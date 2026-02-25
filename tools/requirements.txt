@@ -1,0 +1,22 @@
+# Reverse Engineering Tools
+frida>=16.1.0
+frida-tools>=12.0.0
+
+# APK Analysis
+androguard>=3.4.0
+
+# Network Analysis
+scapy>=2.5.0
+mitmproxy>=10.0.0
+
+# Binary Analysis
+capstone>=5.0.0
+keystone-engine>=0.9.2
+
+# Protocol Analysis
+protobuf>=4.24.0
+
+# Utility
+requests>=2.31.0
+colorama>=0.4.6
+tqdm>=4.66.0
