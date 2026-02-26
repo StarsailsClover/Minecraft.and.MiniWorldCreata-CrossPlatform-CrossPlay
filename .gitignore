@@ -1,0 +1,42 @@
+# 外部资源目录（大文件存储区）
+MnMCPResources/
+
+# APK文件
+*.apk
+
+# 反编译输出
+*_decompiled/
+
+# 日志文件
+*.log
+
+# Python缓存
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# 虚拟环境
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 操作系统
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.tmp
+*.temp
+*.bak
+
+# 位置记录文件（可选，根据需要决定是否提交）
+# *.location

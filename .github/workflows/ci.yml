@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Check file sizes
+      run: |
+        # 检查是否有超过100MB的文件
+        find . -type f -size +100M -not -path "./.git/*" -exec ls -lh {} \; | awk '{ print $9 ": " $5 }'
+        
+        # 如果有大文件，报错
+        LARGE_FILES=$(find . -type f -size +100M -not -path "./.git/*")
+        if [ ! -z "$LARGE_FILES" ]; then
+          echo "Error: Large files (>100MB) found:"
+          echo "$LARGE_FILES"
+          echo "Please move large files to external directory (MnMCPResources/)"
+          exit 1
+        fi
+    
+    - name: Check component manifest
+      run: |
+        if [ ! -f "COMPONENT_MANIFEST.json" ]; then
+          echo "Error: COMPONENT_MANIFEST.json not found"
+          exit 1
+        fi
+        echo "✓ Component manifest exists"
+    
+    - name: Check path resolver
+      run: |
+        if [ ! -f "path_resolver.py" ]; then
+          echo "Error: path_resolver.py not found"
+          exit 1
+        fi
+        echo "✓ Path resolver exists"
+    
+    - name: Validate Python syntax
+      run: |
+        python -m py_compile path_resolver.py
+        python -m py_compile check_and_fix_components.py
+        echo "✓ Python syntax valid"
+    
+    - name: Check documentation
+      run: |
+        for file in README.md PROJECT_OVERVIEW.md QUICK_START.md; do
+          if [ ! -f "$file" ]; then
+            echo "Error: $file not found"
+            exit 1
+          fi
+        done
+        echo "✓ Documentation complete"
