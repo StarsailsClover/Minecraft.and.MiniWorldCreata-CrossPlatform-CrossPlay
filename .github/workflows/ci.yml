@@ -51,7 +51,6 @@ jobs:
     - name: Validate Python syntax
       run: |
         python -m py_compile path_resolver.py
-        python -m py_compile check_and_fix_components.py
         echo "✓ Python syntax valid"
     
     - name: Check documentation
