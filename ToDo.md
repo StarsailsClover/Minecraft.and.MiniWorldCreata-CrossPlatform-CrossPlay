@@ -42,10 +42,14 @@
   - [ ] 同步频率差异
 
 #### 2.3 外服协议分析
-- [ ] 下载 MiniWorld: Creata 1.7.15 APK
-- [ ] 反编译外服APK
-- [ ] 分析登录认证流程（Google/FB OAuth）
+- [x] 下载 MiniWorld: Creata 1.7.15 APK
+- [x] 下载外服PC版
+- [x] 分析外服APK（已识别Google/Facebook/Apple/Twitter登录）
+- [x] 分析外服PC版目录结构
+- [x] 对比国服/外服PC版差异
+- [/] 分析登录认证流程（Google/FB OAuth）
 - [ ] 破解AES-256-GCM加密算法
+- [ ] 抓包分析外服协议
 - [ ] 对比国服/外服协议差异
 
 #### 2.4 协议文档输出
