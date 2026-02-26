@@ -69,7 +69,7 @@ flowchart TD
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/yourusername/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay.git
+git clone https://github.com/StarsailsClover/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay.git
 cd Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay
 
 # 2. 安装依赖

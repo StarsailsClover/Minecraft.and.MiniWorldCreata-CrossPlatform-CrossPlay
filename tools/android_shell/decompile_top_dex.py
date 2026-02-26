@@ -8,8 +8,8 @@ import subprocess
 from pathlib import Path
 
 # 配置
-DEX_DIR = Path(r"C:\Users\Sails\Documents\Coding\MnMCPResources\packs_downloads\dumped_dex\dex")
-JADX_PATH = Path(r"C:\Users\Sails\Documents\Coding\Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay\tools\jadx\bin\jadx.bat")
+DEX_DIR = Path(r"https://github.com/StarsailsClover/MnMCPResources\packs_downloads\dumped_dex\dex")
+JADX_PATH = Path(r"https://github.com/StarsailsClover/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay\tools\jadx\bin\jadx.bat")
 OUTPUT_DIR = DEX_DIR.parent / "java_sources"
 
 def get_top_dex_files(n=3):

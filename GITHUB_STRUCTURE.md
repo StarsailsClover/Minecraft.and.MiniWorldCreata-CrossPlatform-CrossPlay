@@ -83,7 +83,7 @@ Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay/
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/yourusername/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay.git
+git clone https://github.com/StarsailsClover/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay.git
 cd Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay
 
 # 2. 运行安装脚本
@@ -101,7 +101,7 @@ python start_proxy.py
 
 ```bash
 # 1. 下载Release包
-wget https://github.com/yourusername/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay/releases/download/v1.0.0/mnmcp-v1.0.0.zip
+wget https://github.com/StarsailsClover/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay/releases/download/v1.0.0/mnmcp-v1.0.0.zip
 
 # 2. 解压
 unzip mnmcp-v1.0.0.zip

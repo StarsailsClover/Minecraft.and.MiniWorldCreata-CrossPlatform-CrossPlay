@@ -12,7 +12,7 @@ from datetime import datetime
 from collections import defaultdict
 
 # 配置
-SOURCES_DIR = Path(r"C:\Users\Sails\Documents\Coding\MnMCPResources\packs_downloads\dumped_dex\java_sources")
+SOURCES_DIR = Path(r"https://github.com/StarsailsClover/MnMCPResources\packs_downloads\dumped_dex\java_sources")
 OUTPUT_DIR = SOURCES_DIR.parent / "protocol_analysis"
 
 def find_java_files():

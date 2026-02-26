@@ -7,7 +7,7 @@
 
 检查外部目录:
 ```
-C:\Users\Sails\Documents\Coding\MnMCPResources\apk_downloads\
+https://github.com/StarsailsClover/MnMCPResources\apk_downloads\
 └── miniworld_cn_1.53.1.apk          (1.60 GB)
 ```
 

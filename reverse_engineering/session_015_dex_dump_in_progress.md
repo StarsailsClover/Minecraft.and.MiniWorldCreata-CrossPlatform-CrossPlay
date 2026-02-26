@@ -62,7 +62,7 @@
 **方法A: 使用ADB（推荐）**
 ```bash
 # 在电脑上执行
-adb pull /sdcard/Download/BlackDex/com.minitech.miniworld "C:\Users\Sails\Documents\Coding\MnMCPResources\packs_downloads\dumped_dex\"
+adb pull /sdcard/Download/BlackDex/com.minitech.miniworld "https://github.com/StarsailsClover/MnMCPResources\packs_downloads\dumped_dex\"
 ```
 
 **方法B: 使用文件管理器**

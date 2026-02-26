@@ -12,7 +12,7 @@ from datetime import datetime
 
 # 路径配置
 PROJECT_DIR = Path(__file__).parent.resolve()
-RESOURCES_DIR = Path(r"C:\Users\Sails\Documents\Coding\MnMCPResources")
+RESOURCES_DIR = Path(r"https://github.com/StarsailsClover/MnMCPResources")
 
 def clean_project():
     """清理项目，移除不需要的文件"""

@@ -26,7 +26,7 @@
 ### 2.1 克隆仓库
 
 ```bash
-git clone https://github.com/yourusername/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay.git
+git clone https://github.com/StarsailsClover/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay.git
 cd Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay
 ```
 

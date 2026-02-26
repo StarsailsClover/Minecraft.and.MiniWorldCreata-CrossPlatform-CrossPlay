@@ -78,13 +78,13 @@ MnMCPResources/
 #### 方法1：使用ADB（推荐）
 ```bash
 # 1. 在电脑上执行，创建目标目录
-mkdir -p "C:\Users\Sails\Documents\Coding\MnMCPResources\packs_downloads\dumped_dex"
+mkdir -p "https://github.com/StarsailsClover/MnMCPResources\packs_downloads\dumped_dex"
 
 # 2. 从设备复制整个脱壳目录
-adb pull /sdcard/Download/BlackDex/com.minitech.miniworld "C:\Users\Sails\Documents\Coding\MnMCPResources\packs_downloads\dumped_dex\"
+adb pull /sdcard/Download/BlackDex/com.minitech.miniworld "https://github.com/StarsailsClover/MnMCPResources\packs_downloads\dumped_dex\"
 
 # 3. 验证复制结果
-dir "C:\Users\Sails\Documents\Coding\MnMCPResources\packs_downloads\dumped_dex\com.minitech.miniworld\"
+dir "https://github.com/StarsailsClover/MnMCPResources\packs_downloads\dumped_dex\com.minitech.miniworld\"
 ```
 
 #### 方法2：使用文件管理器
@@ -134,7 +134,7 @@ python process_dumped_dex.py
 tools\jadx\bin\jadx-gui.bat
 
 # 然后打开：
-# C:\Users\Sails\Documents\Coding\MnMCPResources\packs_downloads\dumped_dex\com.minitech.miniworld\dump_0.dex
+# https://github.com/StarsailsClover/MnMCPResources\packs_downloads\dumped_dex\com.minitech.miniworld\dump_0.dex
 ```
 
 ---

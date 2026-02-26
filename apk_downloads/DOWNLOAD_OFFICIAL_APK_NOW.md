@@ -3,7 +3,7 @@
 
 ## 下载目标
 - **文件名**: miniworld_cn_official_1.53.1.apk
-- **保存路径**: C:\Users\Sails\Documents\Coding\MnMCPResources\apk_downloads\miniworld_cn_official_1.53.1.apk
+- **保存路径**: https://github.com/StarsailsClover/MnMCPResources\apk_downloads\miniworld_cn_official_1.53.1.apk
 - **大小**: ~1.5-1.8 GB
 
 ## 下载步骤
@@ -21,7 +21,7 @@
 
 ### 4. 保存文件
 - 将下载的文件保存为: miniworld_cn_official_1.53.1.apk
-- 保存位置: C:\Users\Sails\Documents\Coding\MnMCPResources\apk_downloads
+- 保存位置: https://github.com/StarsailsClover/MnMCPResources\apk_downloads
 
 ## 验证官方包
 

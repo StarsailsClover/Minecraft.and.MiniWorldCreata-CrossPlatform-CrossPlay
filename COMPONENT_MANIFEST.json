@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "实现迷你世界与Minecraft全端互通的协议桥接方案",
   "directories": {
-    "project": "C:\\Users\\Sails\\Documents\\Coding\\Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay",
-    "external": "C:\\Users\\Sails\\Documents\\Coding\\MnMCPResources"
+    "project": "https://github.com/StarsailsClover/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay",
+    "external": "https://github.com/StarsailsClover/MnMCPResources"
   },
   "components": {
     "tools": {

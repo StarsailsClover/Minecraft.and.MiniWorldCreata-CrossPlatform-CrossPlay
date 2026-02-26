@@ -5,10 +5,10 @@
 
 ### 步骤 1: 创建外部资源目录
 ```powershell
-New-Item -ItemType Directory -Force -Path 'C:\Users\Sails\Documents\Coding\MnMCPResources'
-New-Item -ItemType Directory -Force -Path 'C:\Users\Sails\Documents\Coding\MnMCPResources\server'
-New-Item -ItemType Directory -Force -Path 'C:\Users\Sails\Documents\Coding\MnMCPResources\tools'
-New-Item -ItemType Directory -Force -Path 'C:\Users\Sails\Documents\Coding\MnMCPResources\apk_downloads'
+New-Item -ItemType Directory -Force -Path 'https://github.com/StarsailsClover/MnMCPResources'
+New-Item -ItemType Directory -Force -Path 'https://github.com/StarsailsClover/MnMCPResources\server'
+New-Item -ItemType Directory -Force -Path 'https://github.com/StarsailsClover/MnMCPResources\tools'
+New-Item -ItemType Directory -Force -Path 'https://github.com/StarsailsClover/MnMCPResources\apk_downloads'
 ```
 状态: ✅ 完成
 
@@ -21,7 +21,7 @@ New-Item -ItemType Directory -Force -Path 'C:\Users\Sails\Documents\Coding\MnMCP
 [发现大文件] apk_downloads\miniworld_cn_latest.apk
   移动: miniworld_cn_latest.apk
     大小: 1.60 GB
-    到: C:\Users\Sails\Documents\Coding\MnMCPResources\apk_downloads\miniworld_cn_latest.apk
+    到: https://github.com/StarsailsClover/MnMCPResources\apk_downloads\miniworld_cn_latest.apk
     创建位置记录文件: ✓
 ```
 
@@ -99,10 +99,10 @@ Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay/
 2. **反编译完成后分析**
    ```bash
    # 查看输出目录
-   dir C:\Users\Sails\Documents\Coding\MnMCPResources\apk_downloads\miniworld_cn_decompiled\
+   dir https://github.com/StarsailsClover/MnMCPResources\apk_downloads\miniworld_cn_decompiled\
    
    # 使用jadx GUI查看
-   ..\tools\jadx\bin\jadx-gui.bat C:\Users\Sails\Documents\Coding\MnMCPResources\apk_downloads\miniworld_cn_1.53.1.apk
+   ..\tools\jadx\bin\jadx-gui.bat https://github.com/StarsailsClover/MnMCPResources\apk_downloads\miniworld_cn_1.53.1.apk
    ```
 
 3. **搜索协议相关代码**

@@ -2,7 +2,7 @@ import sys
 import subprocess
 
 # Set up Python path
-tools_path = r'C:\Users\Sails\Documents\Coding\Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay\tools\python_libs'
+tools_path = r'https://github.com/StarsailsClover/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay\tools\python_libs'
 sys.path.insert(0, tools_path)
 
 # Install frida using pip

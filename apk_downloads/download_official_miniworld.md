@@ -39,7 +39,7 @@
 
 4. **保存文件**
    - 文件名: `miniworld_cn_official_1.53.1.apk`
-   - 保存路径: `C:\Users\Sails\Documents\Coding\MnMCPResources\apk_downloads\`
+   - 保存路径: `https://github.com/StarsailsClover/MnMCPResources\apk_downloads\`
 
 ### 方法2: 官方论坛
 
@@ -90,7 +90,7 @@ jarsigner -verify -verbose -certs miniworld_cn_official_1.53.1.apk
 ```bash
 # 1. 停止当前反编译（如果还在运行）
 # 2. 删除旧的反编译输出
-rd /s /q C:\Users\Sails\Documents\Coding\MnMCPResources\apk_downloads\miniworld_cn_decompiled
+rd /s /q https://github.com/StarsailsClover/MnMCPResources\apk_downloads\miniworld_cn_decompiled
 
 # 3. 重置检查点
 python decompile_checkpoint.py reset

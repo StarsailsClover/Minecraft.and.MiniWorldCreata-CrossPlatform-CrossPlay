@@ -399,8 +399,8 @@ server = path_resolver.get_server_path("paper/paper.jar")
 ### 6.4 官服APK反编译完成（Session 013）
 
 #### 账号信息确认 ✅
-- [x] 确认迷你号: 2056574316
-- [x] 确认密码: ebjz985211
+- [x] 确认迷你号: 20565*****
+- [x] 确认密码: *********
 - [x] 确认平台: PC + Android互通
 - [x] 更新 test_accounts.md
 
@@ -424,30 +424,6 @@ server = path_resolver.get_server_path("paper/paper.jar")
 - [ ] 分析登录认证流程
 - [ ] 分析加密算法实现
 - [ ] 更新ID映射表
-
-### 6.5 等待用户操作
-- [ ] 下载迷你世界官方APK
-  - [ ] 访问 https://www.mini1.cn/
-  - [ ] 下载官方安卓版
-  - [ ] 保存为 miniworld_cn_official_1.53.1.apk
-  - [ ] 验证APK来源（官服确认）
-- [ ] 注册迷你世界官方账号 × 2
-  - [ ] 访问官网下载PC版或安卓版
-  - [ ] 注册账号A（主测试账号）
-  - [ ] 注册账号B（辅助测试账号）
-  - [ ] 记录迷你号和密码
-  - [ ] 验证PC/安卓互通
-  - [ ] 更新 test_accounts.md
-
-**等待原因**: 需要用户手动下载和注册
-**预计时间**: 15-20分钟
-**下一步**: 用户完成后通知助手继续
-
-### 6.4 用户完成后的操作（待执行）
-- [ ] 验证新APK来源
-- [ ] 启动官方APK反编译
-- [ ] 更新账号信息到文档
-- [ ] 继续协议分析
 
 ### 6.2 并行任务执行（Session 008）
 - [x] 检查反编译进度（多次）
@@ -557,7 +533,7 @@ python decompile_checkpoint.py reset
 ### 6.3 反编译完成后分析
 - [ ] 使用jadx GUI查看源代码
   ```bash
-  ..\tools\jadx\bin\jadx-gui.bat C:\Users\Sails\Documents\Coding\MnMCPResources\apk_downloads\miniworld_cn_1.53.1.apk
+  ..\tools\jadx\bin\jadx-gui.bat https://github.com/StarsailsClover/MnMCPResources\apk_downloads\miniworld_cn_1.53.1.apk
   ```
 - [ ] 搜索网络协议相关代码
   - Socket/TCP/UDP通信
@@ -727,7 +703,7 @@ python decompile_checkpoint.py reset
 
 ### APK文件
 - **迷你世界国服**: 1.53.1 (1.60 GB)
-- **位置**: `C:\Users\Sails\Documents\Coding\MnMCPResources\apk_downloads\`
+- **位置**: `https://github.com/StarsailsClover/MnMCPResources\apk_downloads\`
 - **状态**: 已下载，反编译进行中
 
 ### 启动脚本
@@ -736,7 +712,7 @@ python decompile_checkpoint.py reset
 - **内存**: 2GB 分配
 
 ### 外部资源目录
-- **位置**: `C:\Users\Sails\Documents\Coding\MnMCPResources`
+- **位置**: `https://github.com/StarsailsClover/MnMCPResources`
 - **用途**: 存储超过100MB的大文件
 - **当前内容**: 迷你世界国服APK (1.60 GB)
 

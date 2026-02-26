@@ -10,7 +10,7 @@ from pathlib import Path
 
 # 项目根目录
 PROJECT_DIR = Path(__file__).parent.resolve()
-EXTERNAL_DIR = Path(r"C:\Users\Sails\Documents\Coding\MnMCPResources")
+EXTERNAL_DIR = Path(r"YourURL\MnMCPResources")
 
 def resolve_path(rel_path):
     """

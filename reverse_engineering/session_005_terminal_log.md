@@ -46,7 +46,7 @@
 位置文件内容:
 ```
 FILE_MOVED_TO:
-C:\Users\Sails\Documents\Coding\MnMCPResources\apk_downloads\miniworld_cn_1.53.1.apk
+https://github.com/StarsailsClover/MnMCPResources\apk_downloads\miniworld_cn_1.53.1.apk
 ```
 
 ### 步骤 4: 发现并修复硬编码路径问题
@@ -141,15 +141,15 @@ import path_resolver
 
 # 获取APK路径（自动处理外部目录）
 apk_path = path_resolver.get_apk_path("miniworld_cn_1.53.1.apk")
-# 返回: C:\Users\Sails\Documents\Coding\MnMCPResources\apk_downloads\miniworld_cn_1.53.1.apk
+# 返回: https://github.com/StarsailsClover/MnMCPResources\apk_downloads\miniworld_cn_1.53.1.apk
 
 # 获取工具路径
 tool_path = path_resolver.get_tool_path("apktool.jar")
-# 返回: C:\Users\Sails\Documents\Coding\Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay\tools\apktool.jar
+# 返回: https://github.com/StarsailsClover/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay\tools\apktool.jar
 
 # 获取服务端路径
 server_path = path_resolver.get_server_path("paper/paper.jar")
-# 返回: C:\Users\Sails\Documents\Coding\Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay\server\paper\paper.jar
+# 返回: https://github.com/StarsailsClover/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay\server\paper\paper.jar
 ```
 
 ### GitHub提交优势

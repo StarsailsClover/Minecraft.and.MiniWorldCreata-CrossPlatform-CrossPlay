@@ -100,8 +100,8 @@ import os
 import json
 from pathlib import Path
 
-MINECRAFT_DIR = Path(r"C:\Users\Sails\Documents\Coding\Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay\tools\.minecraft")
-LAUNCHER_DIR = Path(r"C:\Users\Sails\Documents\Coding\Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay\tools\pcl2")
+MINECRAFT_DIR = Path(r"https://github.com/StarsailsClover/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay\tools\.minecraft")
+LAUNCHER_DIR = Path(r"https://github.com/StarsailsClover/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay\tools\pcl2")
 
 def setup_directories():
     """创建目录结构"""

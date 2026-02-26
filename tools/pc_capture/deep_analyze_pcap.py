@@ -12,7 +12,7 @@ from datetime import datetime
 from collections import Counter
 
 TSHARK_PATH = r"D:\Program Files\Wireshark\tshark.exe"
-CAPTURE_DIR = Path(r"C:\Users\Sails\Documents\Coding\MnMCPResources\packs_downloads\captures")
+CAPTURE_DIR = Path(r"https://github.com/StarsailsClover/MnMCPResources\packs_downloads\captures")
 OUTPUT_DIR = CAPTURE_DIR / "deep_analysis"
 
 def analyze_capture_deep(pcap_file):

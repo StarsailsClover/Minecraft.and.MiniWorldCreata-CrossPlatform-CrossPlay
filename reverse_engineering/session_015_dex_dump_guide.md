@@ -51,7 +51,7 @@ MnMCPResources/
 #### 方法1：使用ADB（推荐）
 ```bash
 # 在电脑上执行
-adb pull /sdcard/Download/BlackDex/com.minitech.miniworld "C:\Users\Sails\Documents\Coding\MnMCPResources\packs_downloads\dumped_dex\"
+adb pull /sdcard/Download/BlackDex/com.minitech.miniworld "https://github.com/StarsailsClover/MnMCPResources\packs_downloads\dumped_dex\"
 ```
 
 #### 方法2：使用文件管理器
@@ -67,7 +67,7 @@ adb pull /sdcard/Download/BlackDex/com.minitech.miniworld "C:\Users\Sails\Docume
 
 ### 运行处理工具
 ```bash
-cd "C:\Users\Sails\Documents\Coding\Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay\tools\android_shell"
+cd "https://github.com/StarsailsClover/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay\tools\android_shell"
 python process_dumped_dex.py
 ```
 
@@ -181,7 +181,7 @@ python pc_network_capture.py
 1. ⏳ **等待BlackDex完成**
 2. 📋 **复制DEX文件到电脑**：
    ```bash
-   adb pull /sdcard/Download/BlackDex/com.minitech.miniworld "C:\Users\Sails\Documents\Coding\MnMCPResources\packs_downloads\dumped_dex\"
+   adb pull /sdcard/Download/BlackDex/com.minitech.miniworld "https://github.com/StarsailsClover/MnMCPResources\packs_downloads\dumped_dex\"
    ```
 3. 🚀 **运行自动处理工具**：
    ```bash

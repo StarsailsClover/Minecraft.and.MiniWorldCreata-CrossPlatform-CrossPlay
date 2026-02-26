@@ -9,7 +9,7 @@ from pathlib import Path
 from datetime import datetime
 
 TSHARK_PATH = r"D:\Program Files\Wireshark\tshark.exe"
-CAPTURE_DIR = Path(r"C:\Users\Sails\Documents\Coding\MnMCPResources\packs_downloads\captures")
+CAPTURE_DIR = Path(r"https://github.com/StarsailsClover/MnMCPResources\packs_downloads\captures")
 
 def main():
     print("=" * 60)
