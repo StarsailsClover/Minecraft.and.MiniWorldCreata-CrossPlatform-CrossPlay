@@ -1,42 +1,40 @@
-# 外部资源目录（大文件存储区）
-MnMCPResources/
-
-# APK文件
-*.apk
-
-# 反编译输出
-*_decompiled/
-
-# 日志文件
-*.log
-
-# Python缓存
+# Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
+*.so
 .Python
-
-# 虚拟环境
 venv/
 env/
-ENV/
+*.egg-info/
+dist/
+build/
+
+# 配置和日志
+*.log
+.mnmcp/
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
 
 # 操作系统
 .DS_Store
 Thumbs.db
 
-# 临时文件
-*.tmp
-*.temp
-*.bak
+# 测试
+.pytest_cache/
+.coverage
 
-# 位置记录文件（可选，根据需要决定是否提交）
-# *.location
+# 发布
+releases/
+
+# 大文件（应该在外部资源中）
+*.apk
+*.exe
+*.dll
+*.jar
+*.pcapng
+*.pcap

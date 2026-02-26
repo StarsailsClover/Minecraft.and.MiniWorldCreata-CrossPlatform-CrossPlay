@@ -1,0 +1,14 @@
+# MnMCP 依赖
+# Python 3.11+
+
+# 核心依赖（Python标准库）
+# asyncio - 异步IO
+# socket - 网络通信
+# struct - 二进制数据处理
+# json - JSON处理
+# hashlib - 哈希计算
+# logging - 日志记录
+
+# 测试依赖
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
