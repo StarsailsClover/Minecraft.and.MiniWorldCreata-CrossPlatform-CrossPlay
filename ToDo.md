@@ -65,9 +65,17 @@
 ## 下一步行动（详见 docs/NextSteps.md）
 
 ### 🔴 立即执行（本周）
-- [ ] **Android端脱壳**: 使用Frida/Youpk/BlackDex获取真实DEX
-- [ ] **PC端抓包**: 使用Proxifier + Wireshark分析PC协议
-- [ ] **环境准备**: Root设备/模拟器，安装Proxifier和Wireshark
+- [/] **Android端脱壳**: 使用Frida尝试获取真实DEX（进行中）
+- [/] **PC端抓包**: Wireshark环境已准备，等待执行抓包
+- [x] **环境准备**: 安装Proxifier和Wireshark
+- [x] **外服APK分析**: 已完成，识别Google/Facebook/Apple/Twitter登录
+- [x] **外服PC版分析**: 已完成，识别服务器地址差异
+
+### 当前关键发现
+- **国服服务器**: mwu-api-pre.mini1.cn, mwu-cdn-pre.mini1.cn
+- **外服服务器**: mwu-cdn2.miniworldgame.com
+- **外服登录**: Google, Facebook, Apple, Twitter OAuth
+- **APK大小差异**: 国服1641MB vs 外服1011MB（差630MB）
 
 ### 🟡 短期目标（2周内）
 - [ ] 完成脱壳并反编译真实代码
