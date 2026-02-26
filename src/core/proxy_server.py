@@ -190,10 +190,12 @@ class ProxyServer:
         self.connections.append(connection)
         
         try:
-            # TODO: 从抓包分析中获取实际的服务器地址
-            # 临时使用已知的服务器地址
-            mnw_host = "mwu-api-pre.mini1.cn"  # 从抓包分析获得
-            mnw_port = 80  # 临时端口，需要从抓包确认
+            # 从抓包分析获取的服务器地址
+            from .protocol_translator import MINIWORLD_SERVERS
+            
+            # 使用认证服务器
+            mnw_host = MINIWORLD_SERVERS["auth"]["host"]
+            mnw_port = MINIWORLD_SERVERS["auth"]["port"]  # 443 (HTTPS)
             
             # 连接到迷你世界服务器
             if await connection.connect_to_mnw(mnw_host, mnw_port):

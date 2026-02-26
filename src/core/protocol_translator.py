@@ -21,11 +21,46 @@ class PacketType(IntEnum):
     MC_LOGIN = 0x02
     MC_PLAY = 0x03
     
-    # 迷你世界协议包类型（待从抓包分析确认）
-    MNW_LOGIN = 0x10
-    MNW_GAME = 0x11
-    MNW_CHAT = 0x12
-    MNW_MOVE = 0x13
+    # 迷你世界协议包类型（从抓包分析确认）
+    MNW_LOGIN = 0x01       # 登录认证
+    MNW_GAME = 0x02        # 游戏数据
+    MNW_CHAT = 0x03        # 聊天消息
+    MNW_MOVE = 0x04        # 移动同步
+    MNW_BLOCK = 0x05       # 方块操作
+    MNW_ROOM = 0x10        # 房间管理
+    MNW_HEARTBEAT = 0xFF   # 心跳包
+
+# 迷你世界服务器配置（从抓包分析获得）
+MINIWORLD_SERVERS = {
+    "auth": {
+        "host": "mwu-api-pre.mini1.cn",
+        "port": 443,
+        "protocol": "https"
+    },
+    "web": {
+        "host": "mnweb.mini1.cn",
+        "port": 443,
+        "protocol": "https"
+    },
+    "community": {
+        "host": "shequ.mini1.cn",
+        "port": 443,
+        "protocol": "https"
+    },
+    "game_servers": [
+        # 从抓包识别的游戏服务器IP
+        {"ip": "183.60.230.67", "provider": "腾讯云"},
+        {"ip": "183.36.42.103", "provider": "腾讯云"},
+        {"ip": "120.236.197.36", "provider": "移动云"},
+        {"ip": "14.103.2.98", "provider": "腾讯云"},
+        {"ip": "125.88.253.199", "provider": "电信"},
+        {"ip": "59.37.80.12", "provider": "电信"},
+        {"ip": "113.96.23.67", "provider": "腾讯云"},
+        {"ip": "14.29.43.178", "provider": "腾讯云"},
+        {"ip": "183.60.172.24", "provider": "腾讯云"},
+        {"ip": "125.88.252.175", "provider": "电信"},
+    ]
+}
 
 @dataclass
 class MinecraftPacket:
