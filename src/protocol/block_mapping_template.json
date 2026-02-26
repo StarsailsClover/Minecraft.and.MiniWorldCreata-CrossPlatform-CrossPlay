@@ -1,0 +1,334 @@
+{
+  "version": "1.0.0",
+  "mc_version": "1.20.6",
+  "mnw_version": "1.53.1",
+  "last_updated": "2026-02-26",
+  "description": "Minecraft Java 1.20.6 to MiniWorld 1.53.1 Block ID Mapping Template",
+  "mappings": [
+    {
+      "mc_id": 0,
+      "mc_registry": "minecraft:air",
+      "mc_name": "空气",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search for BLOCK_AIR or similar",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 1,
+      "mc_registry": "minecraft:stone",
+      "mc_name": "石头",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search BLOCK_STONE or STONE_BLOCK",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 2,
+      "mc_registry": "minecraft:grass_block",
+      "mc_name": "草方块",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search GRASS_BLOCK or TERRAIN_GRASS",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 3,
+      "mc_registry": "minecraft:dirt",
+      "mc_name": "泥土",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search BLOCK_DIRT",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 4,
+      "mc_registry": "minecraft:cobblestone",
+      "mc_name": "圆石",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search COBBLESTONE",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 5,
+      "mc_registry": "minecraft:oak_planks",
+      "mc_name": "橡木木板",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search PLANK or WOOD_PLANK",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 6,
+      "mc_registry": "minecraft:oak_sapling",
+      "mc_name": "橡树树苗",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search SAPLING",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 7,
+      "mc_registry": "minecraft:bedrock",
+      "mc_name": "基岩",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search BEDROCK",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 12,
+      "mc_registry": "minecraft:sand",
+      "mc_name": "沙子",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search SAND",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 13,
+      "mc_registry": "minecraft:gravel",
+      "mc_name": "砾石",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search GRAVEL",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 14,
+      "mc_registry": "minecraft:gold_ore",
+      "mc_name": "金矿石",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search GOLD_ORE",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 15,
+      "mc_registry": "minecraft:iron_ore",
+      "mc_name": "铁矿石",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search IRON_ORE",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 16,
+      "mc_registry": "minecraft:coal_ore",
+      "mc_name": "煤矿石",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search COAL_ORE",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 17,
+      "mc_registry": "minecraft:oak_log",
+      "mc_name": "橡木原木",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search LOG or WOOD_LOG",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 18,
+      "mc_registry": "minecraft:oak_leaves",
+      "mc_name": "橡树树叶",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search LEAVES",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 20,
+      "mc_registry": "minecraft:glass",
+      "mc_name": "玻璃",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search GLASS_BLOCK or GLASS",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 45,
+      "mc_registry": "minecraft:bricks",
+      "mc_name": "红砖块",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search BRICK_BLOCK",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 46,
+      "mc_registry": "minecraft:tnt",
+      "mc_name": "TNT",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search TNT_BLOCK",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 47,
+      "mc_registry": "minecraft:bookshelf",
+      "mc_name": "书架",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search BOOKSHELF",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 49,
+      "mc_registry": "minecraft:obsidian",
+      "mc_name": "黑曜石",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search OBSIDIAN",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 50,
+      "mc_registry": "minecraft:torch",
+      "mc_name": "火把",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search TORCH",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 54,
+      "mc_registry": "minecraft:chest",
+      "mc_name": "箱子",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search CHEST_BLOCK",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 56,
+      "mc_registry": "minecraft:diamond_ore",
+      "mc_name": "钻石矿石",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search DIAMOND_ORE",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 57,
+      "mc_registry": "minecraft:diamond_block",
+      "mc_name": "钻石块",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search DIAMOND_BLOCK",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 58,
+      "mc_registry": "minecraft:crafting_table",
+      "mc_name": "工作台",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search CRAFTING_TABLE or WORKBENCH",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 61,
+      "mc_registry": "minecraft:furnace",
+      "mc_name": "熔炉",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search FURNACE_BLOCK",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 81,
+      "mc_registry": "minecraft:cactus",
+      "mc_name": "仙人掌",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search CACTUS",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 86,
+      "mc_registry": "minecraft:carved_pumpkin",
+      "mc_name": "南瓜",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search PUMPKIN",
+      "status": "pending",
+      "verified": false
+    },
+    {
+      "mc_id": 91,
+      "mc_registry": "minecraft:jack_o_lantern",
+      "mc_name": "南瓜灯",
+      "mnw_id": null,
+      "mnw_name": null,
+      "mnw_notes": "From DEX: Search LIT_PUMPKIN",
+      "status": "pending",
+      "verified": false
+    }
+  ],
+  "search_instructions": {
+    "dex_source_path": "C:/Users/Sails/Documents/Coding/MnMCPResources/packs_downloads/dumped_dex/java_sources",
+    "search_patterns": [
+      "public static final int BLOCK_",
+      "public static final int TERRAIN_",
+      "enum BlockType",
+      "class BlockConstants",
+      "class BlockRegistry"
+    ],
+    "priority_files": [
+      "Block.java",
+      "Blocks.java", 
+      "BlockType.java",
+      "BlockRegistry.java",
+      "Terrain.java",
+      "WorldBlock.java"
+    ]
+  },
+  "metadata_mappings": {
+    "wool_colors": {
+      "mc_id": 35,
+      "variants": ["white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black"],
+      "mnw_lookup": "Search for WOOL_BLOCK or COLOR_BLOCK with meta"
+    },
+    "wood_types": {
+      "mc_id": 17,
+      "variants": ["oak", "spruce", "birch", "jungle"],
+      "mnw_lookup": "Search for LOG types in BlockRegistry"
+    }
+  },
+  "fallback_rules": {
+    "unmapped_mc_to_mnw": 1,
+    "unmapped_mnw_to_mc": 1,
+    "description": "Default to stone (ID: 1) for unmapped blocks"
+  }
+}

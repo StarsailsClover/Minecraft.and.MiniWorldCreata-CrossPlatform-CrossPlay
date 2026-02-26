@@ -1,0 +1,69 @@
+{
+  "version": "1.0.0",
+  "mc_version": "1.20.6",
+  "mnw_version": "1.53.1",
+  "last_updated": "2026-02-26",
+  "note": "Based on Minecraft Wiki and common block mappings. MiniWorld IDs need verification from runtime analysis.",
+  "mappings": [
+    {"mc_id": 0, "mc_registry": "minecraft:air", "mc_name": "空气", "mnw_id": 0, "mnw_name": "air", "verified": false},
+    {"mc_id": 1, "mc_registry": "minecraft:stone", "mc_name": "石头", "mnw_id": 1, "mnw_name": "stone", "verified": false},
+    {"mc_id": 2, "mc_registry": "minecraft:grass_block", "mc_name": "草方块", "mnw_id": 2, "mnw_name": "grass", "verified": false},
+    {"mc_id": 3, "mc_registry": "minecraft:dirt", "mc_name": "泥土", "mnw_id": 3, "mnw_name": "dirt", "verified": false},
+    {"mc_id": 4, "mc_registry": "minecraft:cobblestone", "mc_name": "圆石", "mnw_id": 4, "mnw_name": "cobblestone", "verified": false},
+    {"mc_id": 5, "mc_registry": "minecraft:oak_planks", "mc_name": "橡木木板", "mnw_id": 5, "mnw_name": "wood_plank", "verified": false},
+    {"mc_id": 7, "mc_registry": "minecraft:bedrock", "mc_name": "基岩", "mnw_id": 7, "mnw_name": "bedrock", "verified": false},
+    {"mc_id": 12, "mc_registry": "minecraft:sand", "mc_name": "沙子", "mnw_id": 12, "mnw_name": "sand", "verified": false},
+    {"mc_id": 13, "mc_registry": "minecraft:gravel", "mc_name": "砾石", "mnw_id": 13, "mnw_name": "gravel", "verified": false},
+    {"mc_id": 14, "mc_registry": "minecraft:gold_ore", "mc_name": "金矿石", "mnw_id": 14, "mnw_name": "gold_ore", "verified": false},
+    {"mc_id": 15, "mc_registry": "minecraft:iron_ore", "mc_name": "铁矿石", "mnw_id": 15, "mnw_name": "iron_ore", "verified": false},
+    {"mc_id": 16, "mc_registry": "minecraft:coal_ore", "mc_name": "煤矿石", "mnw_id": 16, "mnw_name": "coal_ore", "verified": false},
+    {"mc_id": 17, "mc_registry": "minecraft:oak_log", "mc_name": "橡木原木", "mnw_id": 17, "mnw_name": "log", "verified": false},
+    {"mc_id": 18, "mc_registry": "minecraft:oak_leaves", "mc_name": "橡树树叶", "mnw_id": 18, "mnw_name": "leaves", "verified": false},
+    {"mc_id": 20, "mc_registry": "minecraft:glass", "mc_name": "玻璃", "mnw_id": 20, "mnw_name": "glass", "verified": false},
+    {"mc_id": 45, "mc_registry": "minecraft:bricks", "mc_name": "红砖块", "mnw_id": 45, "mnw_name": "brick_block", "verified": false},
+    {"mc_id": 46, "mc_registry": "minecraft:tnt", "mc_name": "TNT", "mnw_id": 46, "mnw_name": "tnt", "verified": false},
+    {"mc_id": 47, "mc_registry": "minecraft:bookshelf", "mc_name": "书架", "mnw_id": 47, "mnw_name": "bookshelf", "verified": false},
+    {"mc_id": 48, "mc_registry": "minecraft:mossy_cobblestone", "mc_name": "苔石", "mnw_id": 48, "mnw_name": "mossy_cobblestone", "verified": false},
+    {"mc_id": 49, "mc_registry": "minecraft:obsidian", "mc_name": "黑曜石", "mnw_id": 49, "mnw_name": "obsidian", "verified": false},
+    {"mc_id": 50, "mc_registry": "minecraft:torch", "mc_name": "火把", "mnw_id": 50, "mnw_name": "torch", "verified": false},
+    {"mc_id": 52, "mc_registry": "minecraft:spawner", "mc_name": "刷怪笼", "mnw_id": 52, "mnw_name": "mob_spawner", "verified": false},
+    {"mc_id": 54, "mc_registry": "minecraft:chest", "mc_name": "箱子", "mnw_id": 54, "mnw_name": "chest", "verified": false},
+    {"mc_id": 56, "mc_registry": "minecraft:diamond_ore", "mc_name": "钻石矿石", "mnw_id": 56, "mnw_name": "diamond_ore", "verified": false},
+    {"mc_id": 57, "mc_registry": "minecraft:diamond_block", "mc_name": "钻石块", "mnw_id": 57, "mnw_name": "diamond_block", "verified": false},
+    {"mc_id": 58, "mc_registry": "minecraft:crafting_table", "mc_name": "工作台", "mnw_id": 58, "mnw_name": "crafting_table", "verified": false},
+    {"mc_id": 61, "mc_registry": "minecraft:furnace", "mc_name": "熔炉", "mnw_id": 61, "mnw_name": "furnace", "verified": false},
+    {"mc_id": 65, "mc_registry": "minecraft:ladder", "mc_name": "梯子", "mnw_id": 65, "mnw_name": "ladder", "verified": false},
+    {"mc_id": 66, "mc_registry": "minecraft:rail", "mc_name": "铁轨", "mnw_id": 66, "mnw_name": "rail", "verified": false},
+    {"mc_id": 81, "mc_registry": "minecraft:cactus", "mc_name": "仙人掌", "mnw_id": 81, "mnw_name": "cactus", "verified": false},
+    {"mc_id": 86, "mc_registry": "minecraft:carved_pumpkin", "mc_name": "南瓜", "mnw_id": 86, "mnw_name": "pumpkin", "verified": false},
+    {"mc_id": 91, "mc_registry": "minecraft:jack_o_lantern", "mc_name": "南瓜灯", "mnw_id": 91, "mnw_name": "lit_pumpkin", "verified": false}
+  ],
+  "metadata_mappings": {
+    "wool": {
+      "mc_id": 35,
+      "variants": ["white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black"],
+      "mnw_lookup": "Check DEX for color block definitions"
+    },
+    "planks": {
+      "mc_id": 5,
+      "variants": ["oak", "spruce", "birch", "jungle", "acacia", "dark_oak"],
+      "mnw_lookup": "Check DEX for wood type variants"
+    },
+    "logs": {
+      "mc_id": 17,
+      "variants": ["oak", "spruce", "birch", "jungle"],
+      "mnw_lookup": "Check DEX for log variants"
+    }
+  },
+  "fallback_rules": {
+    "unmapped_mc_to_mnw": 1,
+    "unmapped_mnw_to_mc": 1,
+    "description": "Default to stone (ID: 1) for unmapped blocks"
+  },
+  "verification_methods": [
+    "1. Runtime hook: Use Frida to intercept getBlockId() calls in MiniWorld",
+    "2. Packet analysis: Capture WebSocket packets when placing blocks",
+    "3. Memory dump: Search for block ID arrays in process memory",
+    "4. Resource files: Check assets/blocks.json or similar in APK"
+  ]
+}
