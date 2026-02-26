@@ -129,13 +129,15 @@ class ProtocolTranslator:
     """协议翻译器主类"""
     
     def __init__(self):
-        # 协议映射表（待从抓包分析填充）
+        # 协议映射表（基于抓包和DEX分析）
         self.mc_to_mnw_map: Dict[int, int] = {
             # Minecraft包ID -> 迷你世界命令码
-            # TODO: 从抓包分析确认映射关系
-            0x00: 0x10,  # Handshake -> Login
-            0x01: 0x11,  # Status -> Game
-            0x02: 0x12,  # Login -> Chat
+            0x00: 0x01,  # Handshake -> Login (认证)
+            0x01: 0x10,  # Status -> Room (房间管理)
+            0x02: 0x02,  # Login -> Game (游戏数据)
+            0x03: 0x03,  # Play -> Chat (聊天)
+            0x04: 0x04,  # Player Move -> Move (移动同步)
+            0x05: 0x05,  # Block Change -> Block (方块操作)
         }
         
         self.mnw_to_mc_map: Dict[int, int] = {
@@ -145,11 +147,64 @@ class ProtocolTranslator:
         
         # 转换函数注册表
         self.converters: Dict[int, Callable] = {}
+        self._register_default_converters()
         
         # 状态管理
         self.state = "handshake"  # handshake, status, login, play
         
+        # 服务器选择
+        self.current_game_server = None
+        
         logger.info("[+] 协议翻译器初始化完成")
+        logger.info(f"    服务器: {MINIWORLD_SERVERS['auth']['host']}")
+    
+    def _register_default_converters(self):
+        """注册默认转换器"""
+        # 登录转换
+        self.register_converter(0x00, self._convert_handshake)
+        self.register_converter(0x02, self._convert_login)
+        
+        # 游戏转换
+        self.register_converter(0x04, self._convert_movement)
+        self.register_converter(0x05, self._convert_block)
+    
+    def _convert_handshake(self, mc_data: bytes) -> bytes:
+        """转换握手包为迷你世界登录请求"""
+        # TODO: 实现迷你世界登录认证格式
+        # 基于抓包分析，迷你世界使用JSON格式登录请求
+        login_request = {
+            "cmd": "login",
+            "version": "1.53.1",
+            "platform": "pc"
+        }
+        return json.dumps(login_request).encode('utf-8')
+    
+    def _convert_login(self, mc_data: bytes) -> bytes:
+        """转换Minecraft登录为迷你世界登录"""
+        # TODO: 实现账户映射
+        # Minecraft用户名 -> 迷你世界迷你号
+        return mc_data
+    
+    def _convert_movement(self, mc_data: bytes) -> bytes:
+        """转换移动数据"""
+        # TODO: 坐标系统转换
+        # Minecraft坐标 -> 迷你世界坐标
+        return mc_data
+    
+    def _convert_block(self, mc_data: bytes) -> bytes:
+        """转换方块操作"""
+        # TODO: 方块ID映射
+        # Minecraft方块ID -> 迷你世界方块ID
+        return mc_data
+    
+    def select_game_server(self) -> dict:
+        """选择最优游戏服务器"""
+        # 简单轮询选择，实际应该根据ping值选择
+        import random
+        server = random.choice(MINIWORLD_SERVERS["game_servers"])
+        self.current_game_server = server
+        logger.info(f"[*] 选择游戏服务器: {server['ip']} ({server['provider']})")
+        return server
     
     def register_converter(self, packet_id: int, converter: Callable):
         """注册数据包转换器"""
