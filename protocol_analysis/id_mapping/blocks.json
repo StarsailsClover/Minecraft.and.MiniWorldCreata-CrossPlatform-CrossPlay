@@ -1,0 +1,49 @@
+{
+  "version": "1.0",
+  "created": "2026-02-26",
+  "minecraft_version": "1.20.6",
+  "miniworld_version": "1.53.1",
+  "description": "方块ID映射表 - Minecraft ↔ 迷你世界",
+  "mapping": {
+    "air": {
+      "minecraft_id": 0,
+      "minecraft_name": "minecraft:air",
+      "miniworld_id": null,
+      "miniworld_name": "待填充",
+      "notes": "空气方块"
+    },
+    "stone": {
+      "minecraft_id": 1,
+      "minecraft_name": "minecraft:stone",
+      "miniworld_id": null,
+      "miniworld_name": "待填充",
+      "notes": "石头"
+    },
+    "grass_block": {
+      "minecraft_id": 9,
+      "minecraft_name": "minecraft:grass_block",
+      "miniworld_id": null,
+      "miniworld_name": "待填充",
+      "notes": "草方块"
+    },
+    "dirt": {
+      "minecraft_id": 10,
+      "minecraft_name": "minecraft:dirt",
+      "miniworld_id": null,
+      "miniworld_name": "待填充",
+      "notes": "泥土"
+    },
+    "cobblestone": {
+      "minecraft_id": 14,
+      "minecraft_name": "minecraft:cobblestone",
+      "miniworld_id": null,
+      "miniworld_name": "待填充",
+      "notes": "圆石"
+    }
+  },
+  "notes": [
+    "待反编译完成后填充迷你世界ID",
+    "需要从APK中提取方块ID定义",
+    "可能需要手动测试验证"
+  ]
+}

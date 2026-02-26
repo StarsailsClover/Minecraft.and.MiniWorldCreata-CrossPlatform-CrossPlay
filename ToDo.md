@@ -17,19 +17,65 @@
 - [ ] 输出《Minecraft双版本协议整合分析报告》
 
 ### 2. 迷你世界国服/外服协议逆向工程
-- [ ] 迷你世界国服协议分析
-  - [ ] 登录认证流程（迷你号/手机号）
-  - [ ] AES-128-CBC加密算法破解
-  - [ ] 数据包结构解析
-  - [ ] 房间管理协议
-- [ ] 迷你世界外服协议分析
-  - [ ] 登录认证流程（Google/FB OAuth）
-  - [ ] AES-256-GCM加密算法破解
-  - [ ] 与国服协议差异对比
-- [ ] 四端协议差异整理
+
+#### 2.1 国服手游端（Android）协议分析
+- [x] 下载官服APK（miniworldMini-wp.apk）
+- [x] 反编译APK
+- [x] **发现APK加固**：腾讯御安全（Ace GShell）加固保护
+- [/] **脱壳处理**（使用BlackDex）
+  - [x] 在Root设备上运行BlackDex
+  - [ ] 复制脱壳产出到资源文件夹
+  - [ ] 反编译DEX文件
+- [ ] 分析登录认证流程（迷你号/手机号）
+- [ ] 破解AES-128-CBC加密算法
+- [ ] 解析数据包结构
+- [ ] 分析房间管理协议
+
+#### 2.2 国服PC端协议分析
+- [x] 提取PC版目录结构
+- [x] 识别关键EXE/DLL文件
+- [x] 分析日志文件（GameApp.log）
+- [ ] **PC端协议抓包分析**（使用Wireshark/Proxifier）
+- [ ] 对比PC端与手游端协议差异
+  - [ ] 房间人数限制（PC: 40人 vs 手游: 6人）
+  - [ ] 数据包大小差异
+  - [ ] 同步频率差异
+
+#### 2.3 外服协议分析
+- [ ] 下载 MiniWorld: Creata 1.7.15 APK
+- [ ] 反编译外服APK
+- [ ] 分析登录认证流程（Google/FB OAuth）
+- [ ] 破解AES-256-GCM加密算法
+- [ ] 对比国服/外服协议差异
+
+#### 2.4 协议文档输出
+- [ ] 输出《迷你世界四端协议差异说明书》
   - [ ] 手游 vs PC 数据包差异
   - [ ] 国服 vs 外服 加密/登录差异
-- [ ] 输出《迷你世界四端协议差异说明书》
+  - [ ] 协议版本兼容性说明
+
+> **注意**：手游端和PC端协议不同，需要分别分析。当前发现官服APK使用了腾讯御安全加固，需要先脱壳才能获取真实代码。
+
+---
+
+## 下一步行动（详见 docs/NextSteps.md）
+
+### 🔴 立即执行（本周）
+- [ ] **Android端脱壳**: 使用Frida/Youpk/BlackDex获取真实DEX
+- [ ] **PC端抓包**: 使用Proxifier + Wireshark分析PC协议
+- [ ] **环境准备**: Root设备/模拟器，安装Proxifier和Wireshark
+
+### 🟡 短期目标（2周内）
+- [ ] 完成脱壳并反编译真实代码
+- [ ] 识别网络通信类和加密算法
+- [ ] 完成PC端协议抓包分析
+- [ ] 注册第二个测试账号
+
+### 🟢 中期目标（1个月内）
+- [ ] 输出《迷你世界国服协议分析报告》
+- [ ] 对比PC端和手游端协议差异
+- [ ] 开始实现协议翻译层核心模块
+- [ ] 下载并分析外服APK
 
 ### 3. 开发环境搭建
 - [x] 部署本地 PaperMC 1.20.6 服务端
@@ -45,21 +91,36 @@
   - [x] 下载 floodgate-spigot.jar
 - [ ] 搭建 Wireshark 抓包环境
 - [ ] 准备测试账号
-  - [ ] 迷你国服账号 × 2
+  - [/] 迷你国服账号 × 2
+    - [x] 账号A（主测试账号）：迷你号 2056574316 ✅
+    - [ ] 账号B（待注册）
   - [ ] 迷你外服账号 × 2
   - [ ] MC Java版账号 × 2
   - [ ] MC 基岩版账号 × 2
 
 ### 4. APK文件准备
-- [x] 下载迷你世界国服 1.53.1 APK
-  - [x] 创建自动下载脚本 (download_apk.py)
-  - [x] 创建手动下载指南 (MANUAL_DOWNLOAD_GUIDE.md)
-  - [x] APK已下载 (1.60 GB)
-  - [x] 移动到外部资源目录
+
+#### 4.1 国服手游端APK
+- [x] 下载官服APK（miniworldMini-wp.apk，1.60 GB）
+- [x] 创建自动下载脚本 (download_apk.py)
+- [x] 创建手动下载指南 (MANUAL_DOWNLOAD_GUIDE.md)
+- [x] 移动到外部资源目录
+- [x] 反编译APK（发现腾讯御安全加固）
+- [ ] **脱壳获取真实DEX**
+
+#### 4.2 国服PC端
+- [x] 提取PC版目录结构
+- [x] 识别关键文件（iworldpc.exe, MicroMiniNew.exe等）
+- [x] 分析日志文件
+- [ ] **PC端网络抓包分析**
+
+#### 4.3 外服APK
 - [/] 下载 MiniWorld: Creata 1.7.15 APK
   - [x] 创建自动下载脚本
   - [x] 创建手动下载指南
   - [ ] 执行下载（需手动操作）
+
+#### 4.4 Minecraft Bedrock
 - [ ] 下载 Minecraft Bedrock 1.20.6 APK（需正版）
 
 ### 5. 大文件管理
@@ -238,7 +299,64 @@ server = path_resolver.get_server_path("paper/paper.jar")
 - [x] 创建官方APK下载指南
 - [x] 创建账号注册指南（PC/安卓互通）
 
-### 6.3 等待用户操作
+### 6.3 主线任务推进（Session 012）
+
+#### 任务A: APK渠道确认 ✅
+- [x] 详细检查APK来源
+- [x] 确认: UC/九游渠道服
+- [x] 发现52个UC SDK文件
+- [x] 结论: 必须重新下载官服
+
+**官服下载地址**: https://www.mini1.cn/
+**官服包名**: com.minitech.miniworld（无.uc后缀）
+
+#### 任务B: Minecraft离线启动方案 ✅
+- [x] 分析PCL2启动器离线模式
+- [x] 创建离线启动配置
+- [x] 测试账号: TestPlayer1（无需正版）
+- [x] 文档: docs/minecraft_offline_launch.md
+
+#### 任务C: ID映射表框架 ✅
+- [x] 创建blocks.json框架
+- [x] 定义映射表结构
+- [x] 待反编译后填充数据
+
+#### 任务D: 代理服务器原型 ✅
+- [x] 创建proxy_server目录
+- [x] 实现TCPProxy基础类
+- [x] 实现双向数据转发
+- [x] 创建测试入口
+
+### 6.4 官服APK反编译完成（Session 013）
+
+#### 账号信息确认 ✅
+- [x] 确认迷你号: 2056574316
+- [x] 确认密码: ebjz985211
+- [x] 确认平台: PC + Android互通
+- [x] 更新 test_accounts.md
+
+#### 官服APK反编译 ✅
+- [x] 检查官服APK: miniworldMini-wp.apk
+- [x] 清理旧反编译输出
+- [x] 备份UC渠道服APK
+- [x] 执行apktool反编译
+- [x] 执行jadx反编译
+- [x] 验证输出文件完整性
+
+**反编译输出**: `decompiled_official/`
+- AndroidManifest.xml ✅
+- smali/ ✅
+- jadx_sources/ ✅
+
+#### 下一步（协议分析）
+- [ ] 使用jadx GUI查看源代码
+- [ ] 搜索网络协议相关类
+- [ ] 提取数据包结构定义
+- [ ] 分析登录认证流程
+- [ ] 分析加密算法实现
+- [ ] 更新ID映射表
+
+### 6.5 等待用户操作
 - [ ] 下载迷你世界官方APK
   - [ ] 访问 https://www.mini1.cn/
   - [ ] 下载官方安卓版
