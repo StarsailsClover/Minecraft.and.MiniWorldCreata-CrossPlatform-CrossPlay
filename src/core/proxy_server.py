@@ -5,9 +5,8 @@
 """
 
 import asyncio
-import socket
 import logging
-from typing import Optional, Dict, Callable
+from typing import Optional, Dict
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -32,10 +31,11 @@ class ProxyConnection:
     
     def __init__(self, client_reader: asyncio.StreamReader, 
                  client_writer: asyncio.StreamWriter, 
-                 session_manager=None):
+                 session_manager=None, translator=None):
         self.client_reader = client_reader
         self.client_writer = client_writer
         self.session_manager = session_manager
+        self.translator = translator
         
         # 获取客户端地址
         self.client_addr = client_writer.get_extra_info('peername')
@@ -82,6 +82,16 @@ class ProxyConnection:
                 self.bytes_received += len(data)
                 self.packets_received += 1
                 
+                # 如果有翻译器，尝试翻译数据包
+                if self.translator:
+                    try:
+                        translated = self.translator.mc_to_mnw(data)
+                        if translated:
+                            data = translated
+                            logger.debug(f"[{self.session_id}] 已翻译MC->MNW数据包")
+                    except Exception as e:
+                        logger.debug(f"[{self.session_id}] 翻译失败，透传原始数据: {e}")
+                
                 # 转发到服务器
                 if self.server_writer:
                     self.server_writer.write(data)
@@ -90,6 +100,9 @@ class ProxyConnection:
                     self.packets_sent += 1
                     
                     logger.debug(f"[{self.session_id}] C->S: {len(data)} bytes")
+                else:
+                    # 如果没有服务器连接，只是记录数据
+                    logger.debug(f"[{self.session_id}] 收到客户端数据: {len(data)} bytes (无服务器连接)")
                     
         except asyncio.CancelledError:
             logger.info(f"[{self.session_id}] 客户端转发任务取消")
@@ -107,6 +120,16 @@ class ProxyConnection:
                 if not data:
                     logger.info(f"[{self.session_id}] 服务器断开连接")
                     break
+                
+                # 如果有翻译器，尝试翻译数据包
+                if self.translator:
+                    try:
+                        translated = self.translator.mnw_to_mc(data)
+                        if translated:
+                            data = translated
+                            logger.debug(f"[{self.session_id}] 已翻译MNW->MC数据包")
+                    except Exception as e:
+                        logger.debug(f"[{self.session_id}] 翻译失败，透传原始数据: {e}")
                 
                 # 转发到客户端
                 self.client_writer.write(data)
@@ -153,11 +176,12 @@ class ProxyServer:
     """代理服务器主类"""
     
     def __init__(self, host: str = "0.0.0.0", port: int = 25565, 
-                 session_manager=None, config=None):
+                 session_manager=None, config=None, translator=None):
         self.host = host
         self.port = port
         self.session_manager = session_manager
         self.config = config
+        self.translator = translator
         
         self.server: Optional[asyncio.Server] = None
         self.connections: Dict[str, ProxyConnection] = {}
@@ -213,13 +237,14 @@ class ProxyServer:
         conn = None
         try:
             # 创建连接对象
-            conn = ProxyConnection(reader, writer, self.session_manager)
+            conn = ProxyConnection(
+                reader, writer, 
+                self.session_manager,
+                self.translator
+            )
             self.connections[conn.session_id] = conn
             self.total_connections += 1
             self.active_connections += 1
-            
-            # TODO: 实现协议识别和迷你世界服务器连接
-            # 这里先实现简单的透传模式
             
             # 创建转发任务
             task1 = asyncio.create_task(conn.relay_client_to_server())
