@@ -13,7 +13,7 @@
 
 > 实现迷你世界（国服/外服·手游/PC）与 Minecraft（Java/Bedrock）全端互通联机的技术方案
 
->访问MnMCP官方网站-https://starsailsclover.github.io/MnMCP-Introducing-Website/
+>[访问MnMCP官方网站](https://starsailsclover.github.io/MnMCP-Introducing-Website/) MnMCP共建者社区Q群：1084172731
 
 **如果我们的项目侵犯了您的切实权益，请联系SailsHuang@gmail.com并提供依据，我们竭诚为您维权。**
 
