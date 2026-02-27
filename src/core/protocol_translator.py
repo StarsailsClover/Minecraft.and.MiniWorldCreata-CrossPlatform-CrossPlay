@@ -169,7 +169,14 @@ class ProtocolTranslator:
             stream = BytesIO(data)
             protocol_version = decode_varint(stream)
             server_address = decode_string(stream)
-            server_port = struct.unpack('>H', stream.read(2))[0]
+            
+            # 检查是否有足够的数据读取端口
+            port_data = stream.read(2)
+            if len(port_data) < 2:
+                logger.warning("握手包数据不完整，缺少端口")
+                return None
+            
+            server_port = struct.unpack('>H', port_data)[0]
             next_state = decode_varint(stream)
             
             logger.info(f"握手: 协议={protocol_version}, 地址={server_address}:{server_port}, 状态={next_state}")

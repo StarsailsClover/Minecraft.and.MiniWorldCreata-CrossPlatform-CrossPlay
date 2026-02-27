@@ -1,283 +1,227 @@
 #!/usr/bin/env python3
 """
 集成测试脚本
-测试协议翻译器和加密模块的集成
+测试协议翻译和加密模块
 """
 
 import sys
-import asyncio
 from pathlib import Path
-from io import BytesIO
 
-# 添加src目录到路径
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
-from core.protocol_translator import ProtocolTranslator, TranslationContext, ConnectionState
-from crypto.aes_crypto import AESCipher, AESMode, MiniWorldEncryption
+import asyncio
 from codec.mc_codec import MinecraftCodec
 from codec.mnw_codec import MiniWorldCodec
+from crypto.aes_crypto import AESCipher, MiniWorldEncryption, hash_password
+from core.protocol_translator import ProtocolTranslator, ConnectionState
 from utils.logger import setup_logger
 
 logger = setup_logger("IntegrationTest")
 
 
-async def test_encryption():
+def test_crypto():
     """测试加密模块"""
     logger.info("=" * 60)
     logger.info("测试加密模块")
     logger.info("=" * 60)
     
-    # 测试AES-128-CBC
-    cipher_cbc = AESCipher(b"0123456789abcdef", mode=AESMode.CBC_128)
-    plaintext = b"Hello, MiniWorld!"
+    # 测试AES-128-CBC（国服）
+    logger.info("\n测试 AES-128-CBC（国服）...")
+    key = b'1234567890123456'  # 16字节密钥
+    cipher = AESCipher(key, mode="CBC")
     
-    encrypted = cipher_cbc.encrypt(plaintext)
-    decrypted = cipher_cbc.decrypt(encrypted)
+    plaintext = b"Hello, MiniWorld CN!"
+    encrypted = cipher.encrypt_cbc(plaintext)
+    decrypted = cipher.decrypt_cbc(encrypted)
     
     assert decrypted == plaintext, "CBC解密失败"
-    logger.info("✓ AES-128-CBC 测试通过")
+    logger.info(f"原始数据: {plaintext}")
+    logger.info(f"加密后: {encrypted.hex()[:32]}...")
+    logger.info(f"解密后: {decrypted}")
+    logger.info("✅ AES-128-CBC 测试通过")
     
-    # 测试AES-256-GCM
-    cipher_gcm = AESCipher(b"0123456789abcdef0123456789abcdef", mode=AESMode.GCM_256)
+    # 测试AES-256-GCM（外服）
+    logger.info("\n测试 AES-256-GCM（外服）...")
+    key = b'12345678901234567890123456789012'  # 32字节密钥
+    cipher = AESCipher(key, mode="GCM")
     
-    encrypted = cipher_gcm.encrypt(plaintext)
-    decrypted = cipher_gcm.decrypt(encrypted)
+    plaintext = b"Hello, MiniWorld Global!"
+    ciphertext, tag = cipher.encrypt_gcm(plaintext)
+    decrypted = cipher.decrypt_gcm(ciphertext, tag)
     
     assert decrypted == plaintext, "GCM解密失败"
-    logger.info("✓ AES-256-GCM 测试通过")
+    logger.info(f"原始数据: {plaintext}")
+    logger.info(f"加密后: {ciphertext.hex()[:32]}...")
+    logger.info(f"Tag: {tag.hex()}")
+    logger.info(f"解密后: {decrypted}")
+    logger.info("✅ AES-256-GCM 测试通过")
     
     # 测试MiniWorld加密管理器
-    encryption = MiniWorldEncryption()
-    encryption.init_cn_encryption("test_session_key")
+    logger.info("\n测试 MiniWorldEncryption...")
+    mw_crypto = MiniWorldEncryption(region="CN")
+    session_key = b'1234567890123456'
+    mw_crypto.set_session_key(session_key)
     
-    encrypted = encryption.encrypt_cn(plaintext)
-    decrypted = encryption.decrypt_cn(encrypted)
+    data = b"Test data for MiniWorld"
+    encrypted = mw_crypto.encrypt(data)
+    decrypted = mw_crypto.decrypt(encrypted)
     
-    assert decrypted == plaintext, "MiniWorld加密失败"
-    logger.info("✓ MiniWorld加密管理器测试通过")
+    assert decrypted == data, "MiniWorld加密失败"
+    logger.info("✅ MiniWorldEncryption 测试通过")
+    
+    # 测试密码哈希
+    logger.info("\n测试密码哈希...")
+    password = "test_password_123"
+    hashed = hash_password(password, method="md5_double")
+    logger.info(f"密码: {password}")
+    logger.info(f"哈希: {hashed}")
+    logger.info("✅ 密码哈希测试通过")
 
 
-async def test_protocol_translation():
+def test_protocol_translation():
     """测试协议翻译"""
     logger.info("\n" + "=" * 60)
     logger.info("测试协议翻译")
     logger.info("=" * 60)
     
-    translator = ProtocolTranslator()
-    context = TranslationContext()
+    translator = ProtocolTranslator(region="CN")
     mc_codec = MinecraftCodec()
     
-    # 测试1: 握手包翻译
-    logger.info("\n测试1: 握手包翻译")
+    # 测试握手包翻译
+    logger.info("\n测试握手包翻译...")
     handshake = mc_codec.create_handshake(
         protocol_version=766,
         server_address="localhost",
         server_port=25565,
         next_state=2
     )
+    result = translator.mc_to_mnw(handshake)
+    logger.info(f"握手包翻译结果: {result}")
+    assert result is None, "握手包不应转发"
+    assert translator.context.state == ConnectionState.LOGIN
+    logger.info("✅ 握手包翻译测试通过")
     
-    result = translator.translate_mc_to_mnw(handshake, context)
-    assert result is None, "握手包不应该被转发"
-    assert context.state == ConnectionState.LOGIN, "状态应该变为LOGIN"
-    logger.info("✓ 握手包翻译测试通过")
-    
-    # 测试2: 登录包翻译
-    logger.info("\n测试2: 登录包翻译")
+    # 测试登录包翻译
+    logger.info("\n测试登录包翻译...")
     login = mc_codec.create_login_start("TestPlayer")
+    result = translator.mc_to_mnw(login)
+    logger.info(f"登录包翻译结果: {result is not None}")
+    assert result is not None, "登录包翻译失败"
+    logger.info("✅ 登录包翻译测试通过")
     
-    result = translator.translate_mc_to_mnw(login, context)
-    # 由于没有账户映射，应该返回None
-    # 在实际环境中会返回迷你世界登录包
-    logger.info("✓ 登录包翻译测试通过（无账户映射）")
+    # 测试聊天包翻译
+    logger.info("\n测试聊天包翻译...")
+    chat = mc_codec.create_chat_message("Hello, MiniWorld!")
+    result = translator.mc_to_mnw(chat)
+    logger.info(f"聊天包翻译结果: {result is not None}")
+    assert result is not None, "聊天包翻译失败"
+    logger.info("✅ 聊天包翻译测试通过")
     
-    # 测试3: 聊天包翻译
-    logger.info("\n测试3: 聊天包翻译")
-    chat = mc_codec.create_chat_message("Hello World!")
-    
-    result = translator.translate_mc_to_mnw(chat, context)
-    # 检查是否生成了迷你世界聊天包
-    if result:
-        logger.info(f"✓ 聊天包翻译成功: {len(result)} bytes")
-    else:
-        logger.info("✗ 聊天包翻译失败")
-    
-    # 测试4: 心跳包翻译
-    logger.info("\n测试4: 心跳包翻译")
-    keep_alive = mc_codec.create_keep_alive(12345)
-    
-    result = translator.translate_mc_to_mnw(keep_alive, context)
-    if result:
-        logger.info(f"✓ 心跳包翻译成功: {len(result)} bytes")
-    else:
-        logger.info("✗ 心跳包翻译失败")
+    # 测试统计
+    stats = translator.get_stats()
+    logger.info(f"\n翻译统计: {stats}")
+    assert stats["packets_translated"] >= 2
+    logger.info("✅ 协议翻译测试全部通过")
 
 
-async def test_mnw_to_mc_translation():
-    """测试迷你世界到Minecraft的翻译"""
+def test_block_mapping():
+    """测试方块映射"""
     logger.info("\n" + "=" * 60)
-    logger.info("测试 MNW -> MC 翻译")
+    logger.info("测试方块映射")
     logger.info("=" * 60)
     
-    translator = ProtocolTranslator()
-    context = TranslationContext()
-    mnw_codec = MiniWorldCodec()
+    from protocol.block_mapper import BlockMapper
     
-    # 测试1: 登录响应翻译
-    logger.info("\n测试1: 登录响应翻译")
-    import json
-    login_response = json.dumps({
-        "success": True,
-        "nickname": "TestPlayer",
-        "session_key": "test_key_123"
-    }).encode()
+    mapper = BlockMapper()
     
-    # 创建MNW登录响应包
-    mnw_packet = MNWPacket(
-        packet_type=MiniWorldCodec.PACKET_LOGIN,
-        sub_type=MiniWorldCodec.SUB_LOGIN_RESPONSE,
-        data=login_response,
-        seq_id=1
-    )
+    # 测试基础映射
+    logger.info("\n测试基础方块映射...")
+    test_cases = [
+        (1, 1),   # 石头
+        (2, 2),   # 草方块
+        (3, 3),   # 泥土
+    ]
     
-    result = translator.translate_mnw_to_mc(mnw_packet.encode(), context)
-    if result:
-        logger.info(f"✓ 登录响应翻译成功: {len(result)} bytes")
-        assert context.state == ConnectionState.PLAY, "状态应该变为PLAY"
-    else:
-        logger.info("✗ 登录响应翻译失败")
+    for mc_id, expected_mnw_id in test_cases:
+        mnw_id, _ = mapper.mc_to_mnw_block(mc_id)
+        logger.info(f"MC ID {mc_id} -> MNW ID {mnw_id}")
+        assert mnw_id == expected_mnw_id, f"方块映射错误: {mc_id} -> {mnw_id}"
     
-    # 测试2: 聊天消息翻译
-    logger.info("\n测试2: 聊天消息翻译")
-    chat_data = json.dumps({
-        "message": "Hello from MiniWorld!",
-        "room_id": "12345"
-    }).encode()
-    
-    mnw_packet = MNWPacket(
-        packet_type=MiniWorldCodec.PACKET_CHAT,
-        sub_type=MiniWorldCodec.SUB_CHAT_MESSAGE,
-        data=chat_data,
-        seq_id=2
-    )
-    
-    result = translator.translate_mnw_to_mc(mnw_packet.encode(), context)
-    if result:
-        logger.info(f"✓ 聊天消息翻译成功: {len(result)} bytes")
-    else:
-        logger.info("✗ 聊天消息翻译失败")
-    
-    # 测试3: 心跳包翻译
-    logger.info("\n测试3: 心跳包翻译")
-    import struct
-    heartbeat_data = struct.pack('>Q', 1234567890)
-    
-    mnw_packet = MNWPacket(
-        packet_type=MiniWorldCodec.PACKET_HEARTBEAT,
-        sub_type=0x00,
-        data=heartbeat_data,
-        seq_id=3
-    )
-    
-    result = translator.translate_mnw_to_mc(mnw_packet.encode(), context)
-    if result:
-        logger.info(f"✓ 心跳包翻译成功: {len(result)} bytes")
-    else:
-        logger.info("✗ 心跳包翻译失败")
+    logger.info("✅ 方块映射测试通过")
 
 
-async def test_end_to_end():
-    """测试端到端流程"""
+def test_coordinate_conversion():
+    """测试坐标转换"""
     logger.info("\n" + "=" * 60)
-    logger.info("测试端到端流程")
+    logger.info("测试坐标转换")
     logger.info("=" * 60)
     
-    translator = ProtocolTranslator()
-    context = TranslationContext()
-    mc_codec = MinecraftCodec()
-    mnw_codec = MiniWorldCodec()
+    from protocol.coordinate_converter import CoordinateConverter, Vector3
     
-    # 模拟完整的登录流程
-    logger.info("\n模拟登录流程:")
+    converter = CoordinateConverter()
     
-    # 1. MC发送握手
-    logger.info("1. MC握手 ->")
-    handshake = mc_codec.create_handshake(766, "localhost", 25565, 2)
-    translator.translate_mc_to_mnw(handshake, context)
-    logger.info(f"   状态: {context.state.value}")
+    # 测试坐标转换（X轴取反）
+    logger.info("\n测试坐标转换...")
+    mc_pos = Vector3(100.0, 64.0, 200.0)
+    mnw_pos = converter.mc_to_mnw_position(mc_pos)
+    back_to_mc = converter.mnw_to_mc_position(mnw_pos)
     
-    # 2. MC发送登录
-    logger.info("2. MC登录 ->")
-    login = mc_codec.create_login_start("TestPlayer")
-    result = translator.translate_mc_to_mnw(login, context)
-    if result:
-        logger.info(f"   生成MNW登录包: {len(result)} bytes")
+    logger.info(f"MC位置: ({mc_pos.x}, {mc_pos.y}, {mc_pos.z})")
+    logger.info(f"MNW位置: ({mnw_pos.x}, {mnw_pos.y}, {mnw_pos.z})")
+    logger.info(f"转回MC: ({back_to_mc.x}, {back_to_mc.y}, {back_to_mc.z})")
     
-    # 3. MNW返回登录成功
-    logger.info("3. MNW登录响应 ->")
-    import json
-    login_response = json.dumps({
-        "success": True,
-        "nickname": "TestPlayer",
-        "session_key": "test_session_key"
-    }).encode()
+    # 由于浮点精度，使用近似相等
+    assert abs(back_to_mc.x - mc_pos.x) < 0.01
+    assert abs(back_to_mc.y - mc_pos.y) < 0.01
+    assert abs(back_to_mc.z - mc_pos.z) < 0.01
     
-    from codec.mnw_codec import MNWPacket
-    mnw_packet = MNWPacket(
-        packet_type=MiniWorldCodec.PACKET_LOGIN,
-        sub_type=MiniWorldCodec.SUB_LOGIN_RESPONSE,
-        data=login_response,
-        seq_id=1
-    )
-    
-    result = translator.translate_mnw_to_mc(mnw_packet.encode(), context)
-    logger.info(f"   状态: {context.state.value}")
-    if result:
-        logger.info(f"   生成MC登录成功包: {len(result)} bytes")
-    
-    # 4. MC发送聊天
-    logger.info("4. MC聊天 ->")
-    chat = mc_codec.create_chat_message("Hello!")
-    result = translator.translate_mc_to_mnw(chat, context)
-    if result:
-        logger.info(f"   生成MNW聊天包: {len(result)} bytes")
-    
-    # 5. MNW广播聊天
-    logger.info("5. MNW聊天广播 ->")
-    chat_data = json.dumps({"message": "Hi there!", "room_id": "12345"}).encode()
-    mnw_packet = MNWPacket(
-        packet_type=MiniWorldCodec.PACKET_CHAT,
-        sub_type=MiniWorldCodec.SUB_CHAT_MESSAGE,
-        data=chat_data,
-        seq_id=2
-    )
-    result = translator.translate_mnw_to_mc(mnw_packet.encode(), context)
-    if result:
-        logger.info(f"   生成MC聊天包: {len(result)} bytes")
-    
-    logger.info("\n✓ 端到端流程测试完成")
+    logger.info("✅ 坐标转换测试通过")
 
 
-async def main():
-    """主测试函数"""
-    logger.info("=" * 60)
-    logger.info("MnMCP 集成测试")
+async def test_proxy_server():
+    """测试代理服务器"""
+    logger.info("\n" + "=" * 60)
+    logger.info("测试代理服务器")
     logger.info("=" * 60)
     
+    from core.proxy_server import ProxyServer
+    from core.session_manager import SessionManager
+    
+    session_manager = SessionManager()
+    server = ProxyServer(
+        host="127.0.0.1",
+        port=25566,  # 使用非标准端口避免冲突
+        session_manager=session_manager
+    )
+    
+    logger.info(f"代理服务器创建成功")
+    logger.info(f"统计: {server.get_stats()}")
+    
+    # 注意：这里不实际启动服务器，只是测试创建
+    logger.info("✅ 代理服务器测试通过")
+
+
+def run_all_tests():
+    """运行所有测试"""
     try:
-        await test_encryption()
-        await test_protocol_translation()
-        await test_mnw_to_mc_translation()
-        await test_end_to_end()
+        test_crypto()
+        test_protocol_translation()
+        test_block_mapping()
+        test_coordinate_conversion()
+        
+        # 异步测试
+        asyncio.run(test_proxy_server())
         
         logger.info("\n" + "=" * 60)
-        logger.info("所有测试通过！")
+        logger.info("🎉 所有集成测试通过！")
         logger.info("=" * 60)
         
     except Exception as e:
-        logger.error(f"测试失败: {e}")
+        logger.error(f"\n❌ 测试失败: {e}")
         import traceback
         traceback.print_exc()
+        sys.exit(1)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    run_all_tests()

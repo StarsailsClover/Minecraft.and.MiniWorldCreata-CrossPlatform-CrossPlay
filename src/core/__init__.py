@@ -1,10 +1,10 @@
-"""
-MnMCP 核心模块
-协议翻译层核心组件
-"""
+"""MnMCP 核心模块"""
+from .proxy_server import ProxyServer, ProxyConnection
+from .protocol_translator import ProtocolTranslator, ConnectionState, TranslationContext
+from .session_manager import SessionManager, PlayerSession, SessionState
 
-from .proxy_server import ProxyServer
-from .protocol_translator import ProtocolTranslator
-from .session_manager import SessionManager
-
-__all__ = ['ProxyServer', 'ProtocolTranslator', 'SessionManager']
+__all__ = [
+    'ProxyServer', 'ProxyConnection',
+    'ProtocolTranslator', 'ConnectionState', 'TranslationContext',
+    'SessionManager', 'PlayerSession', 'SessionState'
+]
