@@ -73,31 +73,6 @@ def check_dependencies():
     print(f"{Colors.OKGREEN}[+] 所有依赖已安装{Colors.ENDC}")
     return True
 
-def decrypt_config(password: str) -> bool:
-    """解密配置文件"""
-    print(f"{Colors.OKBLUE}[*] 解密配置文件...{Colors.ENDC}")
-    
-    decrypt_script = PROJECT_ROOT / "tools" / "decrypt_config.py"
-    if not decrypt_script.exists():
-        print(f"{Colors.FAIL}[!] 解密脚本不存在{Colors.ENDC}")
-        return False
-    
-    try:
-        result = subprocess.run(
-            [sys.executable, str(decrypt_script), "--password", password],
-            capture_output=True,
-            text=True
-        )
-        if result.returncode == 0:
-            print(f"{Colors.OKGREEN}[+] 配置文件解密成功{Colors.ENDC}")
-            return True
-        else:
-            print(f"{Colors.FAIL}[!] 解密失败: {result.stderr}{Colors.ENDC}")
-            return False
-    except Exception as e:
-        print(f"{Colors.FAIL}[!] 解密出错: {e}{Colors.ENDC}")
-        return False
-
 def install_python_deps():
     """安装Python依赖"""
     print(f"{Colors.OKBLUE}[*] 安装Python依赖...{Colors.ENDC}")
@@ -108,6 +83,11 @@ def install_python_deps():
         return False
     
     try:
+        # 先安装/升级 pip
+        subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", "pip"], 
+                      capture_output=True)
+        
+        # 安装依赖
         result = subprocess.run(
             [sys.executable, "-m", "pip", "install", "-r", str(req_file)],
             capture_output=True,
@@ -122,6 +102,40 @@ def install_python_deps():
             return False
     except Exception as e:
         print(f"{Colors.FAIL}[!] 安装出错: {e}{Colors.ENDC}")
+        return False
+
+def decrypt_config(password: str) -> bool:
+    """解密配置文件"""
+    print(f"{Colors.OKBLUE}[*] 解密配置文件...{Colors.ENDC}")
+    
+    decrypt_script = PROJECT_ROOT / "tools" / "decrypt_config.py"
+    if not decrypt_script.exists():
+        print(f"{Colors.FAIL}[!] 解密脚本不存在{Colors.ENDC}")
+        return False
+    
+    # 检查cryptography是否安装
+    try:
+        from cryptography.fernet import Fernet
+    except ImportError:
+        print(f"{Colors.WARNING}[!] cryptography模块未安装，尝试安装...{Colors.ENDC}")
+        subprocess.run([sys.executable, "-m", "pip", "install", "cryptography"], 
+                      capture_output=True)
+    
+    try:
+        result = subprocess.run(
+            [sys.executable, str(decrypt_script), "--password", password],
+            capture_output=True,
+            text=True,
+            cwd=str(PROJECT_ROOT)
+        )
+        if result.returncode == 0:
+            print(f"{Colors.OKGREEN}[+] 配置文件解密成功{Colors.ENDC}")
+            return True
+        else:
+            print(f"{Colors.FAIL}[!] 解密失败: {result.stderr}{Colors.ENDC}")
+            return False
+    except Exception as e:
+        print(f"{Colors.FAIL}[!] 解密出错: {e}{Colors.ENDC}")
         return False
 
 def setup_directories():
@@ -143,6 +157,47 @@ def setup_directories():
     print(f"{Colors.OKGREEN}[+] 目录结构创建完成{Colors.ENDC}")
     return True
 
+def create_sample_config():
+    """创建示例配置文件"""
+    print(f"{Colors.OKBLUE}[*] 创建示例配置...{Colors.ENDC}")
+    
+    config_file = CONFIG_DIR / "config.json"
+    if config_file.exists():
+        print(f"{Colors.OKGREEN}[+] 配置文件已存在{Colors.ENDC}")
+        return True
+    
+    sample_config = {
+        "server": {
+            "host": "0.0.0.0",
+            "port": 25565,
+            "max_players": 100
+        },
+        "miniworld": {
+            "auth_server": "mwu-api-pre.mini1.cn",
+            "game_servers": [
+                "183.60.230.67:4000",
+                "125.88.253.199:4000"
+            ]
+        },
+        "minecraft": {
+            "version": "1.20.6",
+            "server_type": "paper"
+        },
+        "geyser": {
+            "enabled": True,
+            "port": 19132
+        }
+    }
+    
+    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+    with open(config_file, 'w', encoding='utf-8') as f:
+        json.dump(sample_config, f, indent=2, ensure_ascii=False)
+    
+    print(f"{Colors.OKGREEN}[+] 示例配置已创建: {config_file}{Colors.ENDC}")
+    print(f"{Colors.WARNING}[!] 请编辑此文件配置敏感信息后，运行加密命令:{Colors.ENDC}")
+    print(f"    python tools/encrypt_config.py encrypt")
+    return True
+
 def deploy_minimal():
     """最小部署 - 仅代理服务"""
     print(f"{Colors.OKCYAN}{Colors.BOLD}\n>>> 执行最小部署模式 <<<{Colors.ENDC}\n")
@@ -151,6 +206,7 @@ def deploy_minimal():
         ("检查Python版本", check_python_version),
         ("安装Python依赖", install_python_deps),
         ("创建目录结构", setup_directories),
+        ("创建示例配置", create_sample_config),
     ]
     
     for name, func in steps:
@@ -162,6 +218,8 @@ def deploy_minimal():
     print(f"\n{Colors.OKGREEN}{Colors.BOLD}✓ 最小部署完成！{Colors.ENDC}")
     print(f"\n启动命令:")
     print(f"  python -m src.core.proxy_server")
+    print(f"\n{Colors.WARNING}注意: 如需使用加密配置，请先编辑 config/config.json 并运行:{Colors.ENDC}")
+    print(f"  python tools/encrypt_config.py encrypt")
     return True
 
 def deploy_standard():
@@ -172,8 +230,8 @@ def deploy_standard():
         return False
     
     print(f"\n{Colors.BOLD}[安装PaperMC]{Colors.ENDC}")
-    # TODO: 实现PaperMC安装
-    print(f"{Colors.WARNING}PaperMC安装需要手动完成，请参考文档{Colors.ENDC}")
+    print(f"{Colors.WARNING}PaperMC安装需要手动完成，请参考文档:{Colors.ENDC}")
+    print(f"  docs/DEPLOYMENT_GUIDE.md")
     
     print(f"\n{Colors.OKGREEN}{Colors.BOLD}✓ 标准部署完成！{Colors.ENDC}")
     return True
@@ -186,11 +244,9 @@ def deploy_full():
         return False
     
     print(f"\n{Colors.BOLD}[安装GeyserMC]{Colors.ENDC}")
-    # TODO: 实现GeyserMC安装
     print(f"{Colors.WARNING}GeyserMC安装需要手动完成，请参考文档{Colors.ENDC}")
     
     print(f"\n{Colors.BOLD}[部署Web界面]{Colors.ENDC}")
-    # TODO: 实现Web界面部署
     print(f"{Colors.WARNING}Web界面部署需要手动完成，请参考文档{Colors.ENDC}")
     
     print(f"\n{Colors.OKGREEN}{Colors.BOLD}✓ 完整部署完成！{Colors.ENDC}")
@@ -216,9 +272,13 @@ def main():
     
     # 解密配置（除非跳过）
     if not args.skip_decrypt:
-        password = args.password or input(f"{Colors.OKBLUE}请输入配置解密密码: {Colors.ENDC}")
-        if not decrypt_config(password):
-            print(f"{Colors.WARNING}解密失败，使用默认配置继续...{Colors.ENDC}")
+        encrypted_dir = PROJECT_ROOT / "config" / "encrypted"
+        if encrypted_dir.exists() and any(encrypted_dir.glob("*.enc")):
+            password = args.password or input(f"{Colors.OKBLUE}请输入配置解密密码: {Colors.ENDC}")
+            if not decrypt_config(password):
+                print(f"{Colors.WARNING}解密失败，将使用默认配置继续...{Colors.ENDC}")
+        else:
+            print(f"{Colors.OKBLUE}[*] 未发现加密配置文件，跳过解密步骤{Colors.ENDC}")
     
     # 执行部署
     success = False

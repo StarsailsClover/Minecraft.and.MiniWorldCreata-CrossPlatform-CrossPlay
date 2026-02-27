@@ -1,14 +1,25 @@
-# MnMCP 依赖
-# Python 3.11+
+# MnMCP 核心依赖
+requests>=2.31.0
+websockets>=12.0
+cryptography>=41.0.0
+pynbt>=1.2.0
+mcproto>=0.2.0
 
-# 核心依赖（Python标准库）
-# asyncio - 异步IO
-# socket - 网络通信
-# struct - 二进制数据处理
-# json - JSON处理
-# hashlib - 哈希计算
-# logging - 日志记录
+# 网络和数据处理
+dnspython>=2.4.0
+scapy>=2.5.0
+pyshark>=0.6
 
-# 测试依赖
-pytest>=7.0.0
-pytest-asyncio>=0.21.0
+# 日志和监控
+loguru>=0.7.0
+rich>=13.0.0
+
+# 配置管理
+pyyaml>=6.0.0
+python-dotenv>=1.0.0
+
+# 开发工具（可选）
+# pytest>=7.4.0
+# pytest-asyncio>=0.21.0
+# black>=23.7.0
+# flake8>=6.1.0
