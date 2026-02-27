@@ -1,7 +1,7 @@
 # MnMCP - Minecraft 与 迷你世界 跨平台联机代理
 
 <p align="center">
-  <img src="MnMCPIcon.png" alt="MnMCP Logo" width="120" height="120">
+  <img src="MnMCPIcon.jpg" alt="MnMCP Logo">
 </p>
 
 <p align="center">
