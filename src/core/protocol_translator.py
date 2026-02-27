@@ -274,16 +274,268 @@ class ProtocolTranslator:
             return None
     
     def _translate_block_change(self, data: bytes) -> Optional[bytes]:
-        """翻译方块变更包"""
+        """
+        翻译方块变更包
+        
+        Minecraft方块变更包格式:
+        - Position: X(int), Y(int), Z(int) - 打包为Long
+        - Block ID: VarInt
+        """
         try:
-            # 简化处理，实际需要解析完整格式
-            # TODO: 实现完整的方块变更解析
-            logger.debug("方块变更包翻译（待实现）")
-            return None
+            stream = BytesIO(data)
+            
+            # 读取位置（打包为Long）
+            position = decode_varint(stream)
+            
+            # 解码位置
+            x = (position >> 38) & 0x3FFFFFF
+            y = (position >> 26) & 0xFFF
+            z = position & 0x3FFFFFF
+            
+            # 处理有符号数
+            if x >= 2**25:
+                x -= 2**26
+            if y >= 2**11:
+                y -= 2**12
+            if z >= 2**25:
+                z -= 2**26
+            
+            # 读取方块ID
+            block_id = decode_varint(stream)
+            
+            logger.debug(f"MC方块变更: ({x}, {y}, {z}) ID={block_id}")
+            
+            # 方块ID映射
+            mnw_block_id, _ = self.block_mapper.mc_to_mnw_block(block_id)
+            
+            # 坐标转换（X轴取反）
+            mc_pos = Vector3(float(x), float(y), float(z))
+            mnw_pos = self.coord_converter.mc_to_mnw_position(mc_pos)
+            
+            # 创建迷你世界方块放置包
+            mnw_block = self.mnw_codec.create_block_place(
+                x=int(mnw_pos.x),
+                y=int(mnw_pos.y),
+                z=int(mnw_pos.z),
+                block_id=mnw_block_id
+            )
+            
+            self.packets_translated += 1
+            return mnw_block
             
         except Exception as e:
             logger.error(f"翻译方块包失败: {e}")
             return None
+    
+    def _translate_player_digging(self, data: bytes) -> Optional[bytes]:
+        """
+        翻译玩家挖掘包（方块破坏）
+        
+        Minecraft挖掘包格式:
+        - Status: Byte (0=start, 1=cancel, 2=finish)
+        - Position: Long (打包的X,Y,Z)
+        - Face: Byte
+        """
+        try:
+            stream = BytesIO(data)
+            
+            # 读取状态
+            status = struct.unpack('B', stream.read(1))[0]
+            
+            # 读取位置
+            position = decode_varint(stream)
+            x = (position >> 38) & 0x3FFFFFF
+            y = (position >> 26) & 0xFFF
+            z = position & 0x3FFFFFF
+            
+            if x >= 2**25:
+                x -= 2**26
+            if y >= 2**11:
+                y -= 2**12
+            if z >= 2**25:
+                z -= 2**26
+            
+            # 读取面
+            face = struct.unpack('B', stream.read(1))[0]
+            
+            logger.debug(f"MC挖掘: ({x}, {y}, {z}) 状态={status} 面={face}")
+            
+            # 只处理完成挖掘（status=2）
+            if status != 2:
+                return None
+            
+            # 坐标转换
+            mc_pos = Vector3(float(x), float(y), float(z))
+            mnw_pos = self.coord_converter.mc_to_mnw_position(mc_pos)
+            
+            # 创建迷你世界方块破坏包
+            mnw_break = self.mnw_codec.create_block_break(
+                x=int(mnw_pos.x),
+                y=int(mnw_pos.y),
+                z=int(mnw_pos.z)
+            )
+            
+            self.packets_translated += 1
+            return mnw_break
+            
+        except Exception as e:
+            logger.error(f"翻译挖掘包失败: {e}")
+            return None
+    
+    def _translate_player_block_placement(self, data: bytes) -> Optional[bytes]:
+        """
+        翻译玩家方块放置包
+        
+        Minecraft放置包格式:
+        - Hand: VarInt
+        - Position: Long (打包的X,Y,Z)
+        - Face: VarInt
+        - Cursor X/Y/Z: Float
+        - Inside block: Boolean
+        """
+        try:
+            stream = BytesIO(data)
+            
+            # 读取手
+            hand = decode_varint(stream)
+            
+            # 读取位置
+            position = decode_varint(stream)
+            x = (position >> 38) & 0x3FFFFFF
+            y = (position >> 26) & 0xFFF
+            z = position & 0x3FFFFFF
+            
+            if x >= 2**25:
+                x -= 2**26
+            if y >= 2**11:
+                y -= 2**12
+            if z >= 2**25:
+                z -= 2**26
+            
+            # 读取面
+            face = decode_varint(stream)
+            
+            logger.debug(f"MC放置: ({x}, {y}, {z}) 手={hand} 面={face}")
+            
+            # 坐标转换
+            mc_pos = Vector3(float(x), float(y), float(z))
+            mnw_pos = self.coord_converter.mc_to_mnw_position(mc_pos)
+            
+            # TODO: 获取玩家手中的方块ID
+            # 暂时使用石头（ID=1）
+            block_id = 1
+            mnw_block_id, _ = self.block_mapper.mc_to_mnw_block(block_id)
+            
+            # 创建迷你世界方块放置包
+            mnw_place = self.mnw_codec.create_block_place(
+                x=int(mnw_pos.x),
+                y=int(mnw_pos.y),
+                z=int(mnw_pos.z),
+                block_id=mnw_block_id
+            )
+            
+            self.packets_translated += 1
+            return mnw_place
+            
+        except Exception as e:
+            logger.error(f"翻译放置包失败: {e}")
+            return None
+    
+    def create_mc_login_success(self, username: str, uuid_str: str) -> bytes:
+        """
+        创建Minecraft登录成功包
+        
+        Args:
+            username: 用户名
+            uuid_str: UUID字符串
+            
+        Returns:
+            编码后的登录成功包
+        """
+        try:
+            from codec.mc_codec import encode_string
+            import uuid
+            
+            data = BytesIO()
+            
+            # UUID
+            uuid_bytes = uuid.UUID(uuid_str).bytes
+            data.write(uuid_bytes)
+            
+            # 用户名
+            data.write(encode_string(username))
+            
+            # 属性数量（0）
+            data.write(encode_varint(0))
+            
+            return self.mc_codec.encode_packet(PacketType.MC_LOGIN_SUCCESS, data.getvalue())
+            
+        except Exception as e:
+            logger.error(f"创建登录成功包失败: {e}")
+            return b''
+    
+    def create_mc_keep_alive(self, keep_alive_id: int) -> bytes:
+        """创建Minecraft心跳包"""
+        return self.mc_codec.create_keep_alive(keep_alive_id)
+    
+    def create_mc_chat_message(self, message: str) -> bytes:
+        """创建Minecraft聊天消息包"""
+        return self.mc_codec.create_chat_message(message)
+    
+    def create_mc_player_position(self, x: float, y: float, z: float, 
+                                  yaw: float = 0.0, pitch: float = 0.0,
+                                  on_ground: bool = True) -> bytes:
+        """
+        创建Minecraft玩家位置包
+        
+        Args:
+            x, y, z: 坐标
+            yaw: 水平旋转
+            pitch: 垂直旋转
+            on_ground: 是否在地面上
+            
+        Returns:
+            编码后的位置包
+        """
+        try:
+            data = BytesIO()
+            data.write(struct.pack('>d', x))
+            data.write(struct.pack('>d', y))
+            data.write(struct.pack('>d', z))
+            data.write(struct.pack('>f', yaw))
+            data.write(struct.pack('>f', pitch))
+            data.write(struct.pack('>?', on_ground))
+            
+            return self.mc_codec.encode_packet(PacketType.MC_PLAYER_POSITION, data.getvalue())
+            
+        except Exception as e:
+            logger.error(f"创建位置包失败: {e}")
+            return b''
+    
+    def create_mc_block_change(self, x: int, y: int, z: int, block_id: int) -> bytes:
+        """
+        创建Minecraft方块变更包
+        
+        Args:
+            x, y, z: 坐标
+            block_id: 方块ID
+            
+        Returns:
+            编码后的方块变更包
+        """
+        try:
+            # 打包位置
+            position = ((x & 0x3FFFFFF) << 38) | ((y & 0xFFF) << 26) | (z & 0x3FFFFFF)
+            
+            data = BytesIO()
+            data.write(encode_varint(position))
+            data.write(encode_varint(block_id))
+            
+            return self.mc_codec.encode_packet(PacketType.MC_BLOCK_CHANGE, data.getvalue())
+            
+        except Exception as e:
+            logger.error(f"创建方块变更包失败: {e}")
+            return b''
     
     def _translate_mnw_login(self, packet: MNWPacket) -> Optional[bytes]:
         """翻译迷你世界登录响应"""
@@ -331,6 +583,8 @@ class ProtocolTranslator:
             x = move_data.get("x", 0)
             y = move_data.get("y", 0)
             z = move_data.get("z", 0)
+            yaw = move_data.get("yaw", 0.0)
+            pitch = move_data.get("pitch", 0.0)
             
             # 坐标转换（X轴取反）
             mnw_pos = Vector3(x, y, z)
@@ -338,8 +592,17 @@ class ProtocolTranslator:
             
             logger.debug(f"移动: MNW({x:.2f}, {y:.2f}, {z:.2f}) -> MC({mc_pos.x:.2f}, {mc_pos.y:.2f}, {mc_pos.z:.2f})")
             
-            # TODO: 创建MC位置更新包
-            return None
+            # 创建MC位置更新包
+            mc_position = self.create_mc_player_position(
+                x=mc_pos.x,
+                y=mc_pos.y,
+                z=mc_pos.z,
+                yaw=yaw,
+                pitch=pitch
+            )
+            
+            self.packets_translated += 1
+            return mc_position
             
         except Exception as e:
             logger.error(f"翻译MNW移动包失败: {e}")
@@ -356,12 +619,24 @@ class ProtocolTranslator:
             block_id = block_data.get("block_id", 0)
             
             # 方块ID映射
-            mc_block_id = self.block_mapper.mnw_to_mc_block(block_id)
+            mc_block_id, _ = self.block_mapper.mnw_to_mc_block(block_id)
             
-            logger.debug(f"方块: MNW({x}, {y}, {z}) ID={block_id} -> MC ID={mc_block_id}")
+            # 坐标转换
+            mnw_pos = Vector3(float(x), float(y), float(z))
+            mc_pos = self.coord_converter.mnw_to_mc_position(mnw_pos)
             
-            # TODO: 创建MC方块变更包
-            return None
+            logger.debug(f"方块: MNW({x}, {y}, {z}) ID={block_id} -> MC({int(mc_pos.x)}, {int(mc_pos.y)}, {int(mc_pos.z)}) ID={mc_block_id}")
+            
+            # 创建MC方块变更包
+            mc_block = self.create_mc_block_change(
+                x=int(mc_pos.x),
+                y=int(mc_pos.y),
+                z=int(mc_pos.z),
+                block_id=mc_block_id
+            )
+            
+            self.packets_translated += 1
+            return mc_block
             
         except Exception as e:
             logger.error(f"翻译MNW方块包失败: {e}")
