@@ -26,7 +26,7 @@
 基于 bilibili@一只耶吧 原方案的缺陷分析，本项目采用全新架构和方案：
 **迷你四端** → **端适配层** → **协议翻译层** → **Java中转服务端** → **GeyserMC** → **MC全端**
 
-同时我们开发[BolckConnect技术](https://github.com/StarsailsClover/BolckConnect)，实现任何游戏与minecraft的互通联机。
+同时我们开发[BlockConnect技术](https://github.com/StarsailsClover/BlockConnect)，实现任何游戏与minecraft的互通联机。
 
 ---
 
