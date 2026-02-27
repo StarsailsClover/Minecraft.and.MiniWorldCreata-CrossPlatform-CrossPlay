@@ -202,7 +202,6 @@ DEX分析: 81个DEX文件
 - [GeyserMC](https://github.com/GeyserMC/Geyser) - Java ↔ Bedrock 桥接方案
 - [PaperMC](https://papermc.io/) - 高性能 Minecraft 服务端
 - [Fabric](https://fabricmc.net/) - Minecraft 模组框架
-- [@xphrror](https://github.com/xphorror) - 为迷你世界国服脱壳作出贡献🙏
 ---
 
 <p align="center">
