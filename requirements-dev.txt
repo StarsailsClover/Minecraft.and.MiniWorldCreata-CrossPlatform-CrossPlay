@@ -1,0 +1,20 @@
+# 开发依赖
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+black>=23.7.0
+flake8>=6.1.0
+mypy>=1.5.0
+pre-commit>=3.4.0
+
+# 文档生成
+sphinx>=7.1.0
+sphinx-rtd-theme>=1.3.0
+
+# 调试工具
+ipython>=8.14.0
+ipdb>=0.13.13
+
+# 代码质量
+pylint>=2.17.0
+bandit>=1.7.5
