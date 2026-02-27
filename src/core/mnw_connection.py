@@ -16,7 +16,11 @@ from pathlib import Path
 # 导入加密模块
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from crypto.aes_crypto_real import MiniWorldEncryptionReal
+try:
+    from crypto.aes_crypto_real import MiniWorldEncryptionReal
+except ImportError:
+    from crypto.aes_crypto import MiniWorldEncryption as MiniWorldEncryptionReal
+    print("[警告] 使用简化版加密模块")
 
 logger = logging.getLogger(__name__)
 
@@ -380,7 +384,7 @@ class MiniWorldConnection:
             pass
             
         except Exception as e:
-            logger.error(f"处理方块包失败: {e}")")
+            logger.error(f"处理方块包失败: {e}")
     
     async def _handle_heartbeat(self):
         """处理心跳"""
