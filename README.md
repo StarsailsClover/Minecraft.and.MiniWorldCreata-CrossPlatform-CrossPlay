@@ -15,7 +15,7 @@
 
 >[访问MnMCP官方网站](https://starsailsclover.github.io/MnMCP-Introducing-Website/) MnMCP共建者社区Q群：1084172731
 
-**如果我们的项目侵犯了您的切实权益，请联系SailsHuang@gmail.com并提供依据，我们竭诚为您维权。**
+**如果我们的项目侵犯了您的切实权益，请联系SailsHuang@gmail.com并提供依据，我们竭诚为您维权。不必担心您的权益内容被泄露，我们采用加密算法对一些可能侵权的信息进行加密，仅使用时可被程序翻译。**
 
 ---
 
