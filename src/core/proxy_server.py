@@ -7,59 +7,61 @@
 import asyncio
 import socket
 import logging
-from typing import Optional, Callable
+from typing import Optional, Dict, Callable
 from dataclasses import dataclass
 from datetime import datetime
 
-# 配置日志
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class ProxyConfig:
     """代理配置"""
-    # Minecraft 监听配置
     mc_host: str = "0.0.0.0"
-    mc_port: int = 25565  # 标准Minecraft端口
-    
-    # 迷你世界服务器配置
-    mnw_host: str = ""  # 动态获取
-    mnw_port: int = 0   # 动态获取
-    
-    # 协议版本
+    mc_port: int = 25565
+    mnw_host: str = ""
+    mnw_port: int = 0
     protocol_version: int = 1
-    
-    # 超时设置
     connect_timeout: float = 30.0
     read_timeout: float = 60.0
-    
-    # 缓冲区大小
     buffer_size: int = 65536
+
 
 class ProxyConnection:
     """单个代理连接"""
     
-    def __init__(self, client_socket: socket.socket, config: ProxyConfig):
-        self.client_socket = client_socket
-        self.config = config
-        self.server_socket: Optional[socket.socket] = None
-        self.connected = False
+    def __init__(self, client_reader: asyncio.StreamReader, 
+                 client_writer: asyncio.StreamWriter, 
+                 session_manager=None):
+        self.client_reader = client_reader
+        self.client_writer = client_writer
+        self.session_manager = session_manager
+        
+        # 获取客户端地址
+        self.client_addr = client_writer.get_extra_info('peername')
         self.session_id = f"session_{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}"
+        
+        # 服务器连接
+        self.server_reader: Optional[asyncio.StreamReader] = None
+        self.server_writer: Optional[asyncio.StreamWriter] = None
+        self.connected = False
         
         # 统计信息
         self.bytes_sent = 0
         self.bytes_received = 0
+        self.packets_sent = 0
+        self.packets_received = 0
         self.start_time = datetime.now()
+        
+        logger.info(f"[{self.session_id}] 新连接来自 {self.client_addr}")
     
     async def connect_to_mnw(self, host: str, port: int) -> bool:
         """连接到迷你世界服务器"""
         try:
-            self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.server_socket.settimeout(self.config.connect_timeout)
-            self.server_socket.connect((host, port))
+            self.server_reader, self.server_writer = await asyncio.wait_for(
+                asyncio.open_connection(host, port),
+                timeout=30.0
+            )
             self.connected = True
             logger.info(f"[{self.session_id}] 已连接到迷你世界服务器 {host}:{port}")
             return True
@@ -68,189 +70,188 @@ class ProxyConnection:
             return False
     
     async def relay_client_to_server(self):
-        """转发客户端到服务器"""
+        """转发客户端到服务器的数据"""
         try:
             while self.connected:
-                data = self.client_socket.recv(self.config.buffer_size)
+                # 从客户端读取数据
+                data = await self.client_reader.read(65536)
                 if not data:
+                    logger.info(f"[{self.session_id}] 客户端断开连接")
                     break
                 
-                # TODO: 协议转换（Minecraft -> 迷你世界）
-                translated_data = await self.translate_mc_to_mnw(data)
+                self.bytes_received += len(data)
+                self.packets_received += 1
                 
-                self.server_socket.sendall(translated_data)
-                self.bytes_sent += len(translated_data)
-                
-                logger.debug(f"[{self.session_id}] C->S: {len(data)} bytes")
-        
+                # 转发到服务器
+                if self.server_writer:
+                    self.server_writer.write(data)
+                    await self.server_writer.drain()
+                    self.bytes_sent += len(data)
+                    self.packets_sent += 1
+                    
+                    logger.debug(f"[{self.session_id}] C->S: {len(data)} bytes")
+                    
+        except asyncio.CancelledError:
+            logger.info(f"[{self.session_id}] 客户端转发任务取消")
         except Exception as e:
             logger.error(f"[{self.session_id}] 客户端转发错误: {e}")
         finally:
             self.connected = False
     
     async def relay_server_to_client(self):
-        """转发服务器到客户端"""
+        """转发服务器到客户端的数据"""
         try:
             while self.connected:
-                data = self.server_socket.recv(self.config.buffer_size)
+                # 从服务器读取数据
+                data = await self.server_reader.read(65536)
                 if not data:
+                    logger.info(f"[{self.session_id}] 服务器断开连接")
                     break
                 
-                # TODO: 协议转换（迷你世界 -> Minecraft）
-                translated_data = await self.translate_mnw_to_mc(data)
-                
-                self.client_socket.sendall(translated_data)
-                self.bytes_received += len(translated_data)
+                # 转发到客户端
+                self.client_writer.write(data)
+                await self.client_writer.drain()
                 
                 logger.debug(f"[{self.session_id}] S->C: {len(data)} bytes")
-        
+                    
+        except asyncio.CancelledError:
+            logger.info(f"[{self.session_id}] 服务器转发任务取消")
         except Exception as e:
             logger.error(f"[{self.session_id}] 服务器转发错误: {e}")
         finally:
             self.connected = False
     
-    async def translate_mc_to_mnw(self, data: bytes) -> bytes:
-        """Minecraft协议转迷你世界协议"""
-        # TODO: 实现协议转换逻辑
-        # 第一阶段：直接转发（透明代理）
-        return data
-    
-    async def translate_mnw_to_mc(self, data: bytes) -> bytes:
-        """迷你世界协议转Minecraft协议"""
-        # TODO: 实现协议转换逻辑
-        # 第一阶段：直接转发（透明代理）
-        return data
-    
-    def close(self):
+    async def close(self):
         """关闭连接"""
         self.connected = False
         
-        if self.client_socket:
+        # 关闭服务器连接
+        if self.server_writer:
+            self.server_writer.close()
             try:
-                self.client_socket.close()
+                await self.server_writer.wait_closed()
             except:
                 pass
         
-        if self.server_socket:
+        # 关闭客户端连接
+        if self.client_writer:
+            self.client_writer.close()
             try:
-                self.server_socket.close()
+                await self.client_writer.wait_closed()
             except:
                 pass
         
+        # 记录统计信息
         duration = (datetime.now() - self.start_time).total_seconds()
-        logger.info(f"[{self.session_id}] 连接关闭 - "
-                   f"持续时间: {duration:.2f}s, "
-                   f"发送: {self.bytes_sent} bytes, "
-                   f"接收: {self.bytes_received} bytes")
+        logger.info(f"[{self.session_id}] 连接关闭 | "
+                   f"时长: {duration:.1f}s | "
+                   f"收: {self.bytes_received} bytes | "
+                   f"发: {self.bytes_sent} bytes")
+
 
 class ProxyServer:
     """代理服务器主类"""
     
-    def __init__(self, config: Optional[ProxyConfig] = None):
-        self.config = config or ProxyConfig()
+    def __init__(self, host: str = "0.0.0.0", port: int = 25565, 
+                 session_manager=None, config=None):
+        self.host = host
+        self.port = port
+        self.session_manager = session_manager
+        self.config = config
+        
+        self.server: Optional[asyncio.Server] = None
+        self.connections: Dict[str, ProxyConnection] = {}
         self.running = False
-        self.server_socket: Optional[socket.socket] = None
-        self.connections: list[ProxyConnection] = []
-        self.connection_handler: Optional[Callable] = None
+        
+        # 统计
+        self.total_connections = 0
+        self.active_connections = 0
+        
+        logger.info(f"代理服务器初始化完成: {host}:{port}")
     
     async def start(self):
-        """启动代理服务器"""
-        logger.info("=" * 60)
-        logger.info("MnMCP 代理服务器启动")
-        logger.info("=" * 60)
-        logger.info(f"监听地址: {self.config.mc_host}:{self.config.mc_port}")
-        logger.info(f"协议版本: {self.config.protocol_version}")
+        """启动服务器"""
+        self.running = True
         
-        try:
-            self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            self.server_socket.bind((self.config.mc_host, self.config.mc_port))
-            self.server_socket.listen(100)
-            self.running = True
-            
-            logger.info("[+] 代理服务器已启动，等待连接...")
-            
-            while self.running:
-                client_socket, client_addr = self.server_socket.accept()
-                logger.info(f"[+] 新连接: {client_addr}")
-                
-                # 创建新连接处理
-                asyncio.create_task(
-                    self.handle_connection(client_socket, client_addr)
-                )
+        # 创建服务器
+        self.server = await asyncio.start_server(
+            self._handle_client,
+            self.host,
+            self.port
+        )
         
-        except Exception as e:
-            logger.error(f"[-] 服务器错误: {e}")
-        finally:
-            self.stop()
+        logger.info(f"代理服务器已启动: {self.host}:{self.port}")
+        logger.info("等待Minecraft客户端连接...")
+        
+        # 保持运行
+        async with self.server:
+            await self.server.serve_forever()
     
-    async def handle_connection(self, client_socket: socket.socket, client_addr):
-        """处理单个连接"""
-        connection = ProxyConnection(client_socket, self.config)
-        self.connections.append(connection)
-        
-        try:
-            # 从抓包分析获取的服务器地址
-            from .protocol_translator import MINIWORLD_SERVERS
-            
-            # 使用认证服务器
-            mnw_host = MINIWORLD_SERVERS["auth"]["host"]
-            mnw_port = MINIWORLD_SERVERS["auth"]["port"]  # 443 (HTTPS)
-            
-            # 连接到迷你世界服务器
-            if await connection.connect_to_mnw(mnw_host, mnw_port):
-                # 启动双向转发
-                await asyncio.gather(
-                    connection.relay_client_to_server(),
-                    connection.relay_server_to_client()
-                )
-        
-        except Exception as e:
-            logger.error(f"[-] 连接处理错误: {e}")
-        finally:
-            connection.close()
-            if connection in self.connections:
-                self.connections.remove(connection)
-    
-    def stop(self):
-        """停止代理服务器"""
-        logger.info("[*] 正在停止代理服务器...")
+    async def stop(self):
+        """停止服务器"""
+        logger.info("正在停止代理服务器...")
         self.running = False
         
         # 关闭所有连接
-        for conn in self.connections:
-            conn.close()
-        self.connections.clear()
+        close_tasks = []
+        for conn in self.connections.values():
+            close_tasks.append(conn.close())
         
-        # 关闭服务器socket
-        if self.server_socket:
-            try:
-                self.server_socket.close()
-            except:
-                pass
+        if close_tasks:
+            await asyncio.gather(*close_tasks, return_exceptions=True)
         
-        logger.info("[+] 代理服务器已停止")
+        # 关闭服务器
+        if self.server:
+            self.server.close()
+            await self.server.wait_closed()
+        
+        logger.info("代理服务器已停止")
+    
+    async def _handle_client(self, reader: asyncio.StreamReader, 
+                            writer: asyncio.StreamWriter):
+        """处理客户端连接"""
+        conn = None
+        try:
+            # 创建连接对象
+            conn = ProxyConnection(reader, writer, self.session_manager)
+            self.connections[conn.session_id] = conn
+            self.total_connections += 1
+            self.active_connections += 1
+            
+            # TODO: 实现协议识别和迷你世界服务器连接
+            # 这里先实现简单的透传模式
+            
+            # 创建转发任务
+            task1 = asyncio.create_task(conn.relay_client_to_server())
+            task2 = asyncio.create_task(conn.relay_server_to_client())
+            
+            # 等待任一任务完成
+            done, pending = await asyncio.wait(
+                [task1, task2],
+                return_when=asyncio.FIRST_COMPLETED
+            )
+            
+            # 取消剩余任务
+            for task in pending:
+                task.cancel()
+                try:
+                    await task
+                except asyncio.CancelledError:
+                    pass
+            
+        except Exception as e:
+            logger.error(f"处理客户端连接时出错: {e}")
+        finally:
+            if conn:
+                await conn.close()
+                if conn.session_id in self.connections:
+                    del self.connections[conn.session_id]
+                self.active_connections -= 1
     
     def get_stats(self) -> dict:
-        """获取统计信息"""
+        """获取服务器统计信息"""
         return {
-            "running": self.running,
-            "active_connections": len(self.connections),
-            "total_bytes_sent": sum(c.bytes_sent for c in self.connections),
-            "total_bytes_received": sum(c.bytes_received for c in self.connections)
+            "total_connections": self.total_connections,
+            "active_connections": self.active_connections,
+            "uptime": "running" if self.running else "stopped"
         }
-
-# 测试代码
-if __name__ == "__main__":
-    config = ProxyConfig(
-        mc_host="127.0.0.1",
-        mc_port=25565
-    )
-    
-    server = ProxyServer(config)
-    
-    try:
-        asyncio.run(server.start())
-    except KeyboardInterrupt:
-        logger.info("\n[!] 用户中断")
-        server.stop()
