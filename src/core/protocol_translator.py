@@ -7,314 +7,365 @@
 import struct
 import json
 import logging
-from typing import Dict, Optional, Callable, Any
+from typing import Dict, Optional, Callable, Any, Tuple
 from dataclasses import dataclass
-from enum import IntEnum
+from enum import IntEnum, Enum
+from io import BytesIO
+
+from codec.mc_codec import MinecraftCodec, encode_varint, decode_varint, encode_string, decode_string
+from codec.mnw_codec import MiniWorldCodec, MNWPacket
+from protocol.block_mapper import BlockMapper
+from protocol.coordinate_converter import CoordinateConverter, Vector3
+from crypto.aes_crypto import MiniWorldEncryption
 
 logger = logging.getLogger(__name__)
+
+
+class ConnectionState(Enum):
+    """连接状态"""
+    HANDSHAKE = "handshake"
+    STATUS = "status"
+    LOGIN = "login"
+    PLAY = "play"
+    DISCONNECTED = "disconnected"
+
 
 class PacketType(IntEnum):
     """数据包类型"""
     # Minecraft 协议包类型
     MC_HANDSHAKE = 0x00
-    MC_STATUS = 0x01
-    MC_LOGIN = 0x02
-    MC_PLAY = 0x03
+    MC_STATUS_REQUEST = 0x00
+    MC_STATUS_RESPONSE = 0x00
+    MC_LOGIN_START = 0x00
+    MC_LOGIN_SUCCESS = 0x02
+    MC_KEEP_ALIVE = 0x24
+    MC_CHAT_MESSAGE = 0x05
+    MC_PLAYER_POSITION = 0x1A
+    MC_BLOCK_CHANGE = 0x09
     
-    # 迷你世界协议包类型（从抓包分析确认）
-    MNW_LOGIN = 0x01       # 登录认证
-    MNW_GAME = 0x02        # 游戏数据
-    MNW_CHAT = 0x03        # 聊天消息
-    MNW_MOVE = 0x04        # 移动同步
-    MNW_BLOCK = 0x05       # 方块操作
-    MNW_ROOM = 0x10        # 房间管理
-    MNW_HEARTBEAT = 0xFF   # 心跳包
+    # 迷你世界协议包类型
+    MNW_LOGIN = 0x01
+    MNW_GAME = 0x02
+    MNW_CHAT = 0x03
+    MNW_MOVE = 0x04
+    MNW_BLOCK = 0x05
+    MNW_ROOM = 0x10
+    MNW_HEARTBEAT = 0xFF
 
-# 迷你世界服务器配置（从抓包分析获得）
-MINIWORLD_SERVERS = {
-    "auth": {
-        "host": "mwu-api-pre.mini1.cn",
-        "port": 443,
-        "protocol": "https"
-    },
-    "web": {
-        "host": "mnweb.mini1.cn",
-        "port": 443,
-        "protocol": "https"
-    },
-    "community": {
-        "host": "shequ.mini1.cn",
-        "port": 443,
-        "protocol": "https"
-    },
-    "game_servers": [
-        # 从抓包识别的游戏服务器IP
-        {"ip": "183.60.230.67", "provider": "腾讯云"},
-        {"ip": "183.36.42.103", "provider": "腾讯云"},
-        {"ip": "120.236.197.36", "provider": "移动云"},
-        {"ip": "14.103.2.98", "provider": "腾讯云"},
-        {"ip": "125.88.253.199", "provider": "电信"},
-        {"ip": "59.37.80.12", "provider": "电信"},
-        {"ip": "113.96.23.67", "provider": "腾讯云"},
-        {"ip": "14.29.43.178", "provider": "腾讯云"},
-        {"ip": "183.60.172.24", "provider": "腾讯云"},
-        {"ip": "125.88.252.175", "provider": "电信"},
-    ]
-}
 
 @dataclass
-class MinecraftPacket:
-    """Minecraft数据包结构"""
-    length: int
-    packet_id: int
-    data: bytes
-    
-    @classmethod
-    def from_bytes(cls, data: bytes) -> Optional['MinecraftPacket']:
-        """从字节解析Minecraft数据包"""
-        try:
-            # Minecraft协议: [length (varint)] [packet_id (varint)] [data]
-            # 简化实现，实际需要完整的varint解析
-            if len(data) < 2:
-                return None
-            
-            length = data[0]
-            packet_id = data[1]
-            packet_data = data[2:length+1] if length > 1 else b''
-            
-            return cls(length, packet_id, packet_data)
-        except Exception as e:
-            logger.error(f"解析Minecraft数据包失败: {e}")
-            return None
-    
-    def to_bytes(self) -> bytes:
-        """转换为字节"""
-        return bytes([self.length, self.packet_id]) + self.data
+class TranslationContext:
+    """翻译上下文"""
+    mc_username: str = ""
+    mc_uuid: str = ""
+    mnw_account_id: str = ""
+    mnw_token: str = ""
+    room_id: str = ""
+    state: ConnectionState = ConnectionState.HANDSHAKE
+    compression_enabled: bool = False
+    encryption_enabled: bool = False
 
-@dataclass
-class MiniWorldPacket:
-    """迷你世界数据包结构（待从抓包分析确认）"""
-    header: bytes  # 包头
-    command: int   # 命令码
-    length: int    # 数据长度
-    data: bytes    # 数据
-    checksum: bytes  # 校验和
-    
-    @classmethod
-    def from_bytes(cls, data: bytes) -> Optional['MiniWorldPacket']:
-        """从字节解析迷你世界数据包"""
-        # TODO: 从抓包分析确认实际结构
-        # 临时占位实现
-        try:
-            if len(data) < 4:
-                return None
-            
-            # 假设结构: [header 2bytes] [command 1byte] [length 1byte] [data] [checksum 2bytes]
-            header = data[0:2]
-            command = data[2]
-            length = data[3]
-            packet_data = data[4:4+length]
-            checksum = data[4+length:6+length] if len(data) >= 6+length else b'\x00\x00'
-            
-            return cls(header, command, length, packet_data, checksum)
-        except Exception as e:
-            logger.error(f"解析迷你世界数据包失败: {e}")
-            return None
-    
-    def to_bytes(self) -> bytes:
-        """转换为字节"""
-        return self.header + bytes([self.command, self.length]) + self.data + self.checksum
 
 class ProtocolTranslator:
-    """协议翻译器主类"""
+    """
+    协议翻译器
+    实现Minecraft和迷你世界协议之间的双向翻译
+    """
     
-    def __init__(self):
-        # 协议映射表（基于抓包和DEX分析）
-        self.mc_to_mnw_map: Dict[int, int] = {
-            # Minecraft包ID -> 迷你世界命令码
-            0x00: 0x01,  # Handshake -> Login (认证)
-            0x01: 0x10,  # Status -> Room (房间管理)
-            0x02: 0x02,  # Login -> Game (游戏数据)
-            0x03: 0x03,  # Play -> Chat (聊天)
-            0x04: 0x04,  # Player Move -> Move (移动同步)
-            0x05: 0x05,  # Block Change -> Block (方块操作)
-        }
+    def __init__(self, region: str = "CN"):
+        self.mc_codec = MinecraftCodec()
+        self.mnw_codec = MiniWorldCodec()
+        self.block_mapper = BlockMapper()
+        self.coord_converter = CoordinateConverter()
+        self.encryption = MiniWorldEncryption(region=region)
         
-        self.mnw_to_mc_map: Dict[int, int] = {
-            # 反向映射
-            v: k for k, v in self.mc_to_mnw_map.items()
-        }
+        # 翻译上下文
+        self.context = TranslationContext()
         
-        # 转换函数注册表
-        self.converters: Dict[int, Callable] = {}
-        self._register_default_converters()
+        # 统计
+        self.packets_translated = 0
+        self.errors = 0
         
-        # 状态管理
-        self.state = "handshake"  # handshake, status, login, play
+        logger.info("协议翻译器初始化完成")
+    
+    def mc_to_mnw(self, mc_packet: bytes) -> Optional[bytes]:
+        """
+        将Minecraft数据包翻译为迷你世界数据包
         
-        # 服务器选择
-        self.current_game_server = None
-        
-        logger.info("[+] 协议翻译器初始化完成")
-        logger.info(f"    服务器: {MINIWORLD_SERVERS['auth']['host']}")
-    
-    def _register_default_converters(self):
-        """注册默认转换器"""
-        # 登录转换
-        self.register_converter(0x00, self._convert_handshake)
-        self.register_converter(0x02, self._convert_login)
-        
-        # 游戏转换
-        self.register_converter(0x04, self._convert_movement)
-        self.register_converter(0x05, self._convert_block)
-    
-    def _convert_handshake(self, mc_data: bytes) -> bytes:
-        """转换握手包为迷你世界登录请求"""
-        # TODO: 实现迷你世界登录认证格式
-        # 基于抓包分析，迷你世界使用JSON格式登录请求
-        login_request = {
-            "cmd": "login",
-            "version": "1.53.1",
-            "platform": "pc"
-        }
-        return json.dumps(login_request).encode('utf-8')
-    
-    def _convert_login(self, mc_data: bytes) -> bytes:
-        """转换Minecraft登录为迷你世界登录"""
-        # TODO: 实现账户映射
-        # Minecraft用户名 -> 迷你世界迷你号
-        return mc_data
-    
-    def _convert_movement(self, mc_data: bytes) -> bytes:
-        """转换移动数据"""
-        # TODO: 坐标系统转换
-        # Minecraft坐标 -> 迷你世界坐标
-        return mc_data
-    
-    def _convert_block(self, mc_data: bytes) -> bytes:
-        """转换方块操作"""
-        # TODO: 方块ID映射
-        # Minecraft方块ID -> 迷你世界方块ID
-        return mc_data
-    
-    def select_game_server(self) -> dict:
-        """选择最优游戏服务器"""
-        # 简单轮询选择，实际应该根据ping值选择
-        import random
-        server = random.choice(MINIWORLD_SERVERS["game_servers"])
-        self.current_game_server = server
-        logger.info(f"[*] 选择游戏服务器: {server['ip']} ({server['provider']})")
-        return server
-    
-    def register_converter(self, packet_id: int, converter: Callable):
-        """注册数据包转换器"""
-        self.converters[packet_id] = converter
-        logger.debug(f"[+] 注册转换器: 0x{packet_id:02X}")
-    
-    def translate_mc_to_mnw(self, mc_packet: MinecraftPacket) -> Optional[MiniWorldPacket]:
-        """Minecraft协议转迷你世界协议"""
+        Args:
+            mc_packet: Minecraft原始数据包
+            
+        Returns:
+            迷你世界数据包或None
+        """
         try:
-            # 1. 获取对应的迷你世界命令码
-            mnw_command = self.mc_to_mnw_map.get(mc_packet.packet_id, 0x11)
+            # 解析Minecraft数据包
+            packet = self.mc_codec.decode_packet(mc_packet)
+            if not packet:
+                return None
             
-            # 2. 查找专用转换器
-            if mc_packet.packet_id in self.converters:
-                converter = self.converters[mc_packet.packet_id]
-                mnw_data = converter(mc_packet.data)
+            # 根据包ID进行翻译
+            if packet.packet_id == PacketType.MC_HANDSHAKE:
+                return self._translate_handshake(packet.data)
+            elif packet.packet_id == PacketType.MC_LOGIN_START:
+                return self._translate_login_start(packet.data)
+            elif packet.packet_id == PacketType.MC_CHAT_MESSAGE:
+                return self._translate_chat_message(packet.data)
+            elif packet.packet_id == PacketType.MC_PLAYER_POSITION:
+                return self._translate_player_position(packet.data)
+            elif packet.packet_id == PacketType.MC_BLOCK_CHANGE:
+                return self._translate_block_change(packet.data)
             else:
-                # 默认转换：直接透传数据
-                mnw_data = mc_packet.data
-            
-            # 3. 构建迷你世界数据包
-            mnw_packet = MiniWorldPacket(
-                header=b'\xAA\xBB',  # 临时包头
-                command=mnw_command,
-                length=len(mnw_data),
-                data=mnw_data,
-                checksum=b'\x00\x00'  # 临时校验和
-            )
-            
-            logger.debug(f"[C->S] MC 0x{mc_packet.packet_id:02X} -> MNW 0x{mnw_command:02X}")
-            return mnw_packet
-        
+                # 未实现的包类型，记录日志
+                logger.debug(f"未实现的MC包类型: 0x{packet.packet_id:02X}")
+                return None
+                
         except Exception as e:
-            logger.error(f"协议转换失败 (MC->MNW): {e}")
+            logger.error(f"MC→MNW翻译失败: {e}")
+            self.errors += 1
             return None
     
-    def translate_mnw_to_mc(self, mnw_packet: MiniWorldPacket) -> Optional[MinecraftPacket]:
-        """迷你世界协议转Minecraft协议"""
-        try:
-            # 1. 获取对应的Minecraft包ID
-            mc_packet_id = self.mnw_to_mc_map.get(mnw_packet.command, 0x00)
-            
-            # 2. 查找专用转换器
-            if mnw_packet.command in self.converters:
-                converter = self.converters[mnw_packet.command]
-                mc_data = converter(mnw_packet.data)
-            else:
-                # 默认转换：直接透传数据
-                mc_data = mnw_packet.data
-            
-            # 3. 构建Minecraft数据包
-            mc_packet = MinecraftPacket(
-                length=len(mc_data) + 1,
-                packet_id=mc_packet_id,
-                data=mc_data
-            )
-            
-            logger.debug(f"[S->C] MNW 0x{mnw_packet.command:02X} -> MC 0x{mc_packet_id:02X}")
-            return mc_packet
+    def mnw_to_mc(self, mnw_packet: bytes) -> Optional[bytes]:
+        """
+        将迷你世界数据包翻译为Minecraft数据包
         
+        Args:
+            mnw_packet: 迷你世界原始数据包
+            
+        Returns:
+            Minecraft数据包或None
+        """
+        try:
+            # 解密（如果需要）
+            if self.context.encryption_enabled:
+                mnw_packet = self.encryption.decrypt(mnw_packet)
+            
+            # 解析迷你世界数据包
+            packet = self.mnw_codec.decode_packet(mnw_packet, decrypt=False)
+            if not packet:
+                return None
+            
+            # 根据包类型进行翻译
+            if packet.packet_type == PacketType.MNW_LOGIN:
+                return self._translate_mnw_login(packet)
+            elif packet.packet_type == PacketType.MNW_CHAT:
+                return self._translate_mnw_chat(packet)
+            elif packet.packet_type == PacketType.MNW_MOVE:
+                return self._translate_mnw_move(packet)
+            elif packet.packet_type == PacketType.MNW_BLOCK:
+                return self._translate_mnw_block(packet)
+            else:
+                logger.debug(f"未实现的MNW包类型: 0x{packet.packet_type:02X}")
+                return None
+                
         except Exception as e:
-            logger.error(f"协议转换失败 (MNW->MC): {e}")
+            logger.error(f"MNW→MC翻译失败: {e}")
+            self.errors += 1
             return None
     
-    def update_state(self, new_state: str):
-        """更新连接状态"""
-        logger.info(f"[*] 状态变更: {self.state} -> {new_state}")
-        self.state = new_state
+    def _translate_handshake(self, data: bytes) -> Optional[bytes]:
+        """翻译握手包"""
+        try:
+            stream = BytesIO(data)
+            protocol_version = decode_varint(stream)
+            server_address = decode_string(stream)
+            server_port = struct.unpack('>H', stream.read(2))[0]
+            next_state = decode_varint(stream)
+            
+            logger.info(f"握手: 协议={protocol_version}, 地址={server_address}:{server_port}, 状态={next_state}")
+            
+            # 更新上下文状态
+            if next_state == 1:
+                self.context.state = ConnectionState.STATUS
+            elif next_state == 2:
+                self.context.state = ConnectionState.LOGIN
+            
+            # 握手包不需要转发到迷你世界，直接返回空
+            return None
+            
+        except Exception as e:
+            logger.error(f"翻译握手包失败: {e}")
+            return None
     
-    def get_state(self) -> str:
-        """获取当前状态"""
-        return self.state
-
-# 转换函数示例（待从抓包分析实现）
-def convert_handshake(mc_data: bytes) -> bytes:
-    """转换握手包"""
-    # TODO: 从抓包分析确认实际结构
-    # 临时返回原数据
-    return mc_data
-
-def convert_login(mc_data: bytes) -> bytes:
-    """转换登录包"""
-    # TODO: 实现迷你世界登录认证
-    # 需要处理：
-    # 1. Minecraft用户名 -> 迷你世界迷你号
-    # 2. 认证方式转换
-    return mc_data
-
-def convert_chat(mc_data: bytes) -> bytes:
-    """转换聊天包"""
-    # TODO: 实现聊天消息格式转换
-    return mc_data
-
-def convert_movement(mc_data: bytes) -> bytes:
-    """转换移动包"""
-    # TODO: 实现坐标系统转换
-    # Minecraft和迷你世界的坐标系统可能不同
-    return mc_data
-
-# 测试代码
-if __name__ == "__main__":
-    translator = ProtocolTranslator()
+    def _translate_login_start(self, data: bytes) -> Optional[bytes]:
+        """翻译登录开始包"""
+        try:
+            stream = BytesIO(data)
+            username = decode_string(stream)
+            
+            logger.info(f"MC登录: 用户名={username}")
+            self.context.mc_username = username
+            
+            # TODO: 从账户映射表获取迷你号
+            # 暂时使用用户名作为迷你号
+            self.context.mnw_account_id = username
+            
+            # 创建迷你世界登录请求
+            mnw_login = self.mnw_codec.create_login_request(
+                account_id=self.context.mnw_account_id,
+                token="temp_token",  # TODO: 实现真实Token获取
+                version="1.53.1"
+            )
+            
+            self.packets_translated += 1
+            return mnw_login
+            
+        except Exception as e:
+            logger.error(f"翻译登录包失败: {e}")
+            return None
     
-    # 测试数据包转换
-    mc_packet = MinecraftPacket(
-        length=5,
-        packet_id=0x00,
-        data=b'\x01\x02\x03\x04'
-    )
+    def _translate_chat_message(self, data: bytes) -> Optional[bytes]:
+        """翻译聊天消息包"""
+        try:
+            stream = BytesIO(data)
+            message = decode_string(stream)
+            
+            logger.info(f"MC聊天: {message}")
+            
+            # 转换为迷你世界聊天包
+            mnw_chat = self.mnw_codec.create_chat_message(
+                message=message,
+                room_id=self.context.room_id
+            )
+            
+            self.packets_translated += 1
+            return mnw_chat
+            
+        except Exception as e:
+            logger.error(f"翻译聊天包失败: {e}")
+            return None
     
-    mnw_packet = translator.translate_mc_to_mnw(mc_packet)
-    if mnw_packet:
-        print(f"转换成功: MC 0x{mc_packet.packet_id:02X} -> MNW 0x{mnw_packet.command:02X}")
+    def _translate_player_position(self, data: bytes) -> Optional[bytes]:
+        """翻译玩家位置包"""
+        try:
+            # Minecraft位置格式: X(double), Y(double), Z(double), yaw(float), pitch(float), on_ground(bool)
+            if len(data) < 25:
+                return None
+            
+            x = struct.unpack('>d', data[0:8])[0]
+            y = struct.unpack('>d', data[8:16])[0]
+            z = struct.unpack('>d', data[16:24])[0]
+            
+            # 坐标转换（X轴取反）
+            mc_pos = Vector3(x, y, z)
+            mnw_pos = self.coord_converter.mc_to_mnw_position(mc_pos)
+            
+            logger.debug(f"位置: MC({x:.2f}, {y:.2f}, {z:.2f}) -> MNW({mnw_pos.x:.2f}, {mnw_pos.y:.2f}, {mnw_pos.z:.2f})")
+            
+            # 创建迷你世界移动包
+            mnw_move = self.mnw_codec.create_move_packet(
+                x=mnw_pos.x,
+                y=mnw_pos.y,
+                z=mnw_pos.z
+            )
+            
+            self.packets_translated += 1
+            return mnw_move
+            
+        except Exception as e:
+            logger.error(f"翻译位置包失败: {e}")
+            return None
+    
+    def _translate_block_change(self, data: bytes) -> Optional[bytes]:
+        """翻译方块变更包"""
+        try:
+            # 简化处理，实际需要解析完整格式
+            # TODO: 实现完整的方块变更解析
+            logger.debug("方块变更包翻译（待实现）")
+            return None
+            
+        except Exception as e:
+            logger.error(f"翻译方块包失败: {e}")
+            return None
+    
+    def _translate_mnw_login(self, packet: MNWPacket) -> Optional[bytes]:
+        """翻译迷你世界登录响应"""
+        try:
+            response = self.mnw_codec.parse_login_response(packet.data)
+            
+            if response.get("success"):
+                logger.info(f"MNW登录成功: {response.get('nickname', 'Unknown')}")
+                self.context.state = ConnectionState.PLAY
+                
+                # 创建MC登录成功包
+                # TODO: 实现完整的登录成功包
+                return None
+            else:
+                logger.error(f"MNW登录失败: {response.get('error', 'Unknown')}")
+                return None
+                
+        except Exception as e:
+            logger.error(f"翻译MNW登录包失败: {e}")
+            return None
+    
+    def _translate_mnw_chat(self, packet: MNWPacket) -> Optional[bytes]:
+        """翻译迷你世界聊天消息"""
+        try:
+            chat_data = self.mnw_codec.parse_chat_message(packet.data)
+            message = chat_data.get("message", "")
+            
+            logger.info(f"MNW聊天: {message}")
+            
+            # 创建MC聊天包
+            mc_chat = self.mc_codec.create_chat_message(message)
+            
+            self.packets_translated += 1
+            return mc_chat
+            
+        except Exception as e:
+            logger.error(f"翻译MNW聊天包失败: {e}")
+            return None
+    
+    def _translate_mnw_move(self, packet: MNWPacket) -> Optional[bytes]:
+        """翻译迷你世界移动数据"""
+        try:
+            move_data = self.mnw_codec.parse_move_data(packet.data)
+            
+            x = move_data.get("x", 0)
+            y = move_data.get("y", 0)
+            z = move_data.get("z", 0)
+            
+            # 坐标转换（X轴取反）
+            mnw_pos = Vector3(x, y, z)
+            mc_pos = self.coord_converter.mnw_to_mc_position(mnw_pos)
+            
+            logger.debug(f"移动: MNW({x:.2f}, {y:.2f}, {z:.2f}) -> MC({mc_pos.x:.2f}, {mc_pos.y:.2f}, {mc_pos.z:.2f})")
+            
+            # TODO: 创建MC位置更新包
+            return None
+            
+        except Exception as e:
+            logger.error(f"翻译MNW移动包失败: {e}")
+            return None
+    
+    def _translate_mnw_block(self, packet: MNWPacket) -> Optional[bytes]:
+        """翻译迷你世界方块操作"""
+        try:
+            block_data = self.mnw_codec.parse_block_data(packet.data)
+            
+            x = block_data.get("x", 0)
+            y = block_data.get("y", 0)
+            z = block_data.get("z", 0)
+            block_id = block_data.get("block_id", 0)
+            
+            # 方块ID映射
+            mc_block_id = self.block_mapper.mnw_to_mc_block(block_id)
+            
+            logger.debug(f"方块: MNW({x}, {y}, {z}) ID={block_id} -> MC ID={mc_block_id}")
+            
+            # TODO: 创建MC方块变更包
+            return None
+            
+        except Exception as e:
+            logger.error(f"翻译MNW方块包失败: {e}")
+            return None
+    
+    def get_stats(self) -> Dict[str, Any]:
+        """获取翻译统计"""
+        return {
+            "packets_translated": self.packets_translated,
+            "errors": self.errors,
+            "state": self.context.state.value,
+            "mc_username": self.context.mc_username,
+            "mnw_account_id": self.context.mnw_account_id
+        }
