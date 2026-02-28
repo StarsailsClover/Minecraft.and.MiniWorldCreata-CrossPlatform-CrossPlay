@@ -64,11 +64,16 @@ class MiniWorldAuthenticator:
         return f"{self.config.DEVICE_ID_PREFIX}{unique_str}"
     
     def _hash_password(self, password: str) -> str:
-        """密码哈希处理（推测为MD5或自定义算法）"""
-        # TODO: 从DEX中确认实际算法
-        # 当前使用双重MD5作为占位
-        first_hash = hashlib.md5(password.encode()).hexdigest()
-        second_hash = hashlib.md5(first_hash.encode()).hexdigest()
+        """
+        密码哈希处理 - v0.2.2_26w09a_Phase 1
+        
+        使用双重MD5哈希（基于逆向分析推测）
+        """
+        import sys
+        sys.path.insert(0, str(Path(__file__).parent.parent))
+        from crypto.password_hasher import PasswordHasher
+        
+        return PasswordHasher.hash_password_cn(password)ond_hash = hashlib.md5(first_hash.encode()).hexdigest()
         return second_hash.upper()
     
     def _encrypt_request(self, data: Dict) -> str:

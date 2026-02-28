@@ -1,10 +1,13 @@
-"""加密模块"""
-try:
-    from .aes_crypto_real import AESCipherReal, MiniWorldEncryptionReal, hash_password_real
-    __all__ = ['AESCipherReal', 'MiniWorldEncryptionReal', 'hash_password_real']
-except ImportError:
-    from .aes_crypto import AESCipher, MiniWorldEncryption, hash_password
-    AESCipherReal = AESCipher
-    MiniWorldEncryptionReal = MiniWorldEncryption
-    hash_password_real = hash_password
-    __all__ = ['AESCipher', 'MiniWorldEncryption', 'hash_password']
+"""加密模块 - v0.2.2_26w09a_Phase 1"""
+
+from .aes_crypto import AESCipher, MiniWorldCrypto
+from .password_hasher import PasswordHasher, TokenHasher, hash_password, verify_password
+
+__all__ = [
+    'AESCipher',
+    'MiniWorldCrypto',
+    'PasswordHasher',
+    'TokenHasher',
+    'hash_password',
+    'verify_password'
+]
