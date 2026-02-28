@@ -4,61 +4,66 @@ __pycache__/
 *$py.class
 *.so
 .Python
-venv/
-env/
-*.egg-info/
-dist/
 build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# 配置和日志
-*.log
-.mnmcp/
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-
-# 操作系统
+*~
 .DS_Store
-Thumbs.db
 
-# 测试
+# Testing
 .pytest_cache/
 .coverage
+htmlcov/
+.tox/
+.nox/
 
-# 发布
-releases/
+# Logs
+*.log
+logs/
 
-# 大文件（应该在外部资源中）
-*.apk
-*.exe
-*.dll
-*.jar
-*.pcapng
-*.pcap
-PHASE3_4_COMPLETE.md
-PHASE3_4_FINAL.md
-ErrorLog/ACE_ANTI_CHEAT_ANALYSIS.md
-B-ToDo.md
-FINAL_RELEASE.md
-tools/security/sanitize_docs.py
-test_decryption.py
-search_dex_blocks.py
-sanitize_all_docs.py
-HANDSHAKE_VERIFICATION_LOG.md
-HANDSHAKE_VERIFICATION_COMPLETE.md
-handshake_analysis/HANDSHAKE_ANALYSIS_REPORT.md
-handshake_analysis/handshake_analysis.json
-encrypt_sensitive_code.py
-*.py
-docs/Phase2_Plan.md
-VERSION.md
-VERSION.md
-VERSION.md
-docs/Phase2_Progress_Report.md
-docs/Phase3_Plan.md
-VERSION.md
-docs/Phase6_Progress_Report.md
-path_resolver.py
+# Local configuration
+config.local.yaml
+.env
+.env.local
+
+# Encrypted files (sensitive)
+*.enc
+config/encrypted/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Project specific
+# (Add any project-specific files to ignore)
+apk_downloads/minecraft_bedrock_1.20.60.apk
+releases/mnmcp-v1.0.0.zip
