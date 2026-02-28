@@ -53,3 +53,4 @@ handshake_analysis/HANDSHAKE_ANALYSIS_REPORT.md
 handshake_analysis/handshake_analysis.json
 encrypt_sensitive_code.py
 *.py
+docs/Phase2_Plan.md

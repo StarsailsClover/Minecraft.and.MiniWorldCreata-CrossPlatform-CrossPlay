@@ -32,10 +32,12 @@ class BlockMapper:
         self.mnw_to_mc: Dict[int, int] = {}
         self.mappings: Dict[int, BlockMapping] = {}
         
-        # 如果未指定映射文件，尝试查找默认文件（优先使用扩展映射）
+        # 如果未指定映射文件，尝试查找默认文件（优先使用修正映射）
         if mapping_file is None:
-            # 尝试多个可能的文件路径（优先扩展映射）
+            # 尝试多个可能的文件路径（优先修正映射v2）
             possible_paths = [
+                Path(__file__).parent.parent.parent / "data" / "mnw_mc_block_mapping_v2.json",
+                Path("data/mnw_mc_block_mapping_v2.json"),
                 Path(__file__).parent.parent.parent / "data" / "block_mappings_extended.json",
                 Path("data/block_mappings_extended.json"),
                 Path(__file__).parent.parent.parent / "data" / "block_mappings.json",

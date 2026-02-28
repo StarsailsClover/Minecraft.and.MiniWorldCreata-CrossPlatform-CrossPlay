@@ -1,0 +1,13 @@
+{
+  "extracted_at": "2026-02-28T16:50:20.605975",
+  "version": "0.2.2_26w09a_Phase 1",
+  "note": "从DEX文件提取的ID，需要进一步验证",
+  "blocks": {
+    "14": "WebNFCBlockList"
+  },
+  "items": {
+    "11": "onFavItemCatched"
+  },
+  "block_count": 1,
+  "item_count": 1
+}
