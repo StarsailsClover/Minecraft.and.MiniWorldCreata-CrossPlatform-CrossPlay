@@ -4,5 +4,5 @@ idiot = 2
 
 if GitHub + CI == idiot:
   print('Fuck you, Stupid CI!!')
-else
+else:
   print('Fuck you, Stupid Python!!')
