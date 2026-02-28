@@ -1,0 +1,91 @@
+{
+  "analysis_date": "C:\\Users\\Sails\\Documents\\Coding\\MnMCPResources\\tools",
+  "source": "global_analysis (外服APK)",
+  "blocks": [],
+  "items": [
+    {
+      "id": 41,
+      "name": "TRANSACTION_addQueueItem",
+      "class": "Stub",
+      "file": "android\\support\\v4\\media\\session\\IMediaSession.java"
+    },
+    {
+      "id": 42,
+      "name": "TRANSACTION_addQueueItemAt",
+      "class": "Stub",
+      "file": "android\\support\\v4\\media\\session\\IMediaSession.java"
+    },
+    {
+      "id": 43,
+      "name": "TRANSACTION_removeQueueItem",
+      "class": "Stub",
+      "file": "android\\support\\v4\\media\\session\\IMediaSession.java"
+    },
+    {
+      "id": 44,
+      "name": "TRANSACTION_removeQueueItemAt",
+      "class": "Stub",
+      "file": "android\\support\\v4\\media\\session\\IMediaSession.java"
+    },
+    {
+      "id": 17,
+      "name": "TRANSACTION_skipToQueueItem",
+      "class": "Stub",
+      "file": "android\\support\\v4\\media\\session\\IMediaSession.java"
+    },
+    {
+      "id": 25,
+      "name": "MSG_ADD_QUEUE_ITEM",
+      "class": "MediaSessionCompat",
+      "file": "android\\support\\v4\\media\\session\\MediaSessionCompat.java"
+    },
+    {
+      "id": 26,
+      "name": "MSG_ADD_QUEUE_ITEM_AT",
+      "class": "MediaSessionCompat",
+      "file": "android\\support\\v4\\media\\session\\MediaSessionCompat.java"
+    },
+    {
+      "id": 27,
+      "name": "MSG_REMOVE_QUEUE_ITEM",
+      "class": "MediaSessionCompat",
+      "file": "android\\support\\v4\\media\\session\\MediaSessionCompat.java"
+    },
+    {
+      "id": 28,
+      "name": "MSG_REMOVE_QUEUE_ITEM_AT",
+      "class": "MediaSessionCompat",
+      "file": "android\\support\\v4\\media\\session\\MediaSessionCompat.java"
+    },
+    {
+      "id": 11,
+      "name": "MSG_SKIP_TO_ITEM",
+      "class": "MediaSessionCompat",
+      "file": "android\\support\\v4\\media\\session\\MediaSessionCompat.java"
+    },
+    {
+      "id": 4,
+      "name": "GENERATED_ITEM_PADDING",
+      "class": "ActionMenuView",
+      "file": "androidx\\appcompat\\widget\\ActionMenuView.java"
+    },
+    {
+      "id": 3,
+      "name": "ITEM_VIEW_TYPE_COUNT",
+      "class": "ActivityChooserView",
+      "file": "androidx\\appcompat\\widget\\ActivityChooserView.java"
+    },
+    {
+      "id": 1,
+      "name": "ITEM_VIEW_TYPE_FOOTER",
+      "class": "ActivityChooserView",
+      "file": "androidx\\appcompat\\widget\\ActivityChooserView.java"
+    },
+    {
+      "id": 15,
+      "name": "MAX_ITEMS_MEASURED",
+      "class": "AppCompatSpinner",
+      "file": "androidx\\appcompat\\widget\\AppCompatSpinner.java"
+    }
+  ]
+}

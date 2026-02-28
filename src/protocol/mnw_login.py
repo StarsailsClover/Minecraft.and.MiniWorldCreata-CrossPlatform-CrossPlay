@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-迷你世界登录流程实现
+迷你世界登录流程实现 - v0.3.0_26w10a_Phase 2
 基于MnMCPResources中的反编译资源分析
 
 国服登录流程:
@@ -25,11 +25,19 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from crypto.aes_crypto import MiniWorldCrypto, AESCipher
+from crypto.password_hasher import PasswordHasher
+
+# 兼容性别名
+MiniWorldEncryptionReal = MiniWorldCrypto
+hash_password_real = PasswordHasher.hash_password_cn
+
 try:
-    from crypto.aes_crypto_real import MiniWorldEncryptionReal, hash_password_real
+    import cryptography
+    CRYPTO_AVAILABLE = True
 except ImportError:
-    from crypto.aes_crypto import MiniWorldEncryption as MiniWorldEncryptionReal, hash_password as hash_password_real
-    print("[警告] 使用简化版加密模块，生产环境请安装cryptography库")
+    CRYPTO_AVAILABLE = False
+    print("[警告] cryptography库未安装，使用简化版加密")
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +69,7 @@ class MiniWorldLogin:
     
     def __init__(self, region: str = "CN"):
         self.region = region.upper()
-        self.encryption = MiniWorldEncryptionReal(region=region)
+        self.encryption = MiniWorldEncryptionReal()
         
         # 登录状态
         self.authenticated = False
@@ -81,303 +89,147 @@ class MiniWorldLogin:
         3. PBKDF2 (外服)
         
         Args:
-            password: 明文密码
-            salt: 盐值
+            password: 原始密码
+            salt: 可选的盐值
             
         Returns:
-            (哈希值, 盐值)
+            Tuple[哈希值, 使用的盐]
         """
         if salt is None:
-            salt = b'miniworld_salt_2024'  # 推测的默认盐值
+            salt = hashlib.sha256(password.encode()).digest()[:16]
         
-        # 方法1: MD5双重哈希 (常见做法)
-        first_hash = hashlib.md5(password.encode()).hexdigest()
-        second_hash = hashlib.md5(first_hash.encode()).hexdigest()
+        # 方法1: MD5双重哈希
+        hash_result = hash_password_real(password)
         
-        # 方法2: 加盐SHA256
-        sha256 = hashlib.sha256()
-        sha256.update(password.encode())
-        sha256.update(salt)
-        sha256_hash = sha256.hexdigest()
-        
-        logger.debug(f"密码哈希: md5={second_hash[:16]}..., sha256={sha256_hash[:16]}...")
-        
-        # 返回SHA256哈希 (推测新版本使用)
-        return sha256_hash, salt
+        return hash_result, salt
     
-    def _compute_challenge_response(self, challenge: bytes, password_hash: str) -> bytes:
+    async def login(self, account_id: str, password: str) -> LoginResponse:
         """
-        计算挑战响应
-        
-        基于HMAC的挑战-响应机制
+        登录迷你世界
         
         Args:
-            challenge: 服务器发送的挑战数据
-            password_hash: 密码哈希值
+            account_id: 账号ID
+            password: 密码
             
         Returns:
-            响应数据
+            LoginResponse: 登录响应
         """
-        # 使用HMAC-SHA256计算响应
-        response = hmac.new(
-            password_hash.encode(),
-            challenge,
-            hashlib.sha256
-        ).digest()
+        logger.info(f"开始登录: account_id={account_id}")
         
-        logger.debug(f"挑战响应: {response.hex()[:32]}...")
-        return response
-    
-    async def login(self, account: MiniWorldAccount) -> LoginResponse:
-        """
-        执行登录流程
-        
-        Args:
-            account: 账号信息
-            
-        Returns:
-            登录响应
-        """
         try:
-            logger.info(f"开始登录: account_id={account.account_id}")
-            
             # 1. 计算密码哈希
-            password_hash, salt = self._hash_password(account.password)
+            password_hash, salt = self._hash_password(password)
             
-            # 2. 构建登录请求
-            login_request = self._build_login_request(account, password_hash)
-            
-            # 3. 发送登录请求 (模拟)
-            # 实际实现需要连接到mwu-api-pre.mini1.cn:443
-            logger.info("发送登录请求...")
-            
-            # 4. 接收挑战 (模拟)
-            # 实际应该从服务器接收
-            challenge = b'server_challenge_12345'
-            
-            # 5. 计算响应
-            response = self._compute_challenge_response(challenge, password_hash)
-            
-            # 6. 发送响应 (模拟)
-            logger.info("发送挑战响应...")
-            
-            # 7. 接收登录结果 (模拟)
-            # 实际应该从服务器接收
-            login_result = {
-                "success": True,
-                "token": "mock_token_12345",
-                "session_key": b'mock_session_key_16b',
-                "user_id": account.account_id,
-                "nickname": account.nickname or f"Player_{account.account_id}",
-                "level": 1
+            # 2. 发送登录请求
+            login_request = {
+                'type': 'login',
+                'account_id': account_id,
+                'password_hash': password_hash,
+                'region': self.region,
+                'version': '1.0',
             }
             
-            if login_result["success"]:
+            logger.debug(f"登录请求: {login_request}")
+            
+            # 3. 接收服务器挑战
+            # 实际实现需要网络通信
+            challenge = await self._receive_challenge()
+            
+            # 4. 计算响应
+            response = self._calculate_challenge_response(challenge, password)
+            
+            # 5. 发送响应
+            auth_response = await self._send_challenge_response(response)
+            
+            if auth_response.get('success'):
                 self.authenticated = True
-                self.token = login_result["token"]
-                self.session_key = login_result["session_key"]
-                self.user_info = {
-                    "user_id": login_result["user_id"],
-                    "nickname": login_result["nickname"],
-                    "level": login_result["level"]
-                }
+                self.token = auth_response.get('token')
+                self.session_key = auth_response.get('session_key', '').encode()
+                self.user_info = auth_response.get('user_info', {})
                 
-                # 设置加密会话密钥
-                self.encryption.set_session_key(self.session_key)
-                
-                logger.info(f"登录成功: {self.user_info['nickname']}")
-                
+                logger.info("登录成功")
                 return LoginResponse(
                     success=True,
                     token=self.token,
                     session_key=self.session_key,
-                    user_id=login_result["user_id"],
-                    nickname=login_result["nickname"]
+                    user_id=self.user_info.get('user_id', ''),
+                    nickname=self.user_info.get('nickname', ''),
                 )
             else:
-                logger.error(f"登录失败: {login_result.get('error_message', 'Unknown')}")
+                logger.error(f"登录失败: {auth_response.get('error')}")
                 return LoginResponse(
                     success=False,
-                    error_code=login_result.get("error_code", -1),
-                    error_message=login_result.get("error_message", "Login failed")
+                    error_code=auth_response.get('error_code', -1),
+                    error_message=auth_response.get('error', 'Unknown error'),
                 )
                 
         except Exception as e:
             logger.error(f"登录异常: {e}")
             return LoginResponse(
                 success=False,
-                error_code=-1,
-                error_message=str(e)
+                error_message=str(e),
             )
     
-    def _build_login_request(self, account: MiniWorldAccount, password_hash: str) -> Dict:
-        """
-        构建登录请求
-        
-        Args:
-            account: 账号信息
-            password_hash: 密码哈希
-            
-        Returns:
-            登录请求数据
-        """
-        request = {
-            "account_id": account.account_id,
-            "password_hash": password_hash,
-            "region": self.region,
-            "version": "1.53.1",
-            "platform": "android" if self.region == "CN" else "global",
-            "device_id": f"device_{account.account_id}",
-            "timestamp": int(datetime.now().timestamp())
-        }
-        
-        logger.debug(f"登录请求: {json.dumps(request, indent=2)}")
-        return request
+    async def _receive_challenge(self) -> bytes:
+        """接收服务器挑战"""
+        # 实际实现需要网络通信
+        # 这里返回模拟数据
+        return b'mock_challenge_12345'
     
-    async def logout(self) -> bool:
+    def _calculate_challenge_response(self, challenge: bytes, password: str) -> bytes:
         """
-        登出
+        计算挑战响应
         
-        Returns:
-            是否成功
+        使用HMAC-SHA256计算响应
         """
-        try:
-            if not self.authenticated:
-                return True
-            
-            logger.info("执行登出...")
-            
-            # 发送登出请求 (模拟)
-            # 实际应该发送到服务器
-            
-            # 清理状态
-            self.authenticated = False
-            self.token = None
-            self.session_key = None
-            self.user_info = None
-            
-            logger.info("登出成功")
-            return True
-            
-        except Exception as e:
-            logger.error(f"登出异常: {e}")
-            return False
+        key = password.encode()
+        return hmac.new(key, challenge, hashlib.sha256).digest()
     
-    def get_auth_headers(self) -> Dict[str, str]:
-        """
-        获取认证请求头
-        
-        Returns:
-            请求头字典
-        """
-        if not self.authenticated or not self.token:
-            return {}
-        
+    async def _send_challenge_response(self, response: bytes) -> Dict:
+        """发送挑战响应"""
+        # 实际实现需要网络通信
+        # 这里返回模拟成功响应
         return {
-            "Authorization": f"Bearer {self.token}",
-            "X-User-ID": self.user_info.get("user_id", ""),
-            "X-Region": self.region,
-            "X-Version": "1.53.1"
+            'success': True,
+            'token': 'mock_token_12345',
+            'session_key': 'mock_session_key_67890',
+            'user_info': {
+                'user_id': '12345',
+                'nickname': 'TestUser',
+                'level': 10,
+            }
         }
     
-    def encrypt_data(self, data: bytes) -> bytes:
-        """
-        加密数据
-        
-        Args:
-            data: 明文数据
+    async def logout(self):
+        """登出"""
+        if self.authenticated:
+            # 发送登出请求
+            logger.info("登出")
             
-        Returns:
-            加密后的数据
-        """
-        if not self.authenticated:
-            raise ValueError("未登录，无法加密数据")
-        
-        return self.encryption.encrypt(data)
+        self.authenticated = False
+        self.token = None
+        self.session_key = None
+        self.user_info = None
     
-    def decrypt_data(self, data: bytes) -> bytes:
-        """
-        解密数据
-        
-        Args:
-            data: 加密数据
-            
-        Returns:
-            解密后的明文
-        """
-        if not self.authenticated:
-            raise ValueError("未登录，无法解密数据")
-        
-        return self.encryption.decrypt(data)
+    def get_session_key(self) -> Optional[bytes]:
+        """获取会话密钥"""
+        return self.session_key
     
-    def get_status(self) -> Dict:
-        """
-        获取登录状态
-        
-        Returns:
-            状态字典
-        """
-        return {
-            "authenticated": self.authenticated,
-            "token": self.token[:20] + "..." if self.token else None,
-            "user_info": self.user_info,
-            "region": self.region
-        }
+    def is_authenticated(self) -> bool:
+        """检查是否已认证"""
+        return self.authenticated
 
 
-# 测试代码
-if __name__ == "__main__":
-    async def test_login():
-        """测试登录"""
-        print("=" * 60)
-        print("测试迷你世界登录流程")
-        print("=" * 60)
-        
-        # 创建登录管理器
-        login_manager = MiniWorldLogin(region="CN")
-        
-        # 创建测试账号
-        account = MiniWorldAccount(
-            account_id="12345678",
-            password="test_password",
-            nickname="TestPlayer"
-        )
-        
-        # 执行登录
-        print("\n执行登录...")
-        response = await login_manager.login(account)
-        
-        if response.success:
-            print(f"\n✅ 登录成功!")
-            print(f"   Token: {response.token[:20]}...")
-            print(f"   Session Key: {response.session_key.hex()[:32]}...")
-            print(f"   User ID: {response.user_id}")
-            print(f"   Nickname: {response.nickname}")
-            
-            # 测试加密
-            print("\n测试加密...")
-            test_data = b"Hello, MiniWorld!"
-            encrypted = login_manager.encrypt_data(test_data)
-            decrypted = login_manager.decrypt_data(encrypted)
-            
-            print(f"   原始数据: {test_data}")
-            print(f"   加密后: {encrypted.hex()[:32]}...")
-            print(f"   解密后: {decrypted}")
-            print(f"   测试: {'通过' if decrypted == test_data else '失败'}")
-            
-            # 获取状态
-            print("\n登录状态:")
-            print(f"   {json.dumps(login_manager.get_status(), indent=2)}")
-            
-            # 登出
-            print("\n执行登出...")
-            await login_manager.logout()
-            print("✅ 登出成功")
-            
-        else:
-            print(f"\n❌ 登录失败!")
-            print(f"   错误码: {response.error_code}")
-            print(f"   错误信息: {response.error_message}")
-    
-    # 运行测试
-    asyncio.run(test_login())
+# 便捷函数
+async def login_miniworld(account_id: str, password: str, region: str = "CN") -> LoginResponse:
+    """便捷登录函数"""
+    login_manager = MiniWorldLogin(region)
+    return await login_manager.login(account_id, password)
+
+
+__all__ = [
+    'MiniWorldLogin',
+    'MiniWorldAccount',
+    'LoginResponse',
+    'login_miniworld',
+]

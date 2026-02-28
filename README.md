@@ -195,6 +195,10 @@ python -m src.core.proxy_server --dev
 - [GeyserMC](https://github.com/GeyserMC/Geyser) - Java↔Bedrock互通桥接
 - [PaperMC](https://papermc.io/) - 高性能Minecraft服务端
 - [Floodgate](https://github.com/GeyserMC/Floodgate) - 基岩版玩家身份映射
+- [Yeah114](https://github.com/Yeah114) - 方块映像参考列表制作者
+- [xphorror](https://github.com/xphorror) - 迷你世界层开发技术支持
+- [X1LinBaka](https://github.com/按要求保密) - 心跳矫正技术支持
+- [CuO](https://github.com/Soldier11-ObsidianBarracks) - 方块映像技术支持
 
 ---
 

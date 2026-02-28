@@ -1,0 +1,136 @@
+# MnMCP 配置文件
+# v0.4.0_26w11a_Phase 3
+
+# 服务器配置
+server:
+  # MNW监听地址
+  mnw_host: "0.0.0.0"
+  mnw_port: 8080
+  mnw_use_ssl: false
+  
+  # MC服务器地址
+  mc_host: "127.0.0.1"
+  mc_port: 19132
+  
+  # 性能配置
+  max_clients: 100
+  buffer_size: 65536
+  timeout: 30.0
+
+# 认证配置
+auth:
+  # 认证模式: offline / online
+  mode: "offline"
+  username: "MnMCP_User"
+  password: ""
+  
+  # 外服OAuth (仅外服使用)
+  oauth:
+    enabled: false
+    client_id: ""
+    client_secret: ""
+    redirect_uri: ""
+
+# 映射配置
+mapping:
+  # 方块映射表
+  block_table: "data/mnw_block_mapping_from_go.json"
+  
+  # 坐标缩放
+  coordinate_scale: 1.0
+  
+  # 是否启用坐标转换
+  enable_coordinate_conversion: true
+
+# 功能开关
+features:
+  # 协议翻译
+  enable_translation: true
+  
+  # 数据压缩
+  enable_compression: false
+  
+  # 加密
+  enable_encryption: false
+  
+  # 心跳
+  enable_heartbeat: true
+  heartbeat_interval: 30.0
+
+# 日志配置
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  file: "logs/mnmcp.log"
+  max_size: 10485760  # 10MB
+  backup_count: 5
+  
+  # 控制台输出
+  console: true
+  
+  # 格式化
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# 监控配置
+monitoring:
+  # Web监控界面
+  enabled: true
+  host: "0.0.0.0"
+  port: 8081
+  
+  # Prometheus指标
+  prometheus:
+    enabled: true
+    port: 9090
+
+# 性能调优
+performance:
+  # 异步工作线程数
+  worker_threads: 4
+  
+  # 数据包批处理
+  batch_processing: false
+  batch_size: 10
+  batch_timeout: 0.01
+  
+  # 内存优化
+  memory_optimization: true
+  
+  # 连接池
+  connection_pool:
+    enabled: true
+    max_size: 20
+    timeout: 30.0
+
+# 安全配置
+security:
+  # IP白名单
+  whitelist:
+    enabled: false
+    ips: []
+  
+  # 速率限制
+  rate_limit:
+    enabled: true
+    max_requests: 100
+    window: 60.0
+  
+  # 黑名单
+  blacklist:
+    enabled: false
+    ips: []
+
+# 调试配置
+debug:
+  # 数据包嗅探
+  packet_sniffer:
+    enabled: false
+    log_file: "logs/packets.log"
+    max_size: 104857600  # 100MB
+  
+  # 详细日志
+  verbose_logging: false
+  
+  # 性能分析
+  profiling:
+    enabled: false
+    output: "logs/profile.stats"
