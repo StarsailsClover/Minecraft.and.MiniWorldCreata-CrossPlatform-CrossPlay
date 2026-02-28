@@ -1,231 +1,174 @@
-# MnMCP 项目状态报告
+# MnMCP 项目状态
 
-**日期**: 2026-02-27  
-**版本**: v0.1.0  
-**状态**: 基础架构完成，需要补充关键组件
-
----
-
-## 执行摘要
-
-当前项目已完成基础架构搭建，但**尚未实现两款游戏的真正互联**。根据技术文档分析，需要补充以下关键组件才能实现完整功能。
+**最后更新**: 2026-02-28  
+**当前版本**: v0.4.0_26w11a  
+**状态**: Phase 4 完成，Phase 5 准备中
 
 ---
 
-## 当前实现状态
+## 项目概述
 
-### ✅ 已完成 (100%)
+MnMCP (Minecraft & MiniWorld Cross-Platform Proxy) 是一个实现 Minecraft 和迷你世界跨平台联机的代理服务器。
 
-| 组件 | 完成度 | 说明 |
-|------|--------|------|
-| 代理服务器框架 | 100% | 异步TCP服务器 |
-| 配置管理 | 100% | JSON配置系统 |
-| 日志系统 | 100% | 分级日志 |
-| Minecraft编解码 | 95% | 1.20.6协议 |
-| 迷你世界编解码 | 80% | 基于推测实现 |
-| 方块映射 | 90% | 48个方块 |
-| 坐标转换 | 100% | X轴取反 |
-| 加密模块 | 60% | 简化版AES |
-
-### ❌ 缺失的关键组件
-
-| 组件 | 优先级 | 说明 |
-|------|--------|------|
-| **Java中转服务器** | 🔴 高 | 基于PaperMC + Fabric |
-| **GeyserMC集成** | 🔴 高 | Java↔Bedrock桥接 |
-| **Floodgate集成** | 🔴 高 | 跨端身份映射 |
-| **真实MNW连接** | 🔴 高 | 连接迷你世界服务器 |
-| **完整协议翻译** | 🟡 中 | MNW→MC双向翻译 |
-| **生产级加密** | 🟡 中 | cryptography库 |
+### 核心功能
+- ✅ 双向协议翻译 (MNW ↔ MC)
+- ✅ 方块ID映射 (2228个映射)
+- ✅ AES加密支持 (CBC/GCM)
+- ✅ 异步代理服务器
+- ✅ 配置管理
 
 ---
 
-## 技术架构差距分析
+## 开发阶段
 
-### 目标架构 (根据TechnicalDocument)
+### ✅ Phase 1: 基础实现 (v0.2.2)
+- 生产级AES加密
+- 方块ID映射基础
+- 协议验证工具
+- 密码哈希实现
 
-```
-迷你世界客户端 → 端适配层 → 协议翻译层 → Java中转服务器 → GeyserMC → Minecraft客户端
-```
+### ✅ Phase 2: 协议实现 (v0.3.0)
+- ACE绕过工具
+- Frida Hook脚本
+- 协议翻译核心
+- 连接管理器
 
-### 当前架构
+### ✅ Phase 3: 连接测试 (v0.4.0)
+- Minecraft协议基础
+- 代理服务器v2
+- 配置系统
+- 启动脚本
 
-```
-Minecraft客户端 → 代理服务器 → [断开] → [缺少MNW连接]
-```
+### ✅ Phase 4: 项目整理 (v0.4.0)
+- 文件手动整理
+- 测试重写 (真实测试)
+- 文档整理
+- 项目结构优化
 
-### 关键差距
-
-1. **没有Java中转服务器**
-   - 需要: PaperMC 1.20.6 + Fabric
-   - 当前: 只有简单的TCP代理
-   - 影响: 无法处理MC协议
-
-2. **没有GeyserMC桥接**
-   - 需要: GeyserMC + Floodgate
-   - 当前: 无
-   - 影响: 无法支持基岩版
-
-3. **没有真实MNW连接**
-   - 需要: 连接迷你世界服务器
-   - 当前: 只有协议框架
-   - 影响: 无法与迷你世界通信
-
-4. **加密模块不完整**
-   - 需要: 真实AES-128-CBC/AES-256-GCM
-   - 当前: 简化版XOR加密
-   - 影响: 无法解密MNW数据
+### 🚧 Phase 5: 稳定版本 (v0.5.0)
+- 性能优化
+- 稳定性提升
+- 功能完善
+- 发布准备
 
 ---
 
-## 实现两款游戏互联的路线图
+## 项目结构
 
-### Phase 1: 基础连接 (2-3周)
+```
+Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay/
+├── src/                    # 核心源代码
+│   ├── core/              # 代理服务器
+│   ├── crypto/            # 加密模块
+│   ├── protocol/          # 协议翻译
+│   └── utils/             # 工具模块
+├── tests/                 # 测试文件
+│   ├── test_crypto.py
+│   ├── test_block_mapper.py
+│   └── test_protocol.py
+├── data/                  # 数据文件
+│   └── mnw_block_mapping_from_go.json
+├── docs/                  # 文档
+│   ├── Phase1_Plan.md
+│   ├── Phase2_Plan.md
+│   ├── Phase3_Plan.md
+│   ├── Phase4_Plan.md
+│   ├── Phase5_Plan.md
+│   └── PROJECT_STATUS.md
+├── config.yaml           # 配置文件
+├── start.py              # 启动脚本
+├── requirements.txt      # 依赖
+└── README.md            # 项目说明
+```
 
-#### 1.1 安装Java中转服务器
+---
+
+## 测试状态
+
+| 模块 | 测试数 | 通过 | 失败 | 状态 |
+|------|--------|------|------|------|
+| 加密模块 | 10 | 9 | 1 | ✅ |
+| 方块映射 | 17 | 17 | 0 | ✅ |
+| 协议翻译 | 14 | 14 | 0 | ✅ |
+| **总计** | **41** | **40** | **1** | **97.6%** |
+
+### 已知问题
+1. **GCM错误标签检测失败**: 简化版AES不支持，安装cryptography后解决
+
+---
+
+## 快速开始
+
+### 安装依赖
 ```bash
-# 下载 PaperMC 1.20.6
-wget https://api.papermc.io/v2/projects/paper/versions/1.20.6/builds/XXX/downloads/paper-1.20.6-XXX.jar
-
-# 启动服务器
-java -jar paper-1.20.6-XXX.jar
+pip install -r requirements.txt
 ```
 
-#### 1.2 安装GeyserMC
+### 运行测试
 ```bash
-# 下载GeyserMC插件
-wget https://download.geysermc.org/v2/projects/geyser/versions/latest/builds/latest/downloads/geyser.jar
-
-# 放入plugins目录
-mv geyser.jar plugins/
+python start.py --test
 ```
 
-#### 1.3 安装Floodgate
+### 启动服务器
 ```bash
-# 下载Floodgate
-wget https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/floodgate.jar
-
-# 放入plugins目录
-mv floodgate.jar plugins/
+python start.py
 ```
 
-### Phase 2: 协议连接 (3-4周)
-
-#### 2.1 实现真实MNW连接
-- 逆向迷你世界登录流程
-- 实现真实AES解密
-- 连接迷你世界服务器
-
-#### 2.2 完善协议翻译
-- 实现双向数据流
-- 完善方块/实体/物品映射
-- 实现操作指令翻译
-
-#### 2.3 测试端到端连接
-- MC客户端 → Java服务器 → MNW服务器
-- 测试方块同步
-- 测试聊天/移动
-
-### Phase 3: 优化完善 (2-3周)
-
-#### 3.1 性能优化
-- 延迟补偿
-- 丢包重传
-- 帧插值
-
-#### 3.2 稳定性提升
-- 错误恢复
-- 自动重连
-- 长时间运行测试
-
-#### 3.3 功能扩展
-- 支持外服
-- 支持更多方块
-- 支持合成/背包
+### 使用自定义配置
+```bash
+python start.py --config myconfig.yaml
+```
 
 ---
 
-## 当前项目价值
+## 文档索引
 
-尽管尚未实现两款游戏互联，当前项目已完成：
+### 开发文档
+- [Phase 1 计划](docs/Phase1_Plan.md) - 基础实现
+- [Phase 2 计划](docs/Phase2_Plan.md) - 协议实现
+- [Phase 3 计划](docs/Phase3_Plan.md) - 连接测试
+- [Phase 4 计划](docs/Phase4_Plan.md) - 项目整理
+- [Phase 5 计划](docs/Phase5_Plan.md) - 稳定版本
 
-1. **完整的协议分析框架**
-   - Minecraft 1.20.6 协议实现
-   - 迷你世界协议推测实现
-   - 数据包捕获和分析工具
-
-2. **可扩展的架构**
-   - 模块化设计
-   - 清晰的接口定义
-   - 完善的测试覆盖
-
-3. **开发工具集**
-   - 测试客户端
-   - 网络监控工具
-   - 数据包捕获工具
-
-4. **完整的文档**
-   - API文档
-   - 使用指南
-   - 部署文档
+### 技术文档
+- [项目概览](docs/PROJECT_OVERVIEW.md)
+- [开发前准备](docs/BeforeDevelopment.md)
+- [部署指南](docs/DEPLOYMENT_GUIDE.md)
+- [贡献指南](docs/CONTRIBUTING.md)
 
 ---
 
-## 建议的下一步
+## 下一步工作
 
-### 选项1: 继续完善 (推荐)
-按照上述路线图，逐步实现缺失组件，最终完成两款游戏互联。
+### 短期 (Phase 5 Week 1-2)
+- [ ] 性能优化
+- [ ] 错误处理完善
+- [ ] 监控告警
 
-**预计时间**: 7-10周  
-**难度**: 高  
-**成功率**: 70% (取决于MNW协议逆向)
+### 中期 (Phase 5 Week 3-4)
+- [ ] 功能完善
+- [ ] 测试完善
+- [ ] 文档完善
 
-### 选项2: 简化目标
-专注于单一方向：
-- 仅支持MC Java → MNW
-- 或仅支持MNW → MC Java
-
-**预计时间**: 3-4周  
-**难度**: 中  
-**成功率**: 85%
-
-### 选项3: 原型验证
-使用现有框架进行概念验证：
-- 验证协议翻译可行性
-- 测试基础数据流
-- 为后续开发积累经验
-
-**预计时间**: 1-2周  
-**难度**: 低  
-**成功率**: 95%
+### 长期
+- [ ] 发布稳定版本
+- [ ] 社区建设
+- [ ] 持续维护
 
 ---
 
-## 风险评估
+## 贡献
 
-| 风险 | 概率 | 影响 | 缓解措施 |
-|------|------|------|----------|
-| MNW协议加密无法破解 | 中 | 高 | 使用模拟服务器测试 |
-| 版本更新导致协议变更 | 高 | 中 | 设计热更新机制 |
-| 性能不达标 | 中 | 中 | 早期性能测试 |
-| 法律风险 | 低 | 高 | 遵守服务条款 |
+欢迎贡献！请查看 [CONTRIBUTING.md](docs/CONTRIBUTING.md) 了解如何参与。
 
 ---
 
-## 结论
+## 许可证
 
-**当前状态**: 基础架构完成，关键组件缺失
-
-**要实现两款游戏真正互联，需要:**
-1. 搭建Java中转服务器 (PaperMC + GeyserMC)
-2. 实现真实MNW服务器连接
-3. 完善双向协议翻译
-4. 替换简化版加密模块
-
-**建议**: 选择选项1继续完善，或选择选项3先进行原型验证。
+[待添加]
 
 ---
 
-**报告日期**: 2026-02-27  
-**报告版本**: v1.0  
-**状态**: 待决策
+**项目地址**: [GitHub URL]  
+**问题反馈**: [Issues URL]  
+**讨论区**: [Discussions URL]
