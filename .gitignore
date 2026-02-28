@@ -40,3 +40,16 @@ releases/
 *.pcap
 PHASE3_4_COMPLETE.md
 PHASE3_4_FINAL.md
+ErrorLog/ACE_ANTI_CHEAT_ANALYSIS.md
+B-ToDo.md
+FINAL_RELEASE.md
+tools/security/sanitize_docs.py
+test_decryption.py
+search_dex_blocks.py
+sanitize_all_docs.py
+HANDSHAKE_VERIFICATION_LOG.md
+HANDSHAKE_VERIFICATION_COMPLETE.md
+handshake_analysis/HANDSHAKE_ANALYSIS_REPORT.md
+handshake_analysis/handshake_analysis.json
+encrypt_sensitive_code.py
+*.py

@@ -1,3 +1,9 @@
+<!-- 
+此文档已脱敏处理
+处理时间: 2026-02-28T13:37:25.564992
+原始文件: DEPLOYMENT_GUIDE.md
+-->
+
 # MnMCP 部署指南
 
 **版本**: 1.0  
@@ -75,7 +81,7 @@ nano ~/.mnmcp/config.json
     "max_connections": 100
   },
   "miniworld": {
-    "auth_server": "mwu-api-pre.mini1.cn",
+    "auth_server": "[数据处理字符:20]",
     "auth_port": 443,
     "preferred_cdn": "tencent"
   },
@@ -140,7 +146,7 @@ tail -f ~/.mnmcp/proxy.log
 ### 4.3 连接测试
 
 1. 启动Minecraft客户端
-2. 添加服务器: `127.0.0.1:25565`
+2. 添加服务器: `[数据处理字符:15]`
 3. 连接服务器
 4. 查看代理日志确认连接
 
@@ -158,7 +164,7 @@ tail -f ~/.mnmcp/proxy.log
 2. **配置Minecraft**
    - 打开Minecraft
    - 多人游戏 -> 添加服务器
-   - 服务器地址: `127.0.0.1:25565`
+   - 服务器地址: `[数据处理字符:15]`
    - 保存并连接
 
 3. **登录迷你世界**
@@ -172,7 +178,7 @@ tail -f ~/.mnmcp/proxy.log
 # 1. 启动代理
 python start_proxy.py
 
-# 2. 启动Minecraft并连接 127.0.0.1:25565
+# 2. 启动Minecraft并连接 [数据处理字符:15]
 
 # 3. 开始游戏
 ```

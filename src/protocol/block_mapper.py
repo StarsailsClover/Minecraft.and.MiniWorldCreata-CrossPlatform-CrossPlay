@@ -131,14 +131,24 @@ class BlockMapper:
         Returns:
             (迷你世界方块ID, 元数据)
         """
-        mnw_id = self.mc_to_mnw.get(mc_id, mc_id)
-        
-        if mnw_id != mc_id:
-            logger.debug(f"方块映射: MC {mc_id} -> MNW {mnw_id}")
-        else:
-            logger.debug(f"方块未映射: MC {mc_id}，使用原ID")
-        
-        return (mnw_id, mc_meta)
+        try:
+            # 检查ID范围
+            if mc_id < 0 or mc_id > 65535:
+                logger.warning(f"无效的MC方块ID: {mc_id}，使用默认ID 1 (石头)")
+                return (1, mc_meta)
+            
+            mnw_id = self.mc_to_mnw.get(mc_id, mc_id)
+            
+            if mnw_id != mc_id:
+                logger.debug(f"方块映射: MC {mc_id} -> MNW {mnw_id}")
+            else:
+                logger.debug(f"方块未映射: MC {mc_id}，使用原ID")
+            
+            return (mnw_id, mc_meta)
+            
+        except Exception as e:
+            logger.error(f"方块映射失败 (MC->MNW): {e}")
+            return (mc_id, mc_meta)  # fallback到原ID
     
     def mnw_to_mc_block(self, mnw_id: int, mnw_meta: int = 0) -> Tuple[int, int]:
         """
@@ -151,14 +161,24 @@ class BlockMapper:
         Returns:
             (Minecraft方块ID, 元数据)
         """
-        mc_id = self.mnw_to_mc.get(mnw_id, mnw_id)
-        
-        if mc_id != mnw_id:
-            logger.debug(f"方块映射: MNW {mnw_id} -> MC {mc_id}")
-        else:
-            logger.debug(f"方块未映射: MNW {mnw_id}，使用原ID")
-        
-        return (mc_id, mnw_meta)
+        try:
+            # 检查ID范围
+            if mnw_id < 0 or mnw_id > 65535:
+                logger.warning(f"无效的MNW方块ID: {mnw_id}，使用默认ID 1 (石头)")
+                return (1, mnw_meta)
+            
+            mc_id = self.mnw_to_mc.get(mnw_id, mnw_id)
+            
+            if mc_id != mnw_id:
+                logger.debug(f"方块映射: MNW {mnw_id} -> MC {mc_id}")
+            else:
+                logger.debug(f"方块未映射: MNW {mnw_id}，使用原ID")
+            
+            return (mc_id, mnw_meta)
+            
+        except Exception as e:
+            logger.error(f"方块映射失败 (MNW->MC): {e}")
+            return (mnw_id, mnw_meta)  # fallback到原ID
     
     def get_mc_block_info(self, mc_id: int) -> Optional[BlockMapping]:
         """

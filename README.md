@@ -1,3 +1,9 @@
+<!-- 
+此文档已脱敏处理
+处理时间: 2026-02-28T13:37:25.579312
+原始文件: README.md
+-->
+
 # MnMCP - Minecraft ↔ MiniWorld: Creata 全端互通联机方案
 
 <p align="center">
@@ -7,13 +13,13 @@
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License"></a>
   <a href="https://www.minecraft.net/"><img src="https://img.shields.io/badge/Minecraft-Java%2F1.20.6%20%7C%20Bedrock-green" alt="Minecraft"></a>
-  <a href="https://www.mini1.cn/"><img src="https://img.shields.io/badge/MiniWorld-1.53.1%20%7C%201.7.15-orange" alt="MiniWorld"></a>
+  <a href="https://[数据处理字符:12]/"><img src="https://img.shields.io/badge/MiniWorld-1.53.1%20%7C%201.7.15-orange" alt="MiniWorld"></a>
   <a href=".github/workflows/ci.yml"><img src="https://img.shields.io/badge/CI-Passing-brightgreen" alt="CI"></a>
 </p>
 
 > 实现迷你世界（国服/外服·手游/PC）与 Minecraft（Java/Bedrock）全端互通联机的技术方案
 
->[访问MnMCP官方网站](https://starsailsclover.github.io/MnMCP-Introducing-Website/) MnMCP共建者社区Q群：1084172731
+>[访问MnMCP官方网站](https://starsailsclover.github.io/MnMCP-Introducing-Website/) MnMCP共建者社区Q群：[数据处理字符:10]
 
 **如果我们的项目侵犯了您的切实权益，请联系SailsHuang@gmail.com并提供依据，我们竭诚为您维权。不必担心您的权益内容被泄露，我们采用加密算法对一些可能侵权的信息进行加密，仅使用时可被程序翻译。**
 

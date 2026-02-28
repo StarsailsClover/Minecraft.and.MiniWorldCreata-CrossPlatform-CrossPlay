@@ -46,24 +46,40 @@ class CoordinateConverter:
         """
         将Minecraft坐标转换为迷你世界坐标
         
+        转换规则:
+        - X轴取反 (Minecraft东=+X, 迷你世界东=-X)
+        - Y轴保持不变
+        - Z轴保持不变
+        
         Args:
             mc_pos: Minecraft坐标 (x, y, z)
             
         Returns:
             迷你世界坐标
         """
-        mnw_x = (mc_pos.x + self.offset_x) * self.scale_factor
-        mnw_y = (mc_pos.y + self.offset_y) * self.scale_factor
-        mnw_z = (mc_pos.z + self.offset_z) * self.scale_factor
-        
-        if self.y_inverted:
-            mnw_y = -mnw_y
-        
-        return Vector3(mnw_x, mnw_y, mnw_z)
+        try:
+            # X轴取反
+            mnw_x = -(mc_pos.x + self.offset_x) * self.scale_factor
+            mnw_y = (mc_pos.y + self.offset_y) * self.scale_factor
+            mnw_z = (mc_pos.z + self.offset_z) * self.scale_factor
+            
+            if self.y_inverted:
+                mnw_y = -mnw_y
+            
+            return Vector3(mnw_x, mnw_y, mnw_z)
+        except Exception as e:
+            logger.error(f"坐标转换失败 (MC->MNW): {e}")
+            # 返回原始坐标作为fallback
+            return mc_pos
     
     def mnw_to_mc_position(self, mnw_pos: Vector3) -> Vector3:
         """
         将迷你世界坐标转换为Minecraft坐标
+        
+        转换规则:
+        - X轴取反 (与mc_to_mnw_position相反)
+        - Y轴保持不变
+        - Z轴保持不变
         
         Args:
             mnw_pos: 迷你世界坐标
@@ -71,14 +87,19 @@ class CoordinateConverter:
         Returns:
             Minecraft坐标
         """
-        mc_x = (mnw_pos.x / self.scale_factor) - self.offset_x
-        mc_y = (mnw_pos.y / self.scale_factor) - self.offset_y
-        mc_z = (mnw_pos.z / self.scale_factor) - self.offset_z
-        
-        if self.y_inverted:
-            mc_y = -mc_y
-        
-        return Vector3(mc_x, mc_y, mc_z)
+        try:
+            # X轴取反
+            mc_x = -(mnw_pos.x / self.scale_factor) - self.offset_x
+            mc_y = (mnw_pos.y / self.scale_factor) - self.offset_y
+            mc_z = (mnw_pos.z / self.scale_factor) - self.offset_z
+            
+            if self.y_inverted:
+                mc_y = -mc_y
+            
+            return Vector3(mc_x, mc_y, mc_z)
+        except Exception as e:
+            logger.error(f"坐标转换失败 (MNW->MC): {e}")
+            return mnw_pos  # fallback到原坐标
     
     def mc_to_mnw_rotation(self, mc_yaw: float, mc_pitch: float) -> Tuple[float, float]:
         """

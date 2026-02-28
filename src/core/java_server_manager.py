@@ -1,3 +1,4 @@
+from security.crypto_utils import decrypt as D
 #!/usr/bin/env python3
 """
 Java服务器管理器
@@ -241,7 +242,7 @@ class JavaServerManager:
                 player = PlayerInfo(
                     username=username,
                     uuid="",  # 需要从其他日志获取
-                    ip="127.0.0.1",
+                    ip=D("ENC:KTdfUq0aeRP/"),
                     is_bedrock=is_bedrock
                 )
                 

@@ -1,3 +1,4 @@
+from security.crypto_utils import decrypt as D
 #!/usr/bin/env python3
 """
 代理服务器核心
@@ -16,7 +17,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ProxyConfig:
     """代理配置"""
-    mc_host: str = "0.0.0.0"
+    mc_host: str = D("ENC:KCtYUq0aeQ==")
     mc_port: int = 25565
     mnw_host: str = ""
     mnw_port: int = 0
@@ -175,7 +176,7 @@ class ProxyConnection:
 class ProxyServer:
     """代理服务器主类"""
     
-    def __init__(self, host: str = "0.0.0.0", port: int = 25565, 
+    def __init__(self, host: str = D("ENC:KCtYUq0aeQ=="), port: int = 25565, 
                  session_manager=None, config=None, translator=None):
         self.host = host
         self.port = port

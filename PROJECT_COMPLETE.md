@@ -1,3 +1,9 @@
+<!-- 
+此文档已脱敏处理
+处理时间: 2026-02-28T13:37:25.584394
+原始文件: PROJECT_COMPLETE.md
+-->
+
 # 项目完成报告
 
 **项目名称**: Minecraft ↔ MiniWorld: Creata 全端互通联机方案  
@@ -76,7 +82,7 @@
 
 ### 1. 服务器架构
 ```
-认证: mwu-api-pre.mini1.cn:443
+认证: [数据处理字符:24]
 游戏: 10个CDN节点
 反作弊: ACE系统
 ```
@@ -124,7 +130,7 @@ pip install -r requirements.txt
 # 2. 启动代理
 python start_proxy.py
 
-# 3. 连接Minecraft到 127.0.0.1:25565
+# 3. 连接Minecraft到 [数据处理字符:15]
 ```
 
 ### 详细步骤

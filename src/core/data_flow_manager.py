@@ -128,30 +128,39 @@ class DataFlowManager:
         Returns:
             Minecraft数据包或None
         """
+        if not mnw_packet or len(mnw_packet) < 2:
+            logger.warning("收到空的MNW数据包")
+            return None
+            
         try:
             # 解析MNW数据包
             packet = self.mnw_codec.decode_packet(mnw_packet, decrypt=False)
             if not packet:
+                logger.debug("MNW数据包解析失败")
                 return None
             
             self.stats.mnw_to_mc_packets += 1
             self.stats.mnw_to_mc_bytes += len(mnw_packet)
             
             # 根据包类型处理
-            if packet.packet_type == 0x01:  # Login
-                return await self._handle_mnw_login(packet)
-            elif packet.packet_type == 0x03:  # Chat
-                return await self._handle_mnw_chat(packet)
-            elif packet.packet_type == 0x04:  # Move
-                return await self._handle_mnw_move(packet)
-            elif packet.packet_type == 0x05:  # Block
-                return await self._handle_mnw_block(packet)
-            else:
-                logger.debug(f"未处理的MNW包类型: 0x{packet.packet_type:02X}")
+            try:
+                if packet.packet_type == 0x01:  # Login
+                    return await self._handle_mnw_login(packet)
+                elif packet.packet_type == 0x03:  # Chat
+                    return await self._handle_mnw_chat(packet)
+                elif packet.packet_type == 0x04:  # Move
+                    return await self._handle_mnw_move(packet)
+                elif packet.packet_type == 0x05:  # Block
+                    return await self._handle_mnw_block(packet)
+                else:
+                    logger.debug(f"未处理的MNW包类型: 0x{packet.packet_type:02X}")
+                    return None
+            except Exception as handler_error:
+                logger.error(f"处理MNW包类型 0x{packet.packet_type:02X} 时出错: {handler_error}")
                 return None
                 
         except Exception as e:
-            logger.error(f"MNW->MC处理失败: {e}")
+            logger.error(f"MNW->MC处理失败: {e}", exc_info=True)
             self.stats.errors += 1
             return None
     
