@@ -211,6 +211,7 @@ python -m src.core.proxy_server --dev
 - [xphorror](https://github.com/xphorror) - 迷你世界层开发技术支持
 - [X1LinBaka](https://github.com/按要求保密) - 心跳矫正技术支持
 - [CuO](https://github.com/Soldier11-ObsidianBarracks) - 方块映像技术支持
+- [BlackMoss](https://github.com/Black-Moss) - [flutter](https://flutter.dev/)开发支持
 
 ---
 
