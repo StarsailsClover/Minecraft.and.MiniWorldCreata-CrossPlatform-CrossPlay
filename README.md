@@ -25,6 +25,13 @@
 
 ---
 
+## 我们不建议使用该版本(26w09aC) 出现了重大漏洞
+### 漏洞等级：FunctionError 001，重要功能缺陷
+### 请您等候紧急修复（预计11天）更新
+我们会不时推送补丁来完善 当漏洞被修复 此栏将归档 不再显示直到下一次重大错误被提起并挂起
+
+---
+
 ## 📋 项目简介
 
 **MnMCP** (Minecraft and MiniWorld Creata Cross-Platform Cross-Play) 是一个实现 Minecraft Java版 与 迷你世界 跨平台联机的代理服务器项目。
