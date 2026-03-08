@@ -17,7 +17,6 @@
   <img src="https://img.shields.io/badge/version-v1.0.0__26w13a-blue" alt="version">
   <img src="https://img.shields.io/badge/python-3.11+-green" alt="python">
   <img src="https://img.shields.io/badge/flutter-3.0+-blue" alt="flutter">
-  <img src="https://img.shields.io/badge/license-MIT-orange" alt="license">
   <a href=".github/workflows/ci.yml"><img src="https://img.shields.io/badge/CI-Passing-brightgreen" alt="CI"></a>
 </p>
 
@@ -242,6 +241,7 @@ flutter build apk       # Android
 <p align="center">
   <b>MnMCP</b> - 让不同世界的玩家能够一起游戏 By ZCNotFound❤️
 </p>
+
 
 
 
