@@ -42,12 +42,12 @@ class MnMCPTheme {
           titleMedium: TextStyle(color: textSecondary),
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: bgSecondary,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: Colors.white.withOpacity(0.1)),
+          side: BorderSide(color: Color(0x1AFFFFFF)),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(

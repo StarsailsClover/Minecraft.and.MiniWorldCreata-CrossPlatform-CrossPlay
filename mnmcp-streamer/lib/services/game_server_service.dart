@@ -37,7 +37,7 @@ class ServerConfig {
 }
 
 /// Player data
-class Player {
+class GamePlayer {
   final String id;
   String name;
   String platform;
@@ -47,7 +47,7 @@ class Player {
   int maxHealth;
   WebSocketChannel? channel;
 
-  Player({
+  GamePlayer({
     required this.id,
     required this.name,
     required this.platform,
@@ -66,7 +66,7 @@ class GameServerService extends ChangeNotifier {
   HttpServer? _httpServer;
   
   // Players
-  final Map<String, Player> _players = {};
+  final Map<String, GamePlayer> _players = {};
   
   // World state
   final Map<String, int> _blocks = {}; // "x,y,z" -> blockId
@@ -89,7 +89,7 @@ class GameServerService extends ChangeNotifier {
   bool get isRunning => _state == ServerState.running;
   bool get isStarting => _state == ServerState.starting;
   
-  Map<String, Player> get players => Map.unmodifiable(_players);
+  Map<String, GamePlayer> get players => Map.unmodifiable(_players);
   int get playerCount => _players.length;
   int get maxPlayers => _config?.maxPlayers ?? 40;
   int get worldTime => _worldTime;
@@ -164,7 +164,7 @@ class GameServerService extends ChangeNotifier {
   }
 
   /// Handle HTTP/WebSocket requests
-  Response _handleRequest(Request request) {
+  FutureOr<Response> _handleRequest(Request request) {
     if (request.url.path == 'ws' || request.url.path == 'ws/') {
       return webSocketHandler(_handleWebSocket)(request);
     }

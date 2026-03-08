@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 
-import '../services/connection_service.dart';
-import '../services/protocol_service.dart';
-import '../utils/theme.dart';
+import 'package:mnmcp_shared/mnmcp_shared.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

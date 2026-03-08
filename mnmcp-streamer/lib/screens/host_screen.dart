@@ -1,9 +1,9 @@
+import 'package:mnmcp_shared/mnmcp_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../services/game_server_service.dart';
-import '../utils/theme.dart';
 
 class HostScreen extends StatefulWidget {
   const HostScreen({super.key});
@@ -214,7 +214,6 @@ class _HostScreenState extends State<HostScreen> {
             color: isSelected ? MnMCPTheme.accent : MnMCPTheme.border,
             width: isSelected ? 2 : 1,
           ),
-          opacity: enabled ? 1.0 : 0.5,
         ),
         child: Column(
           children: [
@@ -310,7 +309,7 @@ class _HostScreenState extends State<HostScreen> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: (server.isRunning ? MnMCPTheme.success : MnMCPTheme.error).withOpacity(0.5),
+                      color: (server.isRunning ? MnMCPTheme.success : MnMCPTheme.error).withValues(alpha: 0.5),
                       blurRadius: 8,
                     ),
                   ],
@@ -400,7 +399,7 @@ class _HostScreenState extends State<HostScreen> {
     );
   }
 
-  Widget _buildPlayerTile(Player player) {
+  Widget _buildPlayerTile(GamePlayer player) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),

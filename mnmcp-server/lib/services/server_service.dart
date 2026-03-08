@@ -139,7 +139,7 @@ class ServerService extends ChangeNotifier {
   }
   
   /// 处理HTTP请求
-  Response _handleRequest(Request request) {
+  FutureOr<Response> _handleRequest(Request request) {
     // WebSocket升级
     if (request.url.path == 'ws') {
       return webSocketHandler(_handleWebSocket)(request);
@@ -291,9 +291,7 @@ class ServerService extends ChangeNotifier {
       'type': 'join_success',
       'roomId': roomId,
       'roomName': room.name,
-      'players': room.players.map((p) => {
-        return {'id': p.id, 'name': p.name};
-      }).toList(),
+      'players': room.players.map((p) => {'id': p.id, 'name': p.name}).toList(),
     }));
     
     notifyListeners();
@@ -413,7 +411,7 @@ class ServerService extends ChangeNotifier {
   
   /// 处理房间列表请求
   Response _handleRoomsRequest(Request request) {
-    final roomList = _rooms.values.map((room) => {
+    final roomList = _rooms.values.map((room) {
       return {
         'id': room.id,
         'name': room.name,

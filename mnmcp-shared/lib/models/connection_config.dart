@@ -5,7 +5,7 @@ enum GameMode { minecraft, miniworld }
 enum GameType { java, bedrock, cn, global }
 
 /// 连接目标
-enum TargetType { streamer, server }
+enum TargetType { streamer, server, direct }
 
 /// 连接配置 (三端共用)
 class ConnectionConfig {

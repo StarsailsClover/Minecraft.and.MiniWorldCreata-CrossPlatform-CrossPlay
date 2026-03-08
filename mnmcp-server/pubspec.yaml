@@ -29,9 +29,6 @@ dependencies:
   flutter_animate: ^4.3.0
   fl_chart: ^0.66.0
 
-  # 平台
-  system_tray: ^2.0.3
-
   # 工具
   crypto: ^3.0.3
   json_annotation: ^4.8.1

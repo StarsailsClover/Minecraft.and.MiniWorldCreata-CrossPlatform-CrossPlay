@@ -30,6 +30,8 @@ class ConnectionService extends ChangeNotifier {
   MnMCPConnectionState get state => _state;
   ConnectionConfig? get config => _config;
   bool get isConnected => _state == MnMCPConnectionState.connected;
+  bool get isConnecting => _state == MnMCPConnectionState.connecting;
+  int get latency => 0; // TODO: implement ping measurement
   String get errorMessage => _errorMessage;
   DateTime? get connectTime => _connectTime;
   int get bytesSent => _bytesSent;
