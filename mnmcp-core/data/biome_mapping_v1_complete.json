@@ -1,0 +1,727 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-03-02T22:23:45.481161",
+  "total": 90,
+  "mappings": [
+    {
+      "mnw_id": 1000,
+      "mnw_name_cn": "浅海",
+      "mnw_name_en": "OCEAN",
+      "mc_biome": "ocean",
+      "mc_biome_id": 0,
+      "mc_biome_name_cn": "海洋"
+    },
+    {
+      "mnw_id": 1001,
+      "mnw_name_cn": "草原",
+      "mnw_name_en": "PLAINS",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1002,
+      "mnw_name_cn": "沙漠",
+      "mnw_name_en": "DESERT",
+      "mc_biome": "desert",
+      "mc_biome_id": 2,
+      "mc_biome_name_cn": "沙漠"
+    },
+    {
+      "mnw_id": 1004,
+      "mnw_name_cn": "峭壁",
+      "mnw_name_en": "EXTREMEHILLS",
+      "mc_biome": "mountains",
+      "mc_biome_id": 3,
+      "mc_biome_name_cn": "山地"
+    },
+    {
+      "mnw_id": 1003,
+      "mnw_name_cn": "森林",
+      "mnw_name_en": "FOREST",
+      "mc_biome": "forest",
+      "mc_biome_id": 4,
+      "mc_biome_name_cn": "森林"
+    },
+    {
+      "mnw_id": 1006,
+      "mnw_name_cn": "针叶林",
+      "mnw_name_en": "TAIGA",
+      "mc_biome": "taiga",
+      "mc_biome_id": 5,
+      "mc_biome_name_cn": "针叶林"
+    },
+    {
+      "mnw_id": 1005,
+      "mnw_name_cn": "沼泽",
+      "mnw_name_en": "SWAMPLAND",
+      "mc_biome": "swamp",
+      "mc_biome_id": 6,
+      "mc_biome_name_cn": "沼泽"
+    },
+    {
+      "mnw_id": 1008,
+      "mnw_name_cn": "冰原",
+      "mnw_name_en": "ICE_PLAINS",
+      "mc_biome": "snowy_tundra",
+      "mc_biome_id": 12,
+      "mc_biome_name_cn": "雪原"
+    },
+    {
+      "mnw_id": 1011,
+      "mnw_name_cn": "红土",
+      "mnw_name_en": "REDSOIL",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1007,
+      "mnw_name_cn": "丛林",
+      "mnw_name_en": "JUNGLE",
+      "mc_biome": "jungle",
+      "mc_biome_id": 21,
+      "mc_biome_name_cn": "丛林"
+    },
+    {
+      "mnw_id": 1018,
+      "mnw_name_cn": "河流",
+      "mnw_name_en": "RIVER",
+      "mc_biome": "river",
+      "mc_biome_id": 7,
+      "mc_biome_name_cn": "河流"
+    },
+    {
+      "mnw_id": 1009,
+      "mnw_name_cn": "冻洋",
+      "mnw_name_en": "FROZEN_OCEAN",
+      "mc_biome": "snowy_tundra",
+      "mc_biome_id": 12,
+      "mc_biome_name_cn": "雪原"
+    },
+    {
+      "mnw_id": 1056,
+      "mnw_name_cn": "覆雪针叶林",
+      "mnw_name_en": "ICE_PLAINS_CONIFEROUS_FOREST",
+      "mc_biome": "forest",
+      "mc_biome_id": 4,
+      "mc_biome_name_cn": "森林"
+    },
+    {
+      "mnw_id": 1057,
+      "mnw_name_cn": "雪山主峰",
+      "mnw_name_en": "ICE_PLAINS_HIGHEST_PEAK",
+      "mc_biome": "snowy_tundra",
+      "mc_biome_id": 12,
+      "mc_biome_name_cn": "雪原"
+    },
+    {
+      "mnw_id": 1058,
+      "mnw_name_cn": "雪山副峰",
+      "mnw_name_en": "ICE_PLAINS_SECOND_PEAK",
+      "mc_biome": "snowy_tundra",
+      "mc_biome_id": 12,
+      "mc_biome_name_cn": "雪原"
+    },
+    {
+      "mnw_id": 1059,
+      "mnw_name_cn": "雪山山脉",
+      "mnw_name_en": "ICE_PLAINS_MOUNTAIN",
+      "mc_biome": "snowy_tundra",
+      "mc_biome_id": 12,
+      "mc_biome_name_cn": "雪原"
+    },
+    {
+      "mnw_id": 1060,
+      "mnw_name_cn": "雪山中部",
+      "mnw_name_en": "ICE_PLAINS_MOUTAINSIDE",
+      "mc_biome": "snowy_tundra",
+      "mc_biome_id": 12,
+      "mc_biome_name_cn": "雪原"
+    },
+    {
+      "mnw_id": 1061,
+      "mnw_name_cn": "雪山底部",
+      "mnw_name_en": "ICE_PLAINS_PEAK_PLAIN",
+      "mc_biome": "snowy_tundra",
+      "mc_biome_id": 12,
+      "mc_biome_name_cn": "雪原"
+    },
+    {
+      "mnw_id": 1062,
+      "mnw_name_cn": "副峰雪山中部",
+      "mnw_name_en": "ICE_PLAINS_SECOND_MOUTAINSIDE",
+      "mc_biome": "snowy_tundra",
+      "mc_biome_id": 12,
+      "mc_biome_name_cn": "雪原"
+    },
+    {
+      "mnw_id": 1063,
+      "mnw_name_cn": "冻湖",
+      "mnw_name_en": "ICE_PLAINS_FRIZEB_LAKE",
+      "mc_biome": "snowy_tundra",
+      "mc_biome_id": 12,
+      "mc_biome_name_cn": "雪原"
+    },
+    {
+      "mnw_id": 1010,
+      "mnw_name_cn": "冻河",
+      "mnw_name_en": "FROZEN_RIVER",
+      "mc_biome": "snowy_tundra",
+      "mc_biome_id": 12,
+      "mc_biome_name_cn": "雪原"
+    },
+    {
+      "mnw_id": 1016,
+      "mnw_name_cn": "冰山",
+      "mnw_name_en": "ICE_MOUNTAINS",
+      "mc_biome": "snowy_tundra",
+      "mc_biome_id": 12,
+      "mc_biome_name_cn": "雪原"
+    },
+    {
+      "mnw_id": 1012,
+      "mnw_name_cn": "红土海岸",
+      "mnw_name_en": "REDSOIL_SHORE",
+      "mc_biome": "ocean",
+      "mc_biome_id": 0,
+      "mc_biome_name_cn": "海洋"
+    },
+    {
+      "mnw_id": 1019,
+      "mnw_name_cn": "沙滩",
+      "mnw_name_en": "BEACH",
+      "mc_biome": "beach",
+      "mc_biome_id": 16,
+      "mc_biome_name_cn": "沙滩"
+    },
+    {
+      "mnw_id": 1013,
+      "mnw_name_cn": "沙漠山丘",
+      "mnw_name_en": "DESERT_HILLS",
+      "mc_biome": "desert",
+      "mc_biome_id": 2,
+      "mc_biome_name_cn": "沙漠"
+    },
+    {
+      "mnw_id": 1014,
+      "mnw_name_cn": "森林山丘",
+      "mnw_name_en": "FOREST_HILLS",
+      "mc_biome": "forest",
+      "mc_biome_id": 4,
+      "mc_biome_name_cn": "森林"
+    },
+    {
+      "mnw_id": 1015,
+      "mnw_name_cn": "针叶林山丘",
+      "mnw_name_en": "TAIGA_HILLS",
+      "mc_biome": "mountains",
+      "mc_biome_id": 3,
+      "mc_biome_name_cn": "山地"
+    },
+    {
+      "mnw_id": 1020,
+      "mnw_name_cn": "峭壁边缘",
+      "mnw_name_en": "EXTREMEHILLS_EDGE",
+      "mc_biome": "mountains",
+      "mc_biome_id": 3,
+      "mc_biome_name_cn": "山地"
+    },
+    {
+      "mnw_id": 1017,
+      "mnw_name_cn": "丛林山丘",
+      "mnw_name_en": "JUNGLE_HILLS",
+      "mc_biome": "jungle",
+      "mc_biome_id": 21,
+      "mc_biome_name_cn": "丛林"
+    },
+    {
+      "mnw_id": 1039,
+      "mnw_name_cn": "雨林",
+      "mnw_name_en": "RAINFOREST",
+      "mc_biome": "forest",
+      "mc_biome_id": 4,
+      "mc_biome_name_cn": "森林"
+    },
+    {
+      "mnw_id": 1021,
+      "mnw_name_cn": "熔岩之地",
+      "mnw_name_en": "Earthcore",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1022,
+      "mnw_name_cn": "空岛",
+      "mnw_name_en": "AIR_ISLAND",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1023,
+      "mnw_name_cn": "盆地",
+      "mnw_name_en": "BASIN",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1024,
+      "mnw_name_cn": "盆地边缘",
+      "mnw_name_en": "BASIN_EDGE",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1025,
+      "mnw_name_cn": "竹林盆地",
+      "mnw_name_en": "BASIN_BAMBOO",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1026,
+      "mnw_name_cn": "桃树盆地",
+      "mnw_name_en": "BASIN_PEACH",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1027,
+      "mnw_name_cn": "平原",
+      "mnw_name_en": "BIOME_PLANET_SAPCE",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1028,
+      "mnw_name_cn": "山丘",
+      "mnw_name_en": "BIOME_PLANET_SAPCE_HILLS",
+      "mc_biome": "mountains",
+      "mc_biome_id": 3,
+      "mc_biome_name_cn": "山地"
+    },
+    {
+      "mnw_id": 1029,
+      "mnw_name_cn": "祭坛平原",
+      "mnw_name_en": "BIOME_PLANET_SAPCE_SUB1",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1030,
+      "mnw_name_cn": "高山",
+      "mnw_name_en": "BIOME_PLANET_SAPCE_SUB2",
+      "mc_biome": "mountains",
+      "mc_biome_id": 3,
+      "mc_biome_name_cn": "山地"
+    },
+    {
+      "mnw_id": 1031,
+      "mnw_name_cn": "丘陵",
+      "mnw_name_en": "BIOME_PLANET_SAPCE_SUB3",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1032,
+      "mnw_name_cn": "星球空岛",
+      "mnw_name_en": "BIOME_PLANET_SAPCE_AIRLANDS_BASE",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1033,
+      "mnw_name_cn": "星球空岛",
+      "mnw_name_en": "BIOME_PLANET_SAPCE_AIRLANDS",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1034,
+      "mnw_name_cn": "星球空岛",
+      "mnw_name_en": "BIOME_PLANET_SAPCE_AIRLANDS_SUB1",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1035,
+      "mnw_name_cn": "星球空岛",
+      "mnw_name_en": "BIOME_PLANET_SAPCE_AIRLANDS_SUB2",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1036,
+      "mnw_name_cn": "星球空岛",
+      "mnw_name_en": "BIOME_PLANET_SAPCE_AIRLANDS_SUB3",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1037,
+      "mnw_name_cn": "星球空岛",
+      "mnw_name_en": "BIOME_PLANET_SAPCE_AIRLANDS_SUB4",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1038,
+      "mnw_name_cn": "空岛边缘",
+      "mnw_name_en": "BIOME_PLANET_SAPCE_AIRLANDS_SUB5",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1040,
+      "mnw_name_cn": "空岛平原",
+      "mnw_name_en": "BIOME_AIR_PLAINS",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1041,
+      "mnw_name_cn": "草原空岛",
+      "mnw_name_en": "BIOME_AIR_PLAINS_H",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1046,
+      "mnw_name_cn": "火山口",
+      "mnw_name_en": "VOLCANO_CORE",
+      "mc_biome": "mountains",
+      "mc_biome_id": 3,
+      "mc_biome_name_cn": "山地"
+    },
+    {
+      "mnw_id": 1042,
+      "mnw_name_cn": "火山主峰",
+      "mnw_name_en": "VOLCANO",
+      "mc_biome": "mountains",
+      "mc_biome_id": 3,
+      "mc_biome_name_cn": "山地"
+    },
+    {
+      "mnw_id": 1043,
+      "mnw_name_cn": "火山平原",
+      "mnw_name_en": "VOLCANO_PLAIN",
+      "mc_biome": "mountains",
+      "mc_biome_id": 3,
+      "mc_biome_name_cn": "山地"
+    },
+    {
+      "mnw_id": 1044,
+      "mnw_name_cn": "火山山脉",
+      "mnw_name_en": "VOLCANO_MOUNTAIN",
+      "mc_biome": "mountains",
+      "mc_biome_id": 3,
+      "mc_biome_name_cn": "山地"
+    },
+    {
+      "mnw_id": 1045,
+      "mnw_name_cn": "火山岩浆河",
+      "mnw_name_en": "VOLCANO_RIVER",
+      "mc_biome": "mountains",
+      "mc_biome_id": 3,
+      "mc_biome_name_cn": "山地"
+    },
+    {
+      "mnw_id": 1047,
+      "mnw_name_cn": "沙漠绿洲",
+      "mnw_name_en": "BIOME_DESERT_OASIS",
+      "mc_biome": "desert",
+      "mc_biome_id": 2,
+      "mc_biome_name_cn": "沙漠"
+    },
+    {
+      "mnw_id": 1048,
+      "mnw_name_cn": "沙漠湖泊",
+      "mnw_name_en": "BIOME_DESERT_LAKE",
+      "mc_biome": "desert",
+      "mc_biome_id": 2,
+      "mc_biome_name_cn": "沙漠"
+    },
+    {
+      "mnw_id": 1049,
+      "mnw_name_cn": "深海",
+      "mnw_name_en": "DEEPOCEAN",
+      "mc_biome": "ocean",
+      "mc_biome_id": 0,
+      "mc_biome_name_cn": "海洋"
+    },
+    {
+      "mnw_id": 1050,
+      "mnw_name_cn": "荒岛海岸",
+      "mnw_name_en": "ISLAND_SHORE_DESERT",
+      "mc_biome": "desert",
+      "mc_biome_id": 2,
+      "mc_biome_name_cn": "沙漠"
+    },
+    {
+      "mnw_id": 1051,
+      "mnw_name_cn": "荒岛岛心",
+      "mnw_name_en": "ISLAND_LAND_DESERT",
+      "mc_biome": "desert",
+      "mc_biome_id": 2,
+      "mc_biome_name_cn": "沙漠"
+    },
+    {
+      "mnw_id": 1052,
+      "mnw_name_cn": "红土岛海岸",
+      "mnw_name_en": "ISLAND_SHORE_REDSOIL",
+      "mc_biome": "ocean",
+      "mc_biome_id": 0,
+      "mc_biome_name_cn": "海洋"
+    },
+    {
+      "mnw_id": 1053,
+      "mnw_name_cn": "红土岛心",
+      "mnw_name_en": "ISLAND_LAND_REDSOIL",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1054,
+      "mnw_name_cn": "珊瑚岛海岸",
+      "mnw_name_en": "ISLAND_SHORE_REEF",
+      "mc_biome": "ocean",
+      "mc_biome_id": 0,
+      "mc_biome_name_cn": "海洋"
+    },
+    {
+      "mnw_id": 1055,
+      "mnw_name_cn": "珊瑚岛岛心",
+      "mnw_name_en": "ISLAND_LAND_REEF",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1064,
+      "mnw_name_cn": "峡谷",
+      "mnw_name_en": "CANYON",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1065,
+      "mnw_name_cn": "峡谷边缘",
+      "mnw_name_en": "CANYON_EAGE",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1066,
+      "mnw_name_cn": "干旱草原",
+      "mnw_name_en": "PLAINS_ARID",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1067,
+      "mnw_name_cn": "草原蒲公英花海",
+      "mnw_name_en": "PLAINS_DANDELION",
+      "mc_biome": "ocean",
+      "mc_biome_id": 0,
+      "mc_biome_name_cn": "海洋"
+    },
+    {
+      "mnw_id": 1068,
+      "mnw_name_cn": "草原油菜花海",
+      "mnw_name_en": "PLAINS_RAPESEED",
+      "mc_biome": "ocean",
+      "mc_biome_id": 0,
+      "mc_biome_name_cn": "海洋"
+    },
+    {
+      "mnw_id": 1069,
+      "mnw_name_cn": "森林薰衣草花海",
+      "mnw_name_en": "FOREST_LAVENDER",
+      "mc_biome": "forest",
+      "mc_biome_id": 4,
+      "mc_biome_name_cn": "森林"
+    },
+    {
+      "mnw_id": 1070,
+      "mnw_name_cn": "森林狗尾草海",
+      "mnw_name_en": "FOREST_FOXTAIL",
+      "mc_biome": "forest",
+      "mc_biome_id": 4,
+      "mc_biome_name_cn": "森林"
+    },
+    {
+      "mnw_id": 1071,
+      "mnw_name_cn": "森林菊花花海",
+      "mnw_name_en": "FOREST_CHRYSANTH",
+      "mc_biome": "forest",
+      "mc_biome_id": 4,
+      "mc_biome_name_cn": "森林"
+    },
+    {
+      "mnw_id": 1072,
+      "mnw_name_cn": "盆地稻田",
+      "mnw_name_en": "BASIN_RICE",
+      "mc_biome": "snowy_tundra",
+      "mc_biome_id": 12,
+      "mc_biome_name_cn": "雪原"
+    },
+    {
+      "mnw_id": 1073,
+      "mnw_name_cn": "沼泽河畔",
+      "mnw_name_en": "SWAMPLAND_RIVERSIDE",
+      "mc_biome": "swamp",
+      "mc_biome_id": 6,
+      "mc_biome_name_cn": "沼泽"
+    },
+    {
+      "mnw_id": 1074,
+      "mnw_name_cn": "粉蝶花空岛",
+      "mnw_name_en": "AIRISLAND_SHINE",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1075,
+      "mnw_name_cn": "三角梅峭壁",
+      "mnw_name_en": "EXTREMEHILLS_PLUM",
+      "mc_biome": "mountains",
+      "mc_biome_id": 3,
+      "mc_biome_name_cn": "山地"
+    },
+    {
+      "mnw_id": 1076,
+      "mnw_name_cn": "郁金香岛心",
+      "mnw_name_en": "ISLAND_LAND_TULIP",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1077,
+      "mnw_name_cn": "郁金香海岸",
+      "mnw_name_en": "ISLAND_SHORE_TULIP",
+      "mc_biome": "ocean",
+      "mc_biome_id": 0,
+      "mc_biome_name_cn": "海洋"
+    },
+    {
+      "mnw_id": 1078,
+      "mnw_name_cn": "末日城镇",
+      "mnw_name_en": "DESERT_CITY",
+      "mc_biome": "desert",
+      "mc_biome_id": 2,
+      "mc_biome_name_cn": "沙漠"
+    },
+    {
+      "mnw_id": 1079,
+      "mnw_name_cn": "沙漠胡杨林",
+      "mnw_name_en": "DESERT_HUYANG",
+      "mc_biome": "desert",
+      "mc_biome_id": 2,
+      "mc_biome_name_cn": "沙漠"
+    },
+    {
+      "mnw_id": 1080,
+      "mnw_name_cn": "丛林蓝花楹树林",
+      "mnw_name_en": "JUNGLE_LANHUAYING",
+      "mc_biome": "jungle",
+      "mc_biome_id": 21,
+      "mc_biome_name_cn": "丛林"
+    },
+    {
+      "mnw_id": 1081,
+      "mnw_name_cn": "峭壁枫叶林",
+      "mnw_name_en": "EXTREMEHILLS_FENGYE",
+      "mc_biome": "mountains",
+      "mc_biome_id": 3,
+      "mc_biome_name_cn": "山地"
+    },
+    {
+      "mnw_id": 1082,
+      "mnw_name_cn": "峭壁银杏林",
+      "mnw_name_en": "EXTREMEHILLS_YINXING",
+      "mc_biome": "mountains",
+      "mc_biome_id": 3,
+      "mc_biome_name_cn": "山地"
+    },
+    {
+      "mnw_id": 1083,
+      "mnw_name_cn": "草原湖泊",
+      "mnw_name_en": "PLAINS_LAKE",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1084,
+      "mnw_name_cn": "盆地湖泊",
+      "mnw_name_en": "BASIN_LAKE",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1085,
+      "mnw_name_cn": "森林湖泊",
+      "mnw_name_en": "FOREST_LAKE",
+      "mc_biome": "forest",
+      "mc_biome_id": 4,
+      "mc_biome_name_cn": "森林"
+    },
+    {
+      "mnw_id": 1086,
+      "mnw_name_cn": "针叶林湖泊",
+      "mnw_name_en": "TAIGA_LAKE",
+      "mc_biome": "taiga",
+      "mc_biome_id": 5,
+      "mc_biome_name_cn": "针叶林"
+    },
+    {
+      "mnw_id": 1087,
+      "mnw_name_cn": "雨林湖泊",
+      "mnw_name_en": "RAINFOREST_LAKE",
+      "mc_biome": "forest",
+      "mc_biome_id": 4,
+      "mc_biome_name_cn": "森林"
+    },
+    {
+      "mnw_id": 1088,
+      "mnw_name_cn": "铁穹平原",
+      "mnw_name_en": "BIOME_AIRSHIP",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    },
+    {
+      "mnw_id": 1089,
+      "mnw_name_cn": "铁穹舰队",
+      "mnw_name_en": "BIOME_AIRSHIP_H",
+      "mc_biome": "plains",
+      "mc_biome_id": 1,
+      "mc_biome_name_cn": "平原"
+    }
+  ]
+}

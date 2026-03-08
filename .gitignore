@@ -3,28 +3,25 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
-.installed.cfg
 *.egg
-
-# Virtual environments
+dist/
+build/
+.eggs/
 venv/
-ENV/
-env/
-.venv
+.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Flutter / Dart
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+*.iml
+build/
+pubspec.lock
 
 # IDE
 .vscode/
@@ -32,39 +29,29 @@ env/
 *.swp
 *.swo
 *~
-.DS_Store
 
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-.tox/
-.nox/
+# OS
+.DS_Store
+Thumbs.db
 
 # Logs
 *.log
 logs/
 
-# Local configuration
+# Config (sensitive)
 config.local.yaml
 .env
 .env.local
-
-# Encrypted files (sensitive)
-*.enc
 config/encrypted/
 
-# Temporary files
-tmp/
-temp/
-*.tmp
+# Binary
+*.exe
+*.dll
+*.apk
+*.jar
+*.zip
+*.xz
 
-# OS files
-Thumbs.db
-.DS_Store
-
-# Project specific
-# (Add any project-specific files to ignore)
-apk_downloads/minecraft_bedrock_1.20.60.apk
-releases/mnmcp-v1.0.0.zip
-README.md
+# Node (legacy)
+node_modules/
+package-lock.json

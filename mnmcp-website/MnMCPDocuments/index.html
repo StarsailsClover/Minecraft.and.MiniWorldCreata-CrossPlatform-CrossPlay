@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MnMCP文档中心 - Minecraft与迷你世界跨平台联机解决方案">
+    <title>MnMCP文档中心</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="../MnMCPicon.png" type="image/png">
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --dark: #0f172a;
+            --dark-light: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark);
+            color: var(--light);
+            line-height: 1.6;
+        }
+        
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--light);
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+        
+        .nav-logo img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: var(--gray);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .nav-links .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+        
+        /* Main Layout */
+        .docs-layout {
+            display: flex;
+            margin-top: 80px;
+            min-height: calc(100vh - 80px);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--dark-light);
+            border-right: 1px solid rgba(99, 102, 241, 0.1);
+            padding: 2rem 0;
+            position: fixed;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .sidebar-title {
+            padding: 0 1.5rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-menu li a {
+            display: block;
+            padding: 0.5rem 1.5rem;
+            color: var(--light);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar-menu li a:hover,
+        .sidebar-menu li a.active {
+            background: rgba(99, 102, 241, 0.1);
+            border-left-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .sidebar-menu li a i {
+            margin-right: 0.5rem;
+            width: 20px;
+        }
+        
+        /* Content */
+        .content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            max-width: 900px;
+        }
+        
+        .content-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .content-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .content-header p {
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+        
+        /* Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .card {
+            background: var(--dark-light);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.2);
+        }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .card p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        /* Footer */
+        .docs-footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(99, 102, 241, 0.2);
+            text-align: center;
+            color: var(--gray);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            .content {
+                margin-left: 0;
+            }
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-logo">
+                <img src="../MnMCPicon.png" alt="MnMCP">
+                <span>MnMCP文档</span>
+            </a>
+            <div class="nav-links">
+                <a href="../index.html">主页</a>
+                <a href="../Introducing/index.html">介绍</a>
+                <a href="editor/index.html">文档编辑器</a>
+                <a href="https://github.com/starsailsclover/MnMCP" target="_blank">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Layout -->
+    <div class="docs-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">快速开始</div>
+                <ul class="sidebar-menu">
+                    <li><a href="posts/quickstart/introduction.html" class="active"><i class="fas fa-home"></i> 简介</a></li>
+                    <li><a href="posts/quickstart/installation.html"><i class="fas fa-download"></i> 安装部署</a></li>
+                    <li><a href="posts/quickstart/usage.html"><i class="fas fa-play"></i> 使用指南</a></li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">开发文档</div>
+                <ul class="sidebar-menu">
+                    <li><a href="posts/dev/architecture.html"><i class="fas fa-sitemap"></i> 架构设计</a></li>
+                    <li><a href="posts/dev/api.html"><i class="fas fa-code"></i> API文档</a></li>
+                    <li><a href="posts/dev/protocol.html"><i class="fas fa-exchange-alt"></i> 协议说明</a></li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">项目进度</div>
+                <ul class="sidebar-menu">
+                    <li><a href="posts/progress/status.html"><i class="fas fa-tasks"></i> 当前状态</a></li>
+                    <li><a href="posts/progress/roadmap.html"><i class="fas fa-road"></i> 开发路线</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Content -->
+        <main class="content">
+            <div class="content-header">
+                <h1>MnMCP文档中心</h1>
+                <p>Minecraft与迷你世界跨平台联机解决方案的完整文档</p>
+            </div>
+
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>快速开始</h3>
+                    <p>了解MnMCP的基本概念，学习如何安装部署，快速开始跨平台联机。</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h3>开发文档</h3>
+                    <p>深入了解架构设计、API接口、协议转换等技术细节。</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <h3>文档编辑器</h3>
+                    <p>使用内置编辑器创建和编辑文档，支持实时预览和导出。</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon">
+                        <i class="fas fa-github"></i>
+                    </div>
+                    <h3>开源社区</h3>
+                    <p>参与项目开发，提交Issue和PR，加入QQ群讨论交流。</p>
+                </div>
+            </div>
+
+            <div class="docs-footer">
+                <p>MnMCP - 让Minecraft与迷你世界玩家一起玩</p>
+                <p>QQ群: 1084172731 | GitHub: starsailsclover/MnMCP</p>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

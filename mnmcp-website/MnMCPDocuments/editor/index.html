@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LightSearch 文档编辑器</title>
+    <link rel="stylesheet" href="editor-styles.css">
+    <link rel="icon" href="../../icon.png" type="image/png">
+</head>
+<body>
+    <!-- 顶部工具栏 -->
+    <header class="editor-header">
+        <div class="header-left">
+            <a href="../index.html" class="logo">
+                <img src="../../icon.png" alt="LightSearch">
+                <span>文档编辑器</span>
+            </a>
+        </div>
+        <div class="header-center">
+            <input type="text" id="docTitle" placeholder="文档标题" value="未命名文档">
+        </div>
+        <div class="header-right">
+            <button class="btn-icon" id="previewToggle" title="切换预览">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+            </button>
+            <button class="btn-icon" id="downloadMd" title="下载 Markdown">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+            </button>
+            <button class="btn-icon" id="downloadJson" title="下载配置">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+            </button>
+            <button class="btn-primary" id="saveDoc">保存</button>
+        </div>
+    </header>
+
+    <!-- 工具栏 -->
+    <div class="toolbar">
+        <div class="toolbar-group">
+            <button class="toolbar-btn" data-action="bold" title="粗体 (Ctrl+B)">
+                <strong>B</strong>
+            </button>
+            <button class="toolbar-btn" data-action="italic" title="斜体 (Ctrl+I)">
+                <em>I</em>
+            </button>
+            <button class="toolbar-btn" data-action="strikethrough" title="删除线">
+                <s>S</s>
+            </button>
+        </div>
+        <div class="toolbar-divider"></div>
+        <div class="toolbar-group">
+            <button class="toolbar-btn" data-action="h1" title="标题 1">H1</button>
+            <button class="toolbar-btn" data-action="h2" title="标题 2">H2</button>
+            <button class="toolbar-btn" data-action="h3" title="标题 3">H3</button>
+        </div>
+        <div class="toolbar-divider"></div>
+        <div class="toolbar-group">
+            <button class="toolbar-btn" data-action="quote" title="引用">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+            </button>
+            <button class="toolbar-btn" data-action="code" title="代码">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+            </button>
+            <button class="toolbar-btn" data-action="codeblock" title="代码块">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="toolbar-divider"></div>
+        <div class="toolbar-group">
+            <button class="toolbar-btn" data-action="ul" title="无序列表">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
+            </button>
+            <button class="toolbar-btn" data-action="ol" title="有序列表">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <line x1="10" y1="6" x2="21" y2="6"></line>
+                    <line x1="10" y1="12" x2="21" y2="12"></line>
+                    <line x1="10" y1="18" x2="21" y2="18"></line>
+                    <path d="M4 6h1v4"></path>
+                    <path d="M4 10h2"></path>
+                    <path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"></path>
+                </svg>
+            </button>
+            <button class="toolbar-btn" data-action="table" title="表格">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                    <line x1="9" y1="21" x2="9" y2="9"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="toolbar-divider"></div>
+        <div class="toolbar-group">
+            <button class="toolbar-btn" data-action="link" title="链接 (Ctrl+K)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg>
+            </button>
+            <button class="toolbar-btn" data-action="image" title="图片">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- 编辑器主体 -->
+    <div class="editor-container">
+        <!-- 左侧：Markdown 编辑器 -->
+        <div class="editor-pane" id="editorPane">
+            <textarea id="markdownEditor" placeholder="在这里开始编写 Markdown..."></textarea>
+        </div>
+
+        <!-- 右侧：预览 -->
+        <div class="preview-pane" id="previewPane">
+            <div class="preview-content" id="previewContent">
+                <p style="text-align: center; color: #999; padding: 40px;">预览将在这里显示</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 配置面板 -->
+    <div class="config-panel" id="configPanel">
+        <button class="config-toggle" id="configToggle">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M12 1v6m0 6v6m5.2-13.2l-4.2 4.2m0 6l-4.2 4.2M23 12h-6m-6 0H1m18.2 5.2l-4.2-4.2m0-6l-4.2-4.2"></path>
+            </svg>
+            配置
+        </button>
+        <div class="config-content" id="configContent">
+            <h3>文档配置</h3>
+            <div class="config-group">
+                <label>作者</label>
+                <input type="text" id="configAuthor" placeholder="作者名称">
+            </div>
+            <div class="config-group">
+                <label>描述</label>
+                <textarea id="configDescription" placeholder="文档描述" rows="3"></textarea>
+            </div>
+            <div class="config-group">
+                <label>标签</label>
+                <input type="text" id="configTags" placeholder="标签1, 标签2, 标签3">
+            </div>
+            <div class="config-group">
+                <label>分类</label>
+                <select id="configCategory">
+                    <option value="getting-started">快速开始</option>
+                    <option value="guide">用户指南</option>
+                    <option value="advanced">高级功能</option>
+                    <option value="misc">其他</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/javascript.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/python.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/css.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/html.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css">
+    <script src="editor-script.js"></script>
+</body>
+</html>

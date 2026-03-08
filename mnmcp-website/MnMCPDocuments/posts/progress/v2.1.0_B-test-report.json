@@ -1,0 +1,13 @@
+{
+  "title": "LightSearch v2.1.0_B 测试报告",
+  "author": "Sails",
+  "date": "2026-02-09",
+  "category": "progress",
+  "tags": ["测试报告", "v2.1.0_B", "质量保证", "性能测试"],
+  "description": "LightSearch v2.1.0_B 版本的完整测试报告，包含功能测试、兼容性测试、性能测试和问题汇总。",
+  "version": "v2.1.0_B",
+  "status": "completed",
+  "language": "zh-CN",
+  "testCoverage": "93.75%",
+  "testResult": "PASS"
+}

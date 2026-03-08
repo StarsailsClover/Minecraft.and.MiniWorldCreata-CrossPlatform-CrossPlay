@@ -1,0 +1,150 @@
+/*
+ * LightSearch 文档站 - 暗色模式增强
+ * v2.1.0_A0002
+ */
+
+/* 暗色模式对比度增强 */
+body.dark-mode {
+    --color-bg: #0a0a0a;
+    --color-bg-secondary: #1a1a1a;
+    --color-text: #ffffff;  /* 提高对比度 */
+    --color-text-secondary: #e0e0e0;
+    --color-border: #333333;
+    --color-code-bg: #1e1e1e;
+}
+
+body.dark-mode .navbar {
+    background: rgba(10, 10, 10, 0.95);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .sidebar {
+    background: var(--color-bg-secondary);
+    border-right-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .sidebar-content a {
+    color: var(--color-text-secondary);
+}
+
+body.dark-mode .sidebar-content a:hover,
+body.dark-mode .sidebar-content a.active {
+    color: var(--color-text);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .main-content {
+    background: var(--color-bg);
+    color: var(--color-text);
+}
+
+body.dark-mode .doc-article {
+    color: var(--color-text);
+}
+
+body.dark-mode .doc-article h1,
+body.dark-mode .doc-article h2,
+body.dark-mode .doc-article h3,
+body.dark-mode .doc-article h4,
+body.dark-mode .doc-article h5,
+body.dark-mode .doc-article h6 {
+    color: var(--color-text);
+}
+
+body.dark-mode .doc-article p,
+body.dark-mode .doc-article li {
+    color: var(--color-text-secondary);
+}
+
+body.dark-mode .doc-article a {
+    color: #4285f4;
+}
+
+body.dark-mode .doc-article code {
+    background: var(--color-code-bg);
+    color: #ff6b6b;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .doc-article pre {
+    background: var(--color-code-bg);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .doc-article pre code {
+    color: #e0e0e0;
+}
+
+body.dark-mode .doc-article blockquote {
+    background: rgba(255, 255, 255, 0.03);
+    border-left-color: #4285f4;
+    color: var(--color-text-secondary);
+}
+
+body.dark-mode .doc-article table {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .doc-article th {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-text);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .doc-article td {
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-text-secondary);
+}
+
+body.dark-mode .feature-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .feature-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .feature-card h3 {
+    color: var(--color-text);
+}
+
+body.dark-mode .feature-card p {
+    color: var(--color-text-secondary);
+}
+
+body.dark-mode .btn-primary {
+    background: #4285f4;
+    color: #ffffff;
+}
+
+body.dark-mode .btn-primary:hover {
+    background: #3367d6;
+}
+
+body.dark-mode .nav-search input {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-text);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .nav-search input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+body.dark-mode .nav-links a {
+    color: var(--color-text);
+}
+
+body.dark-mode .nav-links a:hover {
+    color: #4285f4;
+}
+
+/* 确保所有文本可读 */
+body.dark-mode {
+    color: var(--color-text);
+}
+
+body.dark-mode * {
+    border-color: var(--color-border);
+}
