@@ -55,3 +55,7 @@ config/encrypted/
 # Node (legacy)
 node_modules/
 package-lock.json
+
+# Memory dumps (sensitive)
+**/dumpingmem/
+**/memory_dumps/
