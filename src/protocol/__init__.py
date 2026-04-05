@@ -1,13 +1,31 @@
-"""协议处理模块"""
-from .block_mapper import BlockMapper
-from .coordinate_converter import CoordinateConverter, Vector3
-from .mnw_login import MiniWorldLogin, MiniWorldAccount, LoginResponse
+"""
+协议层 - Protocol Layer
+
+包含:
+- iLink/mmtls 协议实现
+- RakNet 适配层
+- 迷你世界业务协议
+"""
+
+from .ilink import ILinkSession, ILinkCodec
+from .raknet import RakNetPacket, RakNetCodec, RakNetMessageID
+from .mnw import MNWPacket, MNWCodec, MNWProtoID
+from .business import BusinessMessage, BusinessProtocol, BusinessCmdID
+from .mc_java import MCJavaPacket, MCJavaProtocol, MCJavaPacketID
 
 __all__ = [
-    'BlockMapper',
-    'CoordinateConverter',
-    'Vector3',
-    'MiniWorldLogin',
-    'MiniWorldAccount',
-    'LoginResponse'
+    'ILinkSession',
+    'ILinkCodec',
+    'RakNetPacket',
+    'RakNetCodec',
+    'RakNetMessageID',
+    'MNWPacket',
+    'MNWCodec',
+    'MNWProtoID',
+    'BusinessMessage',
+    'BusinessProtocol',
+    'BusinessCmdID',
+    'MCJavaPacket',
+    'MCJavaProtocol',
+    'MCJavaPacketID',
 ]

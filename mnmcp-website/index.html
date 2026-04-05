@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MnMCP - 实现迷你世界与Minecraft全端互通联机的开源解决方案">
+    <meta name="keywords" content="MnMCP, Minecraft, MiniWorld, 迷你世界, 跨平台联机, GeyserMC">
+    <meta name="author" content="ZCNotFound">
+    <title>MnMCP - Minecraft ↔ MiniWorld 全端互通</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #10b981;
+            --secondary-dark: #059669;
+            --accent: #f59e0b;
+            --dark: #0f172a;
+            --dark-light: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: var(--light);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            padding: 0.75rem 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: var(--shadow);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .nav-logo i {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--gray);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--dark);
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-ghost {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: white;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            padding: 6rem 2rem 4rem;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="rgba(255,255,255,0.03)" width="100" height="100"/></svg>');
+            background-size: 100% 100%, 100% 100%, 50px 50px;
+        }
+
+        .hero-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            animation: float 15s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1000px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .hero-badge i {
+            color: var(--accent);
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .subtitle {
+            font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+            opacity: 0.95;
+            margin-bottom: 1.5rem;
+            font-weight: 400;
+        }
+
+        .hero .description {
+            font-size: 1.1rem;
+            opacity: 0.85;
+            margin-bottom: 3rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.8;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            display: block;
+        }
+
+        .hero-stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-buttons .btn {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+        }
+
+        /* Section Styles */
+        section {
+            padding: 6rem 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: clamp(2rem, 4vw, 2.75rem);
+            margin-bottom: 1rem;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .section-header p {
+            color: var(--gray);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .section-tag {
+            display: inline-block;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 0.35rem 1rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        /* Features Section */
+        .features {
+            background: var(--light);
+            position: relative;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.4s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--gradient-primary);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            color: white;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .feature-card:nth-child(2) .feature-icon { background: var(--gradient-secondary); }
+        .feature-card:nth-child(3) .feature-icon { background: var(--gradient-accent); }
+        .feature-card:nth-child(4) .feature-icon { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .feature-card:nth-child(5) .feature-icon { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: var(--dark); }
+        .feature-card:nth-child(6) .feature-icon { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: var(--dark); }
+
+        .feature-card h3 {
+            font-size: 1.35rem;
+            margin-bottom: 0.75rem;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .feature-card p {
+            color: var(--gray);
+            line-height: 1.7;
+        }
+
+        /* Architecture Section */
+        .architecture {
+            background: white;
+        }
+
+        .arch-diagram {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 30px;
+            padding: 4rem 3rem;
+            margin-top: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .arch-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        .arch-box {
+            background: white;
+            padding: 1.75rem 1.5rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            min-width: 160px;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .arch-box:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .arch-box.mini {
+            border-color: #f59e0b;
+            background: linear-gradient(135deg, #fffbeb 0%, #fff 100%);
+        }
+
+        .arch-box.adapter {
+            border-color: #6366f1;
+            background: linear-gradient(135deg, #eef2ff 0%, #fff 100%);
+        }
+
+        .arch-box.mc {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #ecfdf5 0%, #fff 100%);
+        }
+
+        .arch-box strong {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 0.35rem;
+            color: var(--dark);
+        }
+
+        .arch-box small {
+            color: var(--gray);
+            font-size: 0.8rem;
+        }
+
+        .arch-arrow {
+            font-size: 1.5rem;
+            color: var(--primary);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: translateX(0); }
+            50% { opacity: 0.6; transform: translateX(5px); }
+        }
+
+        /* Status Section */
+        .status {
+            background: var(--dark);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 10% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 90% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .status-item {
+            text-align: center;
+            padding: 2.5rem 2rem;
+            background: rgba(255,255,255,0.03);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s;
+        }
+
+        .status-item:hover {
+            background: rgba(255,255,255,0.06);
+            transform: translateY(-5px);
+        }
+
+        .status-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            line-height: 1;
+        }
+
+        .status-item:nth-child(2) .status-number {
+            background: var(--gradient-secondary);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        .status-item:nth-child(3) .status-number {
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        .status-item:nth-child(4) .status-number {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        .status-label {
+            opacity: 0.8;
+            font-size: 0.95rem;
+        }
+
+        /* Tech Stack Section */
+        .tech-stack {
+            background: var(--light);
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .tech-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+        }
+
+        .tech-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .tech-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tech-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .tech-card:nth-child(1) .tech-icon { background: #3776ab; }
+        .tech-card:nth-child(2) .tech-icon { background: #007396; }
+        .tech-card:nth-child(3) .tech-icon { background: #6f42c1; }
+
+        .tech-header h3 {
+            font-size: 1.2rem;
+            color: var(--dark);
+        }
+
+        .tech-list {
+            list-style: none;
+        }
+
+        .tech-list li {
+            padding: 0.6rem 0;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        .tech-list li:last-child {
+            border-bottom: none;
+        }
+
+        .tech-list li i {
+            color: var(--secondary);
+            font-size: 0.8rem;
+        }
+
+        /* Download Section */
+        .download {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .download h2 {
+            color: white;
+        }
+
+        .download .section-header p {
+            color: rgba(255,255,255,0.85);
+        }
+
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .download-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 2.5rem;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s;
+        }
+
+        .download-card:hover {
+            background: rgba(255,255,255,0.15);
+            transform: translateY(-5px);
+        }
+
+        .download-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .download-card .version {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .download-card .btn {
+            background: white;
+            color: var(--primary);
+            width: 100%;
+            justify-content: center;
+        }
+
+        .download-card .btn:hover {
+            background: rgba(255,255,255,0.9);
+        }
+
+        /* Community Section */
+        .community {
+            background: white;
+        }
+
+        .community-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .community-card {
+            text-align: center;
+            padding: 2.5rem;
+            border-radius: 20px;
+            background: var(--light);
+            transition: all 0.3s;
+            text-decoration: none;
+            color: var(--dark);
+        }
+
+        .community-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            background: white;
+        }
+
+        .community-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 1.5rem;
+            color: white;
+        }
+
+        .community-card:nth-child(1) .community-icon { background: #333; }
+        .community-card:nth-child(2) .community-icon { background: #5865F2; }
+        .community-card:nth-child(3) .community-icon { background: #1DA1F2; }
+        .community-card:nth-child(4) .community-icon { background: var(--gradient-primary); }
+
+        .community-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .community-card p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 4rem 2rem 2rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto 3rem;
+        }
+
+        .footer-brand h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-brand p {
+            color: rgba(255,255,255,0.6);
+            line-height: 1.7;
+            font-size: 0.9rem;
+        }
+
+        .footer-links h4 {
+            font-size: 1rem;
+            margin-bottom: 1.25rem;
+            color: white;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 2rem;
+            text-align: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-bottom p {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.85rem;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .nav-actions .btn-secondary {
+                display: none;
+            }
+
+            .hero {
+                padding: 7rem 1.5rem 4rem;
+            }
+
+            .hero-stats {
+                gap: 2rem;
+            }
+
+            .hero-stat-number {
+                font-size: 2rem;
+            }
+
+            section {
+                padding: 4rem 1.5rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .arch-flow {
+                flex-direction: column;
+            }
+
+            .arch-arrow {
+                transform: rotate(90deg);
+            }
+
+            .status-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .status-number {
+                font-size: 2.5rem;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--light);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">
+                <i class="fas fa-cube"></i>
+                MnMCP
+            </a>
+            <ul class="nav-links">
+                <li><a href="#features">功能特性</a></li>
+                <li><a href="#architecture">技术架构</a></li>
+                <li><a href="#status">项目状态</a></li>
+                <li><a href="#tech">技术栈</a></li>
+                <li><a href="#download">下载</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="https://github.com/StarsailsClover/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay" class="btn btn-secondary" target="_blank">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-particles" id="particles"></div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-star"></i>
+                <span>开源跨平台联机解决方案</span>
+            </div>
+            <h1><span>MnMCP</span><br>Minecraft ↔ MiniWorld</h1>
+            <p class="subtitle">全端互通联机方案</p>
+            <p class="description">
+                实现迷你世界（国服/外服·手游/PC）与 Minecraft（Java/Bedrock）全端互通联机的开源解决方案。
+                打破平台壁垒，让不同世界的玩家能够一起游戏。
+            </p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="hero-stat-number">4</span>
+                    <span class="hero-stat-label">迷你世界端</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">2</span>
+                    <span class="hero-stat-label">Minecraft 版本</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">29+</span>
+                    <span class="hero-stat-label">方块同步</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">MIT</span>
+                    <span class="hero-stat-label">开源协议</span>
+                </div>
+            </div>
+            <div class="cta-buttons">
+                <a href="#download" class="btn btn-primary">
+                    <i class="fas fa-download"></i> 立即下载
+                </a>
+                <a href="https://github.com/StarsailsClover/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay" class="btn btn-ghost" target="_blank">
+                    <i class="fab fa-github"></i> 查看源码
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-tag">Features</span>
+                <h2>核心功能</h2>
+                <p>打破平台壁垒，让不同世界的玩家能够一起游戏</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <h3>全端互通</h3>
+                    <p>支持迷你世界四端（国服手游/PC、外服手游/PC）与 Minecraft Java/基岩版互通，真正实现全平台联机。</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <h3>协议翻译</h3>
+                    <p>智能协议转换引擎，实时翻译两个游戏之间的数据包，确保通信顺畅无阻。</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-cubes"></i>
+                    </div>
+                    <h3>方块同步</h3>
+                    <p>支持29+种方块的双向同步，持续扩展中。X轴坐标自动修正，解决方块镜像问题。</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3>聊天转发</h3>
+                    <p>实时聊天消息互通，支持跨平台交流。玩家可以在不同游戏间自由沟通。</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>加密支持</h3>
+                    <p>完整支持国服 AES-128-CBC 和外服 AES-256-GCM 加密协议，安全可靠。</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>高性能</h3>
+                    <p>基于 asyncio 的异步架构，支持百人同时在线。延迟补偿 + 帧插值，弱网环境下依然流畅。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section class="architecture" id="architecture">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-tag">Architecture</span>
+                <h2>技术架构</h2>
+                <p>分层设计，模块化实现，易于扩展和维护</p>
+            </div>
+            <div class="arch-diagram fade-in">
+                <div class="arch-flow">
+                    <div class="arch-box mini">
+                        <strong>迷你四端</strong>
+                        <small>手游/PC 国服/外服</small>
+                    </div>
+                    <span class="arch-arrow"><i class="fas fa-arrow-right"></i></span>
+                    <div class="arch-box adapter">
+                        <strong>端适配层</strong>
+                        <small>差异化处理</small>
+                    </div>
+                    <span class="arch-arrow"><i class="fas fa-arrow-right"></i></span>
+                    <div class="arch-box adapter">
+                        <strong>协议翻译层</strong>
+                        <small>迷你→Java</small>
+                    </div>
+                    <span class="arch-arrow"><i class="fas fa-arrow-right"></i></span>
+                    <div class="arch-box adapter">
+                        <strong>Java中转</strong>
+                        <small>PaperMC 1.20.6</small>
+                    </div>
+                    <span class="arch-arrow"><i class="fas fa-arrow-right"></i></span>
+                    <div class="arch-box adapter">
+                        <strong>GeyserMC</strong>
+                        <small>Java↔Bedrock</small>
+                    </div>
+                    <span class="arch-arrow"><i class="fas fa-arrow-right"></i></span>
+                    <div class="arch-box mc">
+                        <strong>MC全端</strong>
+                        <small>Java/基岩</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Status Section -->
+    <section class="status" id="status">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-tag" style="background: white; color: var(--dark);">Status</span>
+                <h2 style="color: white;">项目状态</h2>
+                <p style="color: rgba(255,255,255,0.8);">持续开发中，欢迎贡献代码</p>
+            </div>
+            <div class="status-grid">
+                <div class="status-item fade-in">
+                    <div class="status-number">100%</div>
+                    <div class="status-label">协议分析</div>
+                </div>
+                <div class="status-item fade-in">
+                    <div class="status-number">80%</div>
+                    <div class="status-label">协议实现</div>
+                </div>
+                <div class="status-item fade-in">
+                    <div class="status-number">30%</div>
+                    <div class="status-label">方块映射</div>
+                </div>
+                <div class="status-item fade-in">
+                    <div class="status-number">40%</div>
+                    <div class="status-label">登录认证</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack Section -->
+    <section class="tech-stack" id="tech">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-tag">Tech Stack</span>
+                <h2>技术栈</h2>
+                <p>基于成熟的开源技术构建</p>
+            </div>
+            <div class="tech-grid">
+                <div class="tech-card fade-in">
+                    <div class="tech-header">
+                        <div class="tech-icon">
+                            <i class="fab fa-python"></i>
+                        </div>
+                        <h3>Python 生态</h3>
+                    </div>
+                    <ul class="tech-list">
+                        <li><i class="fas fa-check"></i> Python 3.11+ 异步架构</li>
+                        <li><i class="fas fa-check"></i> asyncio 高性能网络</li>
+                        <li><i class="fas fa-check"></i> 协议分析与自动化</li>
+                        <li><i class="fas fa-check"></i> 数据包解析与转换</li>
+                    </ul>
+                </div>
+                <div class="tech-card fade-in">
+                    <div class="tech-header">
+                        <div class="tech-icon">
+                            <i class="fab fa-java"></i>
+                        </div>
+                        <h3>Minecraft 服务端</h3>
+                    </div>
+                    <ul class="tech-list">
+                        <li><i class="fas fa-check"></i> PaperMC 1.20.6</li>
+                        <li><i class="fas fa-check"></i> GeyserMC 互通桥</li>
+                        <li><i class="fas fa-check"></i> Floodgate 认证</li>
+                        <li><i class="fas fa-check"></i> Fabric 模组支持</li>
+                    </ul>
+                </div>
+                <div class="tech-card fade-in">
+                    <div class="tech-header">
+                        <div class="tech-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3>逆向工程</h3>
+                    </div>
+                    <ul class="tech-list">
+                        <li><i class="fas fa-check"></i> APKTool 反编译</li>
+                        <li><i class="fas fa-check"></i> JADX Java 反编译</li>
+                        <li><i class="fas fa-check"></i> Frida 动态分析</li>
+                        <li><i class="fas fa-check"></i> Wireshark 抓包</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Download Section -->
+    <section class="download" id="download">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-tag" style="background: white; color: var(--primary);">Download</span>
+                <h2>下载</h2>
+                <p>获取最新版本，开始跨平台联机体验</p>
+            </div>
+            <div class="download-grid">
+                <div class="download-card fade-in">
+                    <h3><i class="fas fa-server"></i> 服务端</h3>
+                    <p class="version">v1.0.0 - 稳定版</p>
+                    <p style="margin-bottom: 1.5rem; opacity: 0.9;">包含代理服务器、PaperMC、GeyserMC 完整环境</p>
+                    <a href="https://github.com/StarsailsClover/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay/releases" class="btn" target="_blank">
+                        <i class="fas fa-download"></i> 下载服务端
+                    </a>
+                </div>
+                <div class="download-card fade-in">
+                    <h3><i class="fas fa-code"></i> 源代码</h3>
+                    <p class="version">GitHub 仓库</p>
+                    <p style="margin-bottom: 1.5rem; opacity: 0.9;">完整的源代码、文档和开发工具</p>
+                    <a href="https://github.com/StarsailsClover/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay" class="btn" target="_blank">
+                        <i class="fab fa-github"></i> 查看源码
+                    </a>
+                </div>
+                <div class="download-card fade-in">
+                    <h3><i class="fas fa-book"></i> 文档</h3>
+                    <p class="version">完整开发文档</p>
+                    <p style="margin-bottom: 1.5rem; opacity: 0.9;">部署指南、API 文档、开发教程</p>
+                    <a href="https://github.com/StarsailsClover/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay/tree/main/docs" class="btn" target="_blank">
+                        <i class="fas fa-file-alt"></i> 查看文档
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Section -->
+    <section class="community" id="community">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-tag">Community</span>
+                <h2>加入社区</h2>
+                <p>与其他开发者交流，获取最新动态</p>
+            </div>
+            <div class="community-grid">
+                <a href="https://github.com/StarsailsClover/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay" class="community-card fade-in" target="_blank">
+                    <div class="community-icon">
+                        <i class="fab fa-github"></i>
+                    </div>
+                    <h3>GitHub</h3>
+                    <p>Star 项目，提交 Issue 和 PR</p>
+                </a>
+                <a href="#" class="community-card fade-in" onclick="alert('QQ群：1084172731'); return false;">
+                    <div class="community-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3>QQ 群</h3>
+                    <p>MnMCP共建者社区：1084172731</p>
+                </a>
+                <a href="#" class="community-card fade-in">
+                    <div class="community-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3>联系我们</h3>
+                    <p>SailsHuang@gmail.com</p>
+                </a>
+                <a href="https://github.com/StarsailsClover/BlockConnect" class="community-card fade-in" target="_blank">
+                    <div class="community-icon">
+                        <i class="fas fa-plug"></i>
+                    </div>
+                    <h3>BlockConnect</h3>
+                    <p>我们的新技术：任何游戏与MC互通</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h3><i class="fas fa-cube"></i> MnMCP</h3>
+                <p>Minecraft and MiniWorld Creata Cross-Platform Cross-Play - 实现迷你世界与Minecraft全端互通联机的开源解决方案。</p>
+            </div>
+            <div class="footer-links">
+                <h4>项目</h4>
+                <ul>
+                    <li><a href="#features">功能特性</a></li>
+                    <li><a href="#architecture">技术架构</a></li>
+                    <li><a href="#status">项目状态</a></li>
+                    <li><a href="#download">下载</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>文档</h4>
+                <ul>
+                    <li><a href="https://github.com/StarsailsClover/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay/blob/main/docs/TechnicalDocument.md" target="_blank">技术文档</a></li>
+                    <li><a href="https://github.com/StarsailsClover/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay/blob/main/docs/DEPLOYMENT_GUIDE.md" target="_blank">部署指南</a></li>
+                    <li><a href="https://github.com/StarsailsClover/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay/blob/main/CONTRIBUTING.md" target="_blank">贡献指南</a></li>
+                    <li><a href="https://github.com/StarsailsClover/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay/blob/main/docs/API.md" target="_blank">API 文档</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>关于</h4>
+                <ul>
+                    <li><a href="https://github.com/StarsailsClover" target="_blank">GitHub 组织</a></li>
+                    <li><a href="https://github.com/StarsailsClover/BlockConnect" target="_blank">BlockConnect</a></li>
+                    <li><a href="https://github.com/StarsailsClover/Minecraft.and.MiniWorldCreata-CrossPlatform-CrossPlay/blob/main/LICENSE" target="_blank">MIT 许可证</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 MnMCP Project. Licensed under MIT License. Made with ❤️ by ZCNotFound</p>
+        </div>
+    </footer>
+
+    <script>
+        // Navbar scroll effect
+        const navbar = document.querySelector('.navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Fade in animation
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Particle animation
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Counter animation
+        function animateCounter(element, target, duration = 2000) {
+            let start = 0;
+            const increment = target / (duration / 16);
+            const timer = setInterval(() => {
+                start += increment;
+                if (start >= target) {
+                    element.textContent = target + '%';
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(start) + '%';
+                }
+            }, 16);
+        }
+
+        // Animate counters when visible
+        const statusObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.classList.contains('counted')) {
+                    entry.target.classList.add('counted');
+                    const num = entry.target.querySelector('.status-number');
+                    const value = parseInt(num.textContent);
+                    if (!isNaN(value)) {
+                        animateCounter(num, value);
+                    }
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.status-item').forEach(item => {
+            statusObserver.observe(item);
+        });
+    </script>
+</body>
+</html>

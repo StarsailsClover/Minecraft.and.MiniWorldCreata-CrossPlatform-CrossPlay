@@ -1,0 +1,32 @@
+name: mnmcp_personal
+description: MnMCP Personal - Connect to MnMCP servers for cross-platform play
+version: 1.0.0+1
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # 共享组件
+  mnmcp_shared:
+    path: ../mnmcp-shared
+
+  # 网络
+  dio: ^5.4.0
+
+  # 存储
+  shared_preferences: ^2.2.2
+  path_provider: ^2.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/

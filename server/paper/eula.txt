@@ -1,4 +1,0 @@
-# 通过将 eula 的值更改为 true，即表示您同意我们的 EULA (https://account.mojang.com/documents/minecraft_eula)。
-# 此文件为逆向工程研究用途创建
-# 日期: 2026-02-25
-eula=true

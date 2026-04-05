@@ -1,238 +1,129 @@
-#!/usr/bin/env python3
 """
-加密模块真实测试 - Phase 4
-测试AES加密、密码哈希等功能
+加密层集成测试
+
+测试 ECDH + HKDF + AES-GCM 完整流程
 """
 
-import sys
-import os
-import hashlib
-import hmac
-from pathlib import Path
+import unittest
+import logging
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-
-from crypto.aes_crypto import AESCipher, MiniWorldCrypto
-from crypto.password_hasher import PasswordHasher, TokenHasher
+logging.basicConfig(level=logging.INFO)
 
 
-class TestCrypto:
-    """加密模块测试"""
+class TestCryptoLayer(unittest.TestCase):
+    """测试加密层"""
     
-    def __init__(self):
-        self.passed = 0
-        self.failed = 0
-        self.tests = []
+    def test_ecdh_key_exchange(self):
+        """测试 ECDH 密钥交换"""
+        from src.crypto import ECDHKeyExchange
+        
+        ecdh = ECDHKeyExchange()
+        
+        # 生成密钥对
+        self.assertTrue(ecdh.generate_keypair())
+        self.assertIsNotNone(ecdh.private_key)
+        self.assertIsNotNone(ecdh.public_key)
+        
+        # 加载服务器公钥
+        self.assertTrue(ecdh.load_server_public_key())
+        self.assertIsNotNone(ecdh.server_public_key)
+        
+        # 执行密钥交换
+        shared_secret = ecdh.exchange()
+        self.assertIsNotNone(shared_secret)
+        self.assertEqual(len(shared_secret), 32)  # P-256 共享秘密为 32 字节
+        
+        print(f"✓ ECDH key exchange successful, shared secret: {len(shared_secret)} bytes")
     
-    def test(self, name: str, condition: bool, details: str = ""):
-        """记录测试结果"""
-        if condition:
-            self.passed += 1
-            status = "✓"
-        else:
-            self.failed += 1
-            status = "✗"
+    def test_hkdf_key_derivation(self):
+        """测试 HKDF 密钥派生"""
+        from src.crypto import HKDFKeyDerivation
         
-        self.tests.append((name, status, details))
-        return condition
+        hkdf = HKDFKeyDerivation()
+        
+        # 模拟共享秘密
+        shared_secret = b'x' * 32
+        
+        # 派生密钥材料
+        key_material = hkdf.derive(shared_secret, length=48)
+        self.assertIsNotNone(key_material)
+        self.assertEqual(len(key_material), 48)
+        
+        # 提取各个密钥
+        keys = hkdf.extract_keys(key_material)
+        self.assertEqual(len(keys['aes_key']), 16)
+        self.assertEqual(len(keys['nonce_base']), 12)
+        self.assertEqual(len(keys['padding']), 20)
+        
+        print(f"✓ HKDF key derivation successful")
+        print(f"  - AES key: {len(keys['aes_key'])} bytes")
+        print(f"  - Nonce base: {len(keys['nonce_base'])} bytes")
+        print(f"  - Padding: {len(keys['padding'])} bytes")
     
-    def run_all(self):
-        """运行所有测试"""
-        print("=" * 70)
-        print(" 加密模块真实测试")
-        print("=" * 70)
+    def test_aes_gcm_encryption(self):
+        """测试 AES-GCM 加密/解密"""
+        from src.crypto import AESGCMCipher
         
-        # 测试AES-128-CBC
-        self._test_aes_cbc()
+        key = b'x' * 16  # 16 bytes for AES-128
+        nonce_base = b'y' * 12  # 12 bytes for GCM nonce
         
-        # 测试AES-256-GCM
-        self._test_aes_gcm()
+        cipher = AESGCMCipher(key, nonce_base)
         
-        # 测试密码哈希
-        self._test_password_hash()
+        # 测试数据
+        plaintext = b"Hello, MiniWorld!"
+        aad = b"additional_data"
         
-        # 测试会话密钥
-        self._test_session_key()
+        # 加密
+        ciphertext = cipher.encrypt(plaintext, aad)
+        self.assertIsNotNone(ciphertext)
+        self.assertGreater(len(ciphertext), len(plaintext))
         
-        # 打印结果
-        self._print_results()
+        # 解密
+        decrypted = cipher.decrypt(ciphertext, aad)
+        self.assertIsNotNone(decrypted)
+        self.assertEqual(decrypted, plaintext)
+        
+        print(f"✓ AES-GCM encryption/decryption successful")
+        print(f"  - Plaintext: {plaintext}")
+        print(f"  - Ciphertext: {len(ciphertext)} bytes")
     
-    def _test_aes_cbc(self):
-        """测试AES-128-CBC加密"""
-        print("\n[测试] AES-128-CBC加密...")
+    def test_full_crypto_flow(self):
+        """测试完整加密流程: ECDH -> HKDF -> AES-GCM"""
+        from src.crypto import ECDHKeyExchange, HKDFKeyDerivation, AESGCMCipher
         
-        try:
-            # 测试数据
-            key = b'1234567890123456'  # 16字节
-            plaintext = b'Hello, MiniWorld!'
-            
-            # 创建加密器
-            cipher = AESCipher(key, mode="CBC")
-            
-            # 加密
-            ciphertext = cipher.encrypt_cbc(plaintext)
-            
-            # 解密
-            decrypted = cipher.decrypt_cbc(ciphertext)
-            
-            # 验证
-            success = decrypted == plaintext
-            self.test(
-                "AES-128-CBC 加密/解密",
-                success,
-                f"原始: {plaintext} -> 加密 -> 解密: {decrypted}"
-            )
-            
-            # 验证IV被正确使用
-            cipher2 = AESCipher(key, mode="CBC", iv=cipher.iv)
-            decrypted2 = cipher2.decrypt_cbc(ciphertext)
-            success2 = decrypted2 == plaintext
-            self.test(
-                "AES-128-CBC IV一致性",
-                success2,
-                f"使用相同IV解密成功"
-            )
-            
-        except Exception as e:
-            self.test("AES-128-CBC", False, f"异常: {e}")
-    
-    def _test_aes_gcm(self):
-        """测试AES-256-GCM加密"""
-        print("\n[测试] AES-256-GCM加密...")
+        print("\n=== Testing Full Crypto Flow ===")
         
-        try:
-            # 测试数据
-            key = b'12345678901234567890123456789012'  # 32字节
-            plaintext = b'Hello, MiniWorld Global!'
-            aad = b'additional_data'
-            
-            # 创建加密器
-            cipher = AESCipher(key, mode="GCM")
-            
-            # 加密
-            ciphertext, tag = cipher.encrypt_gcm(plaintext, aad)
-            
-            # 解密
-            decrypted = cipher.decrypt_gcm(ciphertext, tag, aad)
-            
-            # 验证
-            success = decrypted == plaintext
-            self.test(
-                "AES-256-GCM 加密/解密",
-                success,
-                f"AAD验证成功，数据完整性保护正常"
-            )
-            
-            # 测试错误标签
-            try:
-                wrong_tag = b'\x00' * len(tag)
-                cipher.decrypt_gcm(ciphertext, wrong_tag, aad)
-                self.test("AES-256-GCM 错误标签检测", False, "应该抛出异常")
-            except Exception:
-                self.test("AES-256-GCM 错误标签检测", True, "正确拒绝错误标签")
-            
-        except Exception as e:
-            self.test("AES-256-GCM", False, f"异常: {e}")
-    
-    def _test_password_hash(self):
-        """测试密码哈希"""
-        print("\n[测试] 密码哈希...")
+        # Step 1: ECDH 密钥交换
+        ecdh = ECDHKeyExchange()
+        shared_secret = ecdh.complete_exchange()
+        self.assertIsNotNone(shared_secret)
+        print(f"✓ Step 1: ECDH complete, shared secret: {len(shared_secret)} bytes")
         
-        try:
-            password = "test_password_123"
-            salt = "random_salt"
-            
-            # 哈希
-            hashed = PasswordHasher.hash_password_cn(password, salt)
-            
-            # 验证正确密码
-            is_valid = PasswordHasher.verify_password(password, hashed, salt)
-            self.test(
-                "密码哈希验证（正确密码）",
-                is_valid,
-                f"哈希值: {hashed[:16]}..."
-            )
-            
-            # 验证错误密码
-            is_invalid = PasswordHasher.verify_password("wrong_password", hashed, salt)
-            self.test(
-                "密码哈希验证（错误密码）",
-                not is_invalid,
-                "正确拒绝错误密码"
-            )
-            
-            # 验证哈希长度
-            self.test(
-                "哈希长度验证",
-                len(hashed) == 32,
-                f"MD5哈希长度: {len(hashed)}"
-            )
-            
-        except Exception as e:
-            self.test("密码哈希", False, f"异常: {e}")
-    
-    def _test_session_key(self):
-        """测试会话密钥生成"""
-        print("\n[测试] 会话密钥生成...")
+        # Step 2: HKDF 密钥派生
+        hkdf = HKDFKeyDerivation()
+        key_material = hkdf.derive(shared_secret)
+        self.assertIsNotNone(key_material)
+        keys = hkdf.extract_keys(key_material)
+        print(f"✓ Step 2: HKDF complete")
+        print(f"  - AES key: {keys['aes_key'].hex()[:16]}...")
+        print(f"  - Nonce base: {keys['nonce_base'].hex()[:16]}...")
         
-        try:
-            user_id = "12345678"
-            timestamp = 1700000000
-            secret = "server_secret_key"
-            
-            # 生成密钥
-            session_key = TokenHasher.generate_session_key(user_id, timestamp, secret)
-            
-            # 验证格式
-            self.test(
-                "会话密钥格式",
-                len(session_key) == 64,
-                f"HMAC-SHA256长度: {len(session_key)}"
-            )
-            
-            # 验证确定性
-            session_key2 = TokenHasher.generate_session_key(user_id, timestamp, secret)
-            self.test(
-                "会话密钥确定性",
-                session_key == session_key2,
-                "相同输入产生相同输出"
-            )
-            
-            # 验证不同输入产生不同输出
-            session_key3 = TokenHasher.generate_session_key(user_id, timestamp + 1, secret)
-            self.test(
-                "会话密钥唯一性",
-                session_key != session_key3,
-                "不同输入产生不同输出"
-            )
-            
-        except Exception as e:
-            self.test("会话密钥", False, f"异常: {e}")
-    
-    def _print_results(self):
-        """打印测试结果"""
-        print("\n" + "=" * 70)
-        print(" 测试结果")
-        print("=" * 70)
+        # Step 3: AES-GCM 加密/解密
+        cipher = AESGCMCipher(keys['aes_key'], keys['nonce_base'])
         
-        for name, status, details in self.tests:
-            print(f"  [{status}] {name}")
-            if details:
-                print(f"       {details}")
+        plaintext = b"Hello from MnMCP!"
+        ciphertext = cipher.encrypt(plaintext)
+        self.assertIsNotNone(ciphertext)
         
-        print("\n" + "=" * 70)
-        print(f" 通过: {self.passed}")
-        print(f" 失败: {self.failed}")
-        print(f" 总计: {self.passed + self.failed}")
+        decrypted = cipher.decrypt(ciphertext)
+        self.assertIsNotNone(decrypted)
+        self.assertEqual(decrypted, plaintext)
+        print(f"✓ Step 3: AES-GCM complete")
+        print(f"  - Original: {plaintext}")
+        print(f"  - Decrypted: {decrypted}")
         
-        if self.failed == 0:
-            print("\n ✓ 所有测试通过!")
-        else:
-            print(f"\n ✗ {self.failed}个测试失败")
-        
-        print("=" * 70)
+        print("\n=== Full Crypto Flow Successful ===")
 
 
-if __name__ == "__main__":
-    tester = TestCrypto()
-    tester.run_all()
+if __name__ == '__main__':
+    unittest.main(verbosity=2)
