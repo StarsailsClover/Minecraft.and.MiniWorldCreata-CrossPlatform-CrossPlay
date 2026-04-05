@@ -43,8 +43,16 @@ class HKDFKeyDerivation:
     
     def extract_keys(self, key_material: bytes) -> dict:
         """提取各个密钥"""
+        if len(key_material) < 48:
+            raise ValueError(f"Key material too short: {len(key_material)} bytes, expected 48")
+        
         return {
-            'aes_key': key_material[:16],      # 16 bytes for AES-128
-            'nonce_base': key_material[16:28],  # 12 bytes for GCM nonce
-            'padding': key_material[28:48],     # 20 bytes padding
+            'aes_key': key_material[:16],           # 16 bytes for AES-128
+            'nonce_base': key_material[16:28],      # 12 bytes for GCM nonce
+            'padding': key_material[28:48],         # 20 bytes padding/reserved
         }
+    
+    def derive_with_salt(self, shared_secret: bytes, salt: bytes, length: int = 48) -> Optional[bytes]:
+        """使用指定 salt 派生密钥"""
+        self.salt = salt
+        return self.derive(shared_secret, length)

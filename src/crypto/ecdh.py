@@ -68,6 +68,8 @@ h8R74SnoKmwW8nz8qZHaAynxU8P5dd29ORHGQEGUW4IFUVsg5I3XTdjRdQ==
             return None
         
         try:
+            from cryptography.hazmat.primitives.asymmetric import ec
+            
             self.shared_secret = self.private_key.exchange(
                 ec.ECDH(),
                 self.server_public_key
@@ -77,3 +79,31 @@ h8R74SnoKmwW8nz8qZHaAynxU8P5dd29ORHGQEGUW4IFUVsg5I3XTdjRdQ==
         except Exception as e:
             logger.error(f"Key exchange failed: {e}")
             return None
+    
+    def get_public_key_bytes(self) -> Optional[bytes]:
+        """获取公钥字节表示 (用于发送给服务器)"""
+        if not self.public_key:
+            return None
+        try:
+            from cryptography.hazmat.primitives import serialization
+            
+            return self.public_key.public_bytes(
+                encoding=serialization.Encoding.X962,
+                format=serialization.PublicFormat.UncompressedPoint
+            )
+        except Exception as e:
+            logger.error(f"Failed to serialize public key: {e}")
+            return None
+    
+    def complete_exchange(self) -> Optional[bytes]:
+        """完整的密钥交换流程"""
+        # 1. 生成密钥对
+        if not self.generate_keypair():
+            return None
+        
+        # 2. 加载服务器公钥
+        if not self.load_server_public_key():
+            return None
+        
+        # 3. 执行交换
+        return self.exchange()
