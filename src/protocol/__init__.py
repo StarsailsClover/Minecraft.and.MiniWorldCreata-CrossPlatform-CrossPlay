@@ -11,6 +11,7 @@ from .ilink import ILinkSession, ILinkCodec
 from .raknet import RakNetPacket, RakNetCodec, RakNetMessageID
 from .mnw import MNWPacket, MNWCodec, MNWProtoID
 from .business import BusinessMessage, BusinessProtocol, BusinessCmdID
+from .mc_java import MCJavaPacket, MCJavaProtocol, MCJavaPacketID
 
 __all__ = [
     'ILinkSession',
@@ -24,4 +25,7 @@ __all__ = [
     'BusinessMessage',
     'BusinessProtocol',
     'BusinessCmdID',
+    'MCJavaPacket',
+    'MCJavaProtocol',
+    'MCJavaPacketID',
 ]
