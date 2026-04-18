@@ -1,70 +1,229 @@
 # Contributing to MnMCP
 
-感谢你对 MnMCP 项目的兴趣！
+Thank you for your interest in contributing to MnMCP (Minecraft and MiniWorld Creata CrossPlay)! This document provides guidelines and instructions for contributing.
 
-## 开发环境
+## Code of Conduct
 
-### 核心引擎 (Python)
+This project and everyone participating in it is governed by our commitment to:
+- Be respectful and inclusive
+- Welcome newcomers
+- Focus on constructive feedback
+- Prioritize user safety and privacy
+
+## How Can I Contribute?
+
+### Reporting Bugs
+
+Before creating bug reports, please check the existing issues to avoid duplicates. When you create a bug report, include:
+
+- **Use a clear descriptive title**
+- **Describe the exact steps to reproduce**
+- **Provide specific examples**
+- **Describe the behavior you observed**
+- **Explain which behavior you expected**
+- **Include system information** (OS, Python version, etc.)
+
+### Suggesting Enhancements
+
+Enhancement suggestions are tracked as GitHub issues. When creating an enhancement suggestion:
+
+- **Use a clear descriptive title**
+- **Provide a step-by-step description**
+- **Provide specific examples**
+- **Explain why this enhancement would be useful**
+
+### Pull Requests
+
+1. Fork the repository
+2. Create a branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Run tests
+5. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
+## Development Setup
+
+### Prerequisites
+
+- Python 3.8 or higher
+- pip
+- virtualenv (recommended)
+
+### Setup
 
 ```bash
-cd mnmcp-core
-pip install -e ".[dev]"
-pytest                    # 运行测试
-black src/ tests/         # 格式化
-ruff check src/ tests/    # 代码检查
+# Clone the repository
+git clone https://github.com/yourusername/BlockConnect-MnMCP.git
+cd BlockConnect-MnMCP
+
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+# On Windows:
+venv\Scripts\activate
+# On Unix or MacOS:
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Install development dependencies
+pip install -r requirements-dev.txt
 ```
 
-### Flutter 客户端
+### Running Tests
 
 ```bash
-flutter pub get
-flutter analyze
-flutter test
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=src --cov-report=html
+
+# Run specific test file
+pytest tests/test_wpkg.py
 ```
 
-## 项目规范
+### Code Style
 
-### 分支策略
+We follow PEP 8 style guide. Please ensure your code:
 
-- `main` — 稳定发布分支
-- `develop` — 开发分支
-- `feature/*` — 功能分支
-- `fix/*` — 修复分支
+- Passes `flake8` linting
+- Is formatted with `black`
+- Has type hints where appropriate
+- Includes docstrings for public APIs
 
-### 提交规范
+```bash
+# Check code style
+flake8 src
 
-```
-<type>(<scope>): <description>
+# Format code
+black src
 
-type: feat, fix, docs, style, refactor, test, chore
-scope: core, personal, streamer, server, shared, website
-```
-
-示例:
-```
-feat(core): add MNW protobuf message parser
-fix(personal): resolve VPN connection timeout
-docs(readme): update quick start guide
+# Check types
+mypy src
 ```
 
-### 代码风格
+## Project Structure
 
-- Python: Black (line-length=100) + Ruff
-- Dart: `flutter analyze` 无警告
-- Kotlin: Android Studio 默认格式化
+```
+BlockConnect-MnMCP/
+├── src/                    # Python source code
+│   ├── protocol/          # Protocol implementations
+│   ├── crypto/            # Cryptography
+│   ├── network/           # Network layer
+│   ├── mapping/           # Data mapping
+│   └── bridge.py          # Main bridge
+├── mnmcp-core/            # Core library
+│   └── src/mnmcp/
+├── tests/                 # Test files
+├── docs/                  # Documentation
+└── tools/                 # Utility tools
+```
 
-## 版本号
+## Coding Guidelines
 
-`v{major}.{minor}.{patch}_{year}w{week}{letter}`
+### Python Code
 
-示例: `v1.0.0_26w13a`
+- Use type hints
+- Write docstrings in Google style
+- Keep functions focused and small
+- Use meaningful variable names
+- Add comments for complex logic
 
-- 语义化版本 (major.minor.patch)
-- Minecraft 快照风格 (年份w周数+字母)
+Example:
+```python
+def process_packet(packet: MNWPacket) -> Optional[bytes]:
+    """
+    Process an MNW packet and return encoded data.
+    
+    Args:
+        packet: The MNW packet to process
+        
+    Returns:
+        Encoded bytes or None if processing failed
+        
+    Raises:
+        ValueError: If packet format is invalid
+    """
+    if not packet.data:
+        return None
+    
+    # Process logic here
+    return packet.encode()
+```
 
-## 需要帮助的领域
+### Documentation
 
-- MNW Protobuf 协议逆向分析
-- 更多方块/实体/物品映射验证
-- iOS Flutter 适配
-- 性能优化和压力测试
+- Update README.md if needed
+- Add docstrings to new functions
+- Update API documentation
+- Include examples for new features
+
+### Testing
+
+- Write unit tests for new functions
+- Ensure tests cover edge cases
+- Maintain test coverage above 80%
+- Use pytest fixtures for setup
+
+Example:
+```python
+def test_wpkg_encode_decode():
+    """Test WPKG encoding and decoding."""
+    codec = WPKGCodec()
+    data = b"Hello, World!"
+    
+    encoded = codec.encode(data)
+    decoded = codec.decode(encoded)
+    
+    assert decoded == data
+```
+
+## Commit Messages
+
+- Use present tense ("Add feature" not "Added feature")
+- Use imperative mood ("Move cursor to..." not "Moves cursor to...")
+- Limit first line to 72 characters
+- Reference issues and pull requests
+
+Example:
+```
+Add WPKG codec support for LZ4 compression
+
+- Implement LZ4 compression algorithm
+- Add compression level configuration
+- Update tests for new compression type
+
+Fixes #123
+```
+
+## Release Process
+
+1. Update version in `__init__.py`
+2. Update CHANGELOG.md
+3. Create a git tag
+4. Push to GitHub
+5. Create a GitHub release
+
+## Security
+
+- Never commit secrets or credentials
+- Report security issues privately
+- Follow secure coding practices
+- Keep dependencies updated
+
+## Questions?
+
+- Check existing documentation
+- Search closed issues
+- Ask in discussions
+- Contact maintainers
+
+## License
+
+By contributing, you agree that your contributions will be licensed under the MIT License.
+
+Thank you for contributing to MnMCP!

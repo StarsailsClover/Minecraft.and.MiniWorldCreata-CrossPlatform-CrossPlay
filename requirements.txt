@@ -1,7 +1,24 @@
+# MnMCP Core Dependencies
+# Production-ready dependencies for MnMCP
+
+# Cryptography
 cryptography>=41.0.0
-protobuf>=4.25.0
-requests>=2.31.0
-websockets>=12.0
-pyyaml>=6.0.0
-pytest>=7.4.0
-pytest-asyncio>=0.21.0
+
+# Async HTTP/WebSocket
+aiohttp>=3.8.0
+websockets>=11.0.0
+
+# Data processing
+pyyaml>=6.0
+
+# Optional: Performance
+# lz4>=4.3.0  # For LZ4 compression support
+# orjson>=3.9.0  # For faster JSON processing
+
+# Development dependencies (install with: pip install -r requirements-dev.txt)
+# pytest>=7.4.0
+# pytest-asyncio>=0.21.0
+# pytest-cov>=4.1.0
+# black>=23.7.0
+# flake8>=6.1.0
+# mypy>=1.5.0

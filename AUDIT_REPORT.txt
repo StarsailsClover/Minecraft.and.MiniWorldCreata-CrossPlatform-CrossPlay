@@ -1,0 +1,111 @@
+================================================================================
+MnMCP 项目审计报告
+================================================================================
+
+【统计信息】
+  total_files: 69
+  total_lines: 9362
+  empty_functions: 0
+  todo_comments: 23
+  pass_statements: 15
+  not_implemented: 12
+  mock_implementations: 7
+
+【问题文件】
+
+文件: audit_code.py
+  行 47: [TODO/FIXME] # 检查 TODO/FIXME
+  行 49: [TODO/FIXME] if 'TODO' in line or 'FIXME' in line:
+  行 53: [TODO/FIXME] 'type': 'TODO/FIXME',
+  行 65: [NOT_IMPLEMENTED] if 'NotImplemented' in line or 'not implemented' in line.lower():
+  行 73: [MOCK_IMPLEMENTATION] if 'mock' in line.lower() and 'crypto' in line.lower():
+  行 88: [PASS_STATEMENT] pass
+
+文件: test_crypto_manual.py
+  行 10: [MOCK_IMPLEMENTATION] from src.crypto.mock_crypto import MockECDHKeyExchange as ECDHKeyExchange
+  行 11: [MOCK_IMPLEMENTATION] from src.crypto.mock_crypto import MockHKDFKeyDerivation as HKDFKeyDerivation
+  行 12: [MOCK_IMPLEMENTATION] from src.crypto.mock_crypto import MockAESGCMCipher as AESGCMCipher
+
+文件: mnmcp-core\src\mnmcp\network\live_connector.py
+  行 134: [NOT_IMPLEMENTED] raise NotImplementedError(
+  行 151: [TODO/FIXME] # TODO: Send DISCONNECT(3004)?
+  行 166: [NOT_IMPLEMENTED] raise NotImplementedError(
+  行 183: [NOT_IMPLEMENTED] raise NotImplementedError(
+  行 196: [NOT_IMPLEMENTED] raise NotImplementedError(
+  行 246: [NOT_IMPLEMENTED] raise NotImplementedError("Waiting for openroom capture")
+  行 251: [NOT_IMPLEMENTED] raise NotImplementedError("Waiting for TCP capture")
+  行 256: [NOT_IMPLEMENTED] raise NotImplementedError("Waiting for LOGIN_REQ capture")
+  行 261: [NOT_IMPLEMENTED] raise NotImplementedError("Waiting for session_key capture")
+  行 271: [PASS_STATEMENT] pass
+
+文件: mnmcp-core\src\mnmcp\network\__init__.py
+  行 238: [TODO/FIXME] # TODO: 转发到 MNW 连接
+
+文件: mnmcp-core\src\mnmcp\protocol\mnw_constants.py
+  行 112: [PASS_STATEMENT] pass
+
+文件: mnmcp-core\src\mnmcp\protocol\__init__.py
+  行 201: [PASS_STATEMENT] pass
+  行 295: [PASS_STATEMENT] pass
+
+文件: mnmcp-core\src\mnmcp\utils\logging.py
+  行 74: [PASS_STATEMENT] pass
+
+文件: mnmcp-core\src\mnmcp\utils\watcher.py
+  行 143: [PASS_STATEMENT] pass
+
+文件: src\bridge.py
+  行 140: [TODO/FIXME] # TODO: 实现登录响应处理
+  行 199: [TODO/FIXME] # TODO: 解析 Minecraft 协议
+  行 210: [TODO/FIXME] # TODO: 使用 session 解密
+
+文件: src\bridge_v2.py
+  行 167: [TODO/FIXME] # TODO: 实现 MC Java 协议发送聊天消息
+  行 172: [TODO/FIXME] # TODO: 实现 MC Java 协议发送玩家移动
+
+文件: src\auth\login.py
+  行 77: [TODO/FIXME] # TODO: 实现验证码处理
+  行 80: [NOT_IMPLEMENTED] error_message="Verification required but not implemented"
+  行 224: [TODO/FIXME] # TODO: 实现登出请求
+
+文件: src\crypto\__init__.py
+  行 28: [MOCK_IMPLEMENTATION] from .mock_crypto import (
+  行 34: [MOCK_IMPLEMENTATION] CRYPTO_BACKEND = 'mock'
+  行 35: [MOCK_IMPLEMENTATION] logger.warning("Using mock cryptography backend")
+
+文件: src\mapping\coordinates.py
+  行 81: [TODO/FIXME] # TODO: 实现方块映射
+  行 90: [TODO/FIXME] # TODO: 实现方块映射
+
+文件: src\protocol\ilink.py
+  行 32: [TODO/FIXME] # TODO: 实现 ECDH + HKDF
+  行 45: [TODO/FIXME] # TODO: 实现 WPKG 编码 + AES-GCM 加密
+  行 50: [TODO/FIXME] # TODO: 实现 WPKG 解码 + AES-GCM 解密
+
+文件: src\protocol\mnw.py
+  行 60: [TODO/FIXME] # TODO: 实现 PB_PACKDATA_CLIENT 编码
+  行 66: [TODO/FIXME] # TODO: 实现 PB_PACKDATA_CLIENT 解码
+
+文件: src\protocol\protobuf_defs.py
+  行 59: [TODO/FIXME] return cls()  # TODO: 完整实现
+
+文件: src\protocol\raknet.py
+  行 35: [TODO/FIXME] # TODO: 实现 RakNet 编码
+
+文件: src\utils\error_handler.py
+  行 32: [PASS_STATEMENT] pass
+  行 37: [PASS_STATEMENT] pass
+  行 42: [PASS_STATEMENT] pass
+  行 47: [PASS_STATEMENT] pass
+  行 52: [PASS_STATEMENT] pass
+
+文件: tools\pcapng_parser.py
+  行 216: [PASS_STATEMENT] pass
+
+文件: tools\pcap_analyzer.py
+  行 91: [TODO/FIXME] # TODO: 实现完整的 PCAP 解析
+  行 92: [NOT_IMPLEMENTED] print("✗ Full PCAP parsing not implemented")
+  行 98: [TODO/FIXME] # TODO: 实现完整的 PCAPNG 解析
+  行 99: [NOT_IMPLEMENTED] print("✗ Full PCAPNG parsing not implemented")
+
+================================================================================

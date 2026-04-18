@@ -1,0 +1,158 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mnmcp"
+version = "1.1.0"
+description = "Minecraft and MiniWorld Creata CrossPlay Protocol Bridge"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "MnMCP Contributors", email = "mnmcp@example.com"}
+]
+keywords = ["minecraft", "miniworld", "crossplay", "protocol", "bridge", "multiplayer"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Games/Entertainment",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Networking",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "cryptography>=41.0.0",
+    "aiohttp>=3.8.0",
+    "websockets>=11.0.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.7.0",
+    "flake8>=6.1.0",
+    "mypy>=1.5.0",
+    "isort>=5.12.0",
+]
+docs = [
+    "sphinx>=7.1.0",
+    "sphinx-rtd-theme>=1.3.0",
+]
+performance = [
+    "lz4>=4.3.0",
+    "orjson>=3.9.0",
+]
+
+[project.scripts]
+mnmcp = "mnmcp.cli:main"
+mnmcp-server = "mnmcp.server:main"
+
+[project.urls]
+Homepage = "https://github.com/yourusername/BlockConnect-MnMCP"
+Documentation = "https://mnmcp.readthedocs.io/"
+Repository = "https://github.com/yourusername/BlockConnect-MnMCP.git"
+"Bug Tracker" = "https://github.com/yourusername/BlockConnect-MnMCP/issues"
+
+[tool.setuptools]
+packages = ["src", "mnmcp-core/src/mnmcp"]
+
+[tool.setuptools.package-data]
+mnmcp = ["data/*.json", "config/*.yaml"]
+
+# Black configuration
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+# isort configuration
+[tool.isort]
+profile = "black"
+line_length = 100
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+
+# mypy configuration
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = false
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+# pytest configuration
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers --cov=src --cov-report=term-missing"
+testpaths = [
+    "tests",
+]
+asyncio_mode = "auto"
+
+# Coverage configuration
+[tool.coverage.run]
+source = ["src", "mnmcp-core/src/mnmcp"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+# Flake8 configuration (using flake8-pyproject)
+[tool.flake8]
+max-line-length = 100
+extend-ignore = ["E203", "W503"]
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    ".venv",
+    "venv",
+]

@@ -11,35 +11,32 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# 优先使用真实加密实现（基于标准库）
 try:
-    # 尝试导入真实加密实现
-    from cryptography.hazmat.primitives.asymmetric import ec
-    from cryptography.hazmat.primitives import serialization
-    from cryptography.hazmat.primitives.kdf.hkdf import HKDF
-    from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-    from cryptography.hazmat.primitives import hashes
-    from cryptography.hazmat.backends import default_backend
-    
-    # 如果成功导入，使用真实实现
-    from .ecdh import ECDHKeyExchange
-    from .hkdf import HKDFKeyDerivation
-    from .aesgcm import AESGCMCipher
+    from .real_crypto import (
+        RealECDHKeyExchange as ECDHKeyExchange,
+        RealHKDFKeyDerivation as HKDFKeyDerivation,
+        RealAESGCMCipher as AESGCMCipher
+    )
     _REAL_CRYPTO = True
-    logger.info("Using real cryptography backend")
+    CRYPTO_BACKEND = 'real_stdlib'
+    logger.info("Using real cryptography backend (stdlib)")
     
 except ImportError as e:
-    # 如果 cryptography 未安装，使用模拟实现
-    logger.warning(f"cryptography not installed ({e}), using mock backend")
-    from .mock_crypto import MockECDHKeyExchange as ECDHKeyExchange
-    from .mock_crypto import MockHKDFKeyDerivation as HKDFKeyDerivation
-    from .mock_crypto import MockAESGCMCipher as AESGCMCipher
+    logger.error(f"Failed to import real_crypto: {e}")
+    # 降级到模拟实现
+    from .mock_crypto import (
+        MockECDHKeyExchange as ECDHKeyExchange,
+        MockHKDFKeyDerivation as HKDFKeyDerivation,
+        MockAESGCMCipher as AESGCMCipher
+    )
     _REAL_CRYPTO = False
+    CRYPTO_BACKEND = 'mock'
+    logger.warning("Using mock cryptography backend")
 
 __all__ = [
     'ECDHKeyExchange',
     'HKDFKeyDerivation',
     'AESGCMCipher',
+    'CRYPTO_BACKEND',
 ]
-
-# 导出加密状态
-CRYPTO_BACKEND = 'real' if _REAL_CRYPTO else 'mock'

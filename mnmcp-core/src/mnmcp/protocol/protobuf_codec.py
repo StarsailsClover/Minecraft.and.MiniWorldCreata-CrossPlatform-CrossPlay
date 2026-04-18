@@ -1,18 +1,20 @@
 """
-Protobuf 协议定义
+Protobuf 编解码器
 
-基于逆向分析提取的原始 .proto 定义
+基于逆向分析提取的原始 .proto 定义实现
+支持迷你世界国服协议消息
 """
 
-from dataclasses import dataclass
-from typing import Optional, List
 import struct
 import logging
+from dataclasses import dataclass
+from typing import Optional, List, Dict, Any
+from enum import IntEnum
 
 logger = logging.getLogger(__name__)
 
 
-class WireType:
+class WireType(IntEnum):
     """Protobuf Wire Type"""
     VARINT = 0
     FIXED64 = 1
@@ -22,8 +24,18 @@ class WireType:
     FIXED32 = 5
 
 
-def _encode_varint(value: int) -> bytes:
-    """编码 varint"""
+def zigzag_encode(n: int) -> int:
+    """ZigZag 编码 - 用于有符号整数"""
+    return (n << 1) ^ (n >> 63)
+
+
+def zigzag_decode(n: int) -> int:
+    """ZigZag 解码"""
+    return (n >> 1) ^ -(n & 1)
+
+
+def encode_varint(value: int) -> bytes:
+    """编码 VarInt"""
     result = []
     while value > 127:
         result.append((value & 0x7F) | 0x80)
@@ -32,8 +44,8 @@ def _encode_varint(value: int) -> bytes:
     return bytes(result)
 
 
-def _decode_varint(data: bytes, offset: int = 0) -> tuple:
-    """解码 varint，返回 (value, new_offset)"""
+def decode_varint(data: bytes, offset: int = 0) -> tuple:
+    """解码 VarInt，返回 (value, new_offset)"""
     value = 0
     shift = 0
     while True:
@@ -50,23 +62,13 @@ def _decode_varint(data: bytes, offset: int = 0) -> tuple:
     return value, offset
 
 
-def _zigzag_encode(n: int) -> int:
-    """ZigZag 编码"""
-    return (n << 1) ^ (n >> 63)
-
-
-def _zigzag_decode(n: int) -> int:
-    """ZigZag 解码"""
-    return (n >> 1) ^ -(n & 1)
-
-
-def _make_tag(field_number: int, wire_type: int) -> int:
+def make_tag(field_number: int, wire_type: int) -> int:
     """生成字段标签"""
     return (field_number << 3) | wire_type
 
 
-def _parse_tag(tag: int) -> tuple:
-    """解析字段标签"""
+def parse_tag(tag: int) -> tuple:
+    """解析字段标签，返回 (field_number, wire_type)"""
     return (tag >> 3), (tag & 0x07)
 
 
@@ -84,8 +86,9 @@ class PB_Vector3:
     @classmethod
     def from_mc_coords(cls, x: float, y: float, z: float) -> 'PB_Vector3':
         """从 Minecraft 坐标转换"""
+        # 迷你世界使用整数坐标，需要缩放
         return cls(
-            X=int(x * 100),
+            X=int(x * 100),  # 缩放因子
             Y=int(y * 100),
             Z=int(z * 100)
         )
@@ -98,11 +101,11 @@ class PB_Vector3:
         """编码为 protobuf 格式"""
         data = b''
         # field 1: X (sint32, ZigZag 编码)
-        data += bytes([_make_tag(1, WireType.VARINT)]) + _encode_varint(_zigzag_encode(self.X))
+        data += bytes([make_tag(1, WireType.VARINT)]) + encode_varint(zigzag_encode(self.X))
         # field 2: Y (sint32, ZigZag 编码)
-        data += bytes([_make_tag(2, WireType.VARINT)]) + _encode_varint(_zigzag_encode(self.Y))
+        data += bytes([make_tag(2, WireType.VARINT)]) + encode_varint(zigzag_encode(self.Y))
         # field 3: Z (sint32, ZigZag 编码)
-        data += bytes([_make_tag(3, WireType.VARINT)]) + _encode_varint(_zigzag_encode(self.Z))
+        data += bytes([make_tag(3, WireType.VARINT)]) + encode_varint(zigzag_encode(self.Z))
         return data
     
     @classmethod
@@ -113,12 +116,12 @@ class PB_Vector3:
             offset = 0
             
             while offset < len(data):
-                tag, offset = _decode_varint(data, offset)
-                field_num, wire_type = _parse_tag(tag)
+                tag, offset = decode_varint(data, offset)
+                field_num, wire_type = parse_tag(tag)
                 
                 if wire_type == WireType.VARINT:
-                    value, offset = _decode_varint(data, offset)
-                    decoded_value = _zigzag_decode(value)
+                    value, offset = decode_varint(data, offset)
+                    decoded_value = zigzag_decode(value)
                     
                     if field_num == 1:
                         obj.X = decoded_value
@@ -133,7 +136,7 @@ class PB_Vector3:
                     elif wire_type == WireType.FIXED32:
                         offset += 4
                     elif wire_type == WireType.LENGTH_DELIMITED:
-                        length, offset = _decode_varint(data, offset)
+                        length, offset = decode_varint(data, offset)
                         offset += length
                     else:
                         break
@@ -159,11 +162,11 @@ class PB_HeartBeatCH:
         """编码为 protobuf 格式"""
         data = b''
         # field 1: BeatCode (uint64)
-        data += bytes([_make_tag(1, WireType.VARINT)]) + _encode_varint(self.BeatCode)
+        data += bytes([make_tag(1, WireType.VARINT)]) + encode_varint(self.BeatCode)
         # field 2: server_time (uint64)
-        data += bytes([_make_tag(2, WireType.VARINT)]) + _encode_varint(self.server_time)
+        data += bytes([make_tag(2, WireType.VARINT)]) + encode_varint(self.server_time)
         # field 3: client_time (uint64)
-        data += bytes([_make_tag(3, WireType.VARINT)]) + _encode_varint(self.client_time)
+        data += bytes([make_tag(3, WireType.VARINT)]) + encode_varint(self.client_time)
         return data
     
     @classmethod
@@ -174,11 +177,11 @@ class PB_HeartBeatCH:
             offset = 0
             
             while offset < len(data):
-                tag, offset = _decode_varint(data, offset)
-                field_num, wire_type = _parse_tag(tag)
+                tag, offset = decode_varint(data, offset)
+                field_num, wire_type = parse_tag(tag)
                 
                 if wire_type == WireType.VARINT:
-                    value, offset = _decode_varint(data, offset)
+                    value, offset = decode_varint(data, offset)
                     
                     if field_num == 1:
                         obj.BeatCode = value
@@ -193,7 +196,7 @@ class PB_HeartBeatCH:
                     elif wire_type == WireType.FIXED32:
                         offset += 4
                     elif wire_type == WireType.LENGTH_DELIMITED:
-                        length, offset = _decode_varint(data, offset)
+                        length, offset = decode_varint(data, offset)
                         offset += length
                     else:
                         break
@@ -206,7 +209,9 @@ class PB_HeartBeatCH:
 
 @dataclass
 class PB_RoomInfo:
-    """房间信息"""
+    """
+    房间信息
+    """
     room_id: str = ""
     room_name: str = ""
     host_uin: int = 0
@@ -219,27 +224,27 @@ class PB_RoomInfo:
         data = b''
         # field 1: room_id (string)
         room_id_bytes = self.room_id.encode('utf-8')
-        data += bytes([_make_tag(1, WireType.LENGTH_DELIMITED)])
-        data += _encode_varint(len(room_id_bytes)) + room_id_bytes
+        data += bytes([make_tag(1, WireType.LENGTH_DELIMITED)])
+        data += encode_varint(len(room_id_bytes)) + room_id_bytes
         
         # field 2: room_name (string)
         room_name_bytes = self.room_name.encode('utf-8')
-        data += bytes([_make_tag(2, WireType.LENGTH_DELIMITED)])
-        data += _encode_varint(len(room_name_bytes)) + room_name_bytes
+        data += bytes([make_tag(2, WireType.LENGTH_DELIMITED)])
+        data += encode_varint(len(room_name_bytes)) + room_name_bytes
         
         # field 3: host_uin (uint64)
-        data += bytes([_make_tag(3, WireType.VARINT)]) + _encode_varint(self.host_uin)
+        data += bytes([make_tag(3, WireType.VARINT)]) + encode_varint(self.host_uin)
         
         # field 4: max_players (uint32)
-        data += bytes([_make_tag(4, WireType.VARINT)]) + _encode_varint(self.max_players)
+        data += bytes([make_tag(4, WireType.VARINT)]) + encode_varint(self.max_players)
         
         # field 5: current_players (uint32)
-        data += bytes([_make_tag(5, WireType.VARINT)]) + _encode_varint(self.current_players)
+        data += bytes([make_tag(5, WireType.VARINT)]) + encode_varint(self.current_players)
         
         # field 6: game_mode (string)
         game_mode_bytes = self.game_mode.encode('utf-8')
-        data += bytes([_make_tag(6, WireType.LENGTH_DELIMITED)])
-        data += _encode_varint(len(game_mode_bytes)) + game_mode_bytes
+        data += bytes([make_tag(6, WireType.LENGTH_DELIMITED)])
+        data += encode_varint(len(game_mode_bytes)) + game_mode_bytes
         
         return data
     
@@ -251,11 +256,11 @@ class PB_RoomInfo:
             offset = 0
             
             while offset < len(data):
-                tag, offset = _decode_varint(data, offset)
-                field_num, wire_type = _parse_tag(tag)
+                tag, offset = decode_varint(data, offset)
+                field_num, wire_type = parse_tag(tag)
                 
                 if wire_type == WireType.VARINT:
-                    value, offset = _decode_varint(data, offset)
+                    value, offset = decode_varint(data, offset)
                     if field_num == 3:
                         obj.host_uin = value
                     elif field_num == 4:
@@ -264,7 +269,7 @@ class PB_RoomInfo:
                         obj.current_players = value
                         
                 elif wire_type == WireType.LENGTH_DELIMITED:
-                    length, offset = _decode_varint(data, offset)
+                    length, offset = decode_varint(data, offset)
                     value = data[offset:offset+length].decode('utf-8')
                     offset += length
                     
@@ -275,6 +280,7 @@ class PB_RoomInfo:
                     elif field_num == 6:
                         obj.game_mode = value
                 else:
+                    # 跳过未知字段
                     if wire_type == WireType.FIXED64:
                         offset += 8
                     elif wire_type == WireType.FIXED32:
@@ -290,9 +296,11 @@ class PB_RoomInfo:
 
 @dataclass
 class PB_ActorOperationCH:
-    """玩家操作 (proto_ch.proto)"""
+    """
+    玩家操作 (proto_ch.proto)
+    """
     actor_id: int = 0
-    operation_type: int = 0
+    operation_type: int = 0  # 操作类型
     position: Optional[PB_Vector3] = None
     rotation: Optional[PB_Vector3] = None
     
@@ -300,22 +308,22 @@ class PB_ActorOperationCH:
         """编码为 protobuf 格式"""
         data = b''
         # field 1: actor_id (uint64)
-        data += bytes([_make_tag(1, WireType.VARINT)]) + _encode_varint(self.actor_id)
+        data += bytes([make_tag(1, WireType.VARINT)]) + encode_varint(self.actor_id)
         
         # field 2: operation_type (uint32)
-        data += bytes([_make_tag(2, WireType.VARINT)]) + _encode_varint(self.operation_type)
+        data += bytes([make_tag(2, WireType.VARINT)]) + encode_varint(self.operation_type)
         
         # field 3: position (PB_Vector3)
         if self.position:
             pos_data = self.position.encode()
-            data += bytes([_make_tag(3, WireType.LENGTH_DELIMITED)])
-            data += _encode_varint(len(pos_data)) + pos_data
+            data += bytes([make_tag(3, WireType.LENGTH_DELIMITED)])
+            data += encode_varint(len(pos_data)) + pos_data
         
         # field 4: rotation (PB_Vector3)
         if self.rotation:
             rot_data = self.rotation.encode()
-            data += bytes([_make_tag(4, WireType.LENGTH_DELIMITED)])
-            data += _encode_varint(len(rot_data)) + rot_data
+            data += bytes([make_tag(4, WireType.LENGTH_DELIMITED)])
+            data += encode_varint(len(rot_data)) + rot_data
         
         return data
     
@@ -327,18 +335,18 @@ class PB_ActorOperationCH:
             offset = 0
             
             while offset < len(data):
-                tag, offset = _decode_varint(data, offset)
-                field_num, wire_type = _parse_tag(tag)
+                tag, offset = decode_varint(data, offset)
+                field_num, wire_type = parse_tag(tag)
                 
                 if wire_type == WireType.VARINT:
-                    value, offset = _decode_varint(data, offset)
+                    value, offset = decode_varint(data, offset)
                     if field_num == 1:
                         obj.actor_id = value
                     elif field_num == 2:
                         obj.operation_type = value
                         
                 elif wire_type == WireType.LENGTH_DELIMITED:
-                    length, offset = _decode_varint(data, offset)
+                    length, offset = decode_varint(data, offset)
                     sub_data = data[offset:offset+length]
                     offset += length
                     
@@ -347,6 +355,7 @@ class PB_ActorOperationCH:
                     elif field_num == 4:
                         obj.rotation = PB_Vector3.decode(sub_data)
                 else:
+                    # 跳过未知字段
                     if wire_type == WireType.FIXED64:
                         offset += 8
                     elif wire_type == WireType.FIXED32:
@@ -358,160 +367,56 @@ class PB_ActorOperationCH:
         except Exception as e:
             logger.error(f"PB_ActorOperationCH decode error: {e}")
             return None
-    BeatCode: int = 0      # 心跳序列号
-    server_time: int = 0   # 服务器毫秒级时间戳
-    client_time: int = 0   # 客户端毫秒级时间戳
-    
-    def encode(self) -> bytes:
-        """编码"""
-        data = b''
-        # field 1: BeatCode (uint64)
-        data += b'\x08' + self._encode_varint(self.BeatCode)
-        # field 2: server_time (uint64)
-        data += b'\x10' + self._encode_varint(self.server_time)
-        # field 3: client_time (uint64)
-        data += b'\x18' + self._encode_varint(self.client_time)
-        return data
+
+
+class ProtobufCodec:
+    """Protobuf 便捷编解码器"""
     
     @staticmethod
-    def _encode_varint(value: int) -> bytes:
-        """编码 varint"""
-        result = []
-        while value > 127:
-            result.append((value & 0x7F) | 0x80)
-            value >>= 7
-        result.append(value)
-        return bytes(result)
-
-
-@dataclass
-class PB_ThornBallCH:
-    """
-    荆棘球/战斗 (proto_ch_ver2.proto)
-    
-    承载核心战斗逻辑
-    """
-    atkpoints: int = 0     # 攻击力/伤害点数
-    num: int = 0           # 触发数量
-    dir: int = 0           # 作用方向
-    
-    def encode(self) -> bytes:
-        """编码"""
-        data = b''
-        # field 1: atkpoints (int32)
-        data += b'\x08' + self._encode_varint(self.atkpoints)
-        # field 2: num (int32)
-        data += b'\x10' + self._encode_varint(self.num)
-        # field 3: dir (int32)
-        data += b'\x18' + self._encode_varint(self.dir)
-        return data
+    def encode_vector3(x: int, y: int, z: int) -> bytes:
+        """编码 3D 向量"""
+        return PB_Vector3(X=x, Y=y, Z=z).encode()
     
     @staticmethod
-    def _encode_varint(value: int) -> bytes:
-        """编码 varint"""
-        result = []
-        while value > 127:
-            result.append((value & 0x7F) | 0x80)
-            value >>= 7
-        result.append(value)
-        return bytes(result)
-
-
-@dataclass
-class PB_ActorOperationCH:
-    """
-    实体操作 (proto_ch_ver2.proto)
-    
-    同步玩家的位移、挖掘、建筑等实时操作
-    """
-    blockid: int = 0       # 操作目标方块ID
-    operation_type: int = 0  # 操作类型 (扩展)
-    position: Optional[PB_Vector3] = None  # 位置
-    
-    # 操作类型枚举
-    OP_MOVE = 0
-    OP_DIG = 1
-    OP_BUILD = 2
-    OP_INTERACT = 3
-    
-    def encode(self) -> bytes:
-        """编码"""
-        data = b''
-        # field 1: blockid (int32)
-        data += b'\x08' + self._encode_varint(self.blockid)
-        return data
+    def decode_vector3(data: bytes) -> Optional[PB_Vector3]:
+        """解码 3D 向量"""
+        return PB_Vector3.decode(data)
     
     @staticmethod
-    def _encode_varint(value: int) -> bytes:
-        """编码 varint"""
-        result = []
-        while value > 127:
-            result.append((value & 0x7F) | 0x80)
-            value >>= 7
-        result.append(value)
-        return bytes(result)
-
-
-@dataclass
-class PB_RoomInfo:
-    """
-    房间信息 (proto_room.proto)
-    
-    用于联机大厅及房间状态同步
-    """
-    OwnerUin: int = 0          # 房主唯一识别码
-    PlayerCount: int = 0       # 当前房间人数
-    MaxPlayerCount: int = 0    # 房间上限
-    GameType: int = 0          # 玩法模式 (0=生存, 1=创造, 2=冒险)
-    
-    def encode(self) -> bytes:
-        """编码"""
-        data = b''
-        # field 1: OwnerUin (uint32)
-        data += b'\x08' + self._encode_varint(self.OwnerUin)
-        # field 2: PlayerCount (int32)
-        data += b'\x10' + self._encode_varint(self.PlayerCount)
-        # field 3: MaxPlayerCount (int32)
-        data += b'\x18' + self._encode_varint(self.MaxPlayerCount)
-        # field 4: GameType (int32)
-        data += b'\x20' + self._encode_varint(self.GameType)
-        return data
+    def encode_heartbeat(beat_code: int, server_time: int, client_time: int) -> bytes:
+        """编码心跳包"""
+        return PB_HeartBeatCH(
+            BeatCode=beat_code,
+            server_time=server_time,
+            client_time=client_time
+        ).encode()
     
     @staticmethod
-    def _encode_varint(value: int) -> bytes:
-        """编码 varint"""
-        result = []
-        while value > 127:
-            result.append((value & 0x7F) | 0x80)
-            value >>= 7
-        result.append(value)
-        return bytes(result)
+    def decode_heartbeat(data: bytes) -> Optional[PB_HeartBeatCH]:
+        """解码心跳包"""
+        return PB_HeartBeatCH.decode(data)
 
 
-@dataclass
-class PB_ItemDataComponent:
-    """
-    物品/组件数据 (proto_common.proto)
-    """
-    name: str = ""           # 物品/组件唯一名称
-    data: bytes = b''        # 序列化后的组件私有数据
-    
-    def encode(self) -> bytes:
-        """编码"""
-        data = b''
-        # field 1: name (string)
-        name_bytes = self.name.encode('utf-8')
-        data += b'\x0a' + self._encode_varint(len(name_bytes)) + name_bytes
-        # field 2: data (bytes)
-        data += b'\x12' + self._encode_varint(len(self.data)) + self.data
-        return data
-    
-    @staticmethod
-    def _encode_varint(value: int) -> bytes:
-        """编码 varint"""
-        result = []
-        while value > 127:
-            result.append((value & 0x7F) | 0x80)
-            value >>= 7
-        result.append(value)
-        return bytes(result)
+# 便捷函数
+def encode_pb_vector3(x: int, y: int, z: int) -> bytes:
+    """便捷编码 3D 向量"""
+    return PB_Vector3(X=x, Y=y, Z=z).encode()
+
+
+def decode_pb_vector3(data: bytes) -> Optional[PB_Vector3]:
+    """便捷解码 3D 向量"""
+    return PB_Vector3.decode(data)
+
+
+def encode_pb_heartbeat(beat_code: int, server_time: int, client_time: int) -> bytes:
+    """便捷编码心跳包"""
+    return PB_HeartBeatCH(
+        BeatCode=beat_code,
+        server_time=server_time,
+        client_time=client_time
+    ).encode()
+
+
+def decode_pb_heartbeat(data: bytes) -> Optional[PB_HeartBeatCH]:
+    """便捷解码心跳包"""
+    return PB_HeartBeatCH.decode(data)
