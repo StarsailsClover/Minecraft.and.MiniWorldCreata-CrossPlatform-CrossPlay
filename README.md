@@ -188,7 +188,7 @@ mypy src
 ## 联系方式
 
 - GitHub Issues: [报告问题](https://github.com/yourusername/BlockConnect-MnMCP/issues)
-- 邮件: mnmcp@example.com
+- 邮件: SailsHuang@gmail.com
 
 ---
 
